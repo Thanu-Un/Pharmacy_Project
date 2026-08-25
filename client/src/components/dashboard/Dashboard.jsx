@@ -43,6 +43,7 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
   const [currentView, setCurrentView] = useState(() => {
     return localStorage.getItem('dashboard_currentView') || 'Dashboard';
   });
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('dashboard_currentView', currentView);
@@ -346,31 +347,44 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
   ];
 
   return (
-    <div className="flex h-screen bg-slate-50 font-sans selection:bg-emerald-100 selection:text-emerald-900">
+    <div className="flex h-screen bg-slate-50 font-sans selection:bg-emerald-100 selection:text-emerald-900 relative">
       {currentView !== 'New Sale' && (
-        <Sidebar
-          currentView={currentView}
-          onMenuSelect={(view) => {
-            setEditingCategory(null);
-            setEditingUnit(null);
-            setEditingProduct(null);
-            setEditingSupplier(null);
-            setEditingPatient(null);
-            setEditingPurchase(null);
-            setEditingStaff(null);
-            setCurrentView(view);
-          }}
-          permissions={permissions}
-        />
+        <>
+          {/* Mobile Overlay */}
+          {isMobileMenuOpen && (
+            <div 
+              className="fixed inset-0 bg-slate-900/50 z-40 md:hidden transition-opacity"
+              onClick={() => setIsMobileMenuOpen(false)}
+            ></div>
+          )}
+          <Sidebar
+            currentView={currentView}
+            isMobileMenuOpen={isMobileMenuOpen}
+            setIsMobileMenuOpen={setIsMobileMenuOpen}
+            onMenuSelect={(view) => {
+              setEditingCategory(null);
+              setEditingUnit(null);
+              setEditingProduct(null);
+              setEditingSupplier(null);
+              setEditingPatient(null);
+              setEditingPurchase(null);
+              setEditingStaff(null);
+              setCurrentView(view);
+              setIsMobileMenuOpen(false); // Close mobile menu when navigating
+            }}
+            permissions={permissions}
+          />
+        </>
       )}
 
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
+      <div className="flex-1 flex flex-col h-screen overflow-hidden w-full relative">
         <Header
           username={username}
           onLogout={onLogout}
           onPOSClick={() => setCurrentView('New Sale')}
           showBrand={currentView === 'New Sale'}
           onBrandClick={() => setCurrentView('Dashboard')}
+          onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         />
 
         {/* Main Scrollable Area */}

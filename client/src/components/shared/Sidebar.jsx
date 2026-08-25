@@ -114,7 +114,7 @@ const navItems = [
   },
 ];
 
-export default function Sidebar({ currentView, onMenuSelect, permissions = [] }) {
+export default function Sidebar({ currentView, onMenuSelect, permissions = [], isMobileMenuOpen, setIsMobileMenuOpen }) {
   const { t } = useTranslation();
   const [expandedMenus, setExpandedMenus] = useState({});
 
@@ -132,23 +132,38 @@ export default function Sidebar({ currentView, onMenuSelect, permissions = [] })
   };
 
   return (
-    <div className="w-64 bg-[#0f172a] min-h-screen text-slate-300 flex flex-col shrink-0 overflow-y-auto border-r border-slate-800">
+    <div className={`
+      w-64 bg-[#0f172a] min-h-screen text-slate-300 flex flex-col shrink-0 overflow-y-auto border-r border-slate-800
+      fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out
+      ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+      md:relative md:translate-x-0
+    `}>
       {/* Brand Header (click to go to Dashboard & refresh) */}
-      <div
-        onClick={() => {
-          if (onMenuSelect) onMenuSelect('Dashboard');
-          try { window.dispatchEvent(new Event('refreshDashboard')); } catch (e) { /* ignore */ }
-        }}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { if (onMenuSelect) onMenuSelect('Dashboard'); try { window.dispatchEvent(new Event('refreshDashboard')); } catch (e) { } } }}
-        className=" uppercase h-14 bg-[#020617] flex items-center px-4 text-white font-bold text-lg border-b border-slate-800 gap-2 cursor-pointer"
-      >
-        <svg className="w-9 h-9 text-[#10b981] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <circle cx="12" cy="12" r="9" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v8M8 12h8" />
-        </svg>
-        <span className="whitespace-nowrap overflow-hidden text-ellipsis text-[15px] tracking-wide">NUTHEB PHARMACY</span>
+      <div className="flex items-center justify-between px-4 h-14 bg-[#020617] border-b border-slate-800 shrink-0">
+        <div
+          onClick={() => {
+            if (onMenuSelect) onMenuSelect('Dashboard');
+            try { window.dispatchEvent(new Event('refreshDashboard')); } catch (e) { /* ignore */ }
+          }}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { if (onMenuSelect) onMenuSelect('Dashboard'); try { window.dispatchEvent(new Event('refreshDashboard')); } catch (e) { } } }}
+          className="flex items-center gap-2 cursor-pointer text-white font-bold text-lg hover:opacity-80 transition-opacity"
+        >
+          <svg className="w-8 h-8 text-[#10b981] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <circle cx="12" cy="12" r="9" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v8M8 12h8" />
+          </svg>
+          <span className="whitespace-nowrap overflow-hidden text-ellipsis text-[14px] tracking-wide uppercase">NUTHEB PHARMACY</span>
+        </div>
+
+        {/* Mobile Close Button */}
+        <button 
+          onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)}
+          className="md:hidden text-slate-400 hover:text-white p-1"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
       </div>
 
       {/* Navigation Menu */}

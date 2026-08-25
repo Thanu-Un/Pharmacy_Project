@@ -678,7 +678,7 @@ export default function Dispensing({ onSaleComplete }) {
                 <div className="w-full h-28 mb-3 bg-slate-50 rounded-md border border-slate-100 flex items-center justify-center overflow-hidden">
                   {product.image ? (
                     <img
-                      src={product.image.startsWith('http') || product.image.startsWith('data:') ? product.image : `http://localhost:8081/uploads/${product.image}`}
+                      src={product.image.startsWith('http') || product.image.startsWith('data:') ? product.image : `/api/operation${product.image}`}
                       alt={product.name}
                       className="w-full h-full object-contain p-1 mix-blend-multiply"
                     />

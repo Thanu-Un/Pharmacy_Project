@@ -33,15 +33,15 @@ export default function SalesAnalytics() {
       const headers = { 'Authorization': `Bearer ${localStorage.getItem('token')}` };
 
       // Fetch summary
-      const sumRes = await fetch(`http://localhost:8080/api/reporting/sales-summary?startDate=${sdStr}&endDate=${edStr}`, { headers });
+      const sumRes = await fetch(`/api/reporting/sales-summary?startDate=${sdStr}&endDate=${edStr}`, { headers });
       if (sumRes.ok) setSummary(await sumRes.json());
 
       // Fetch daily sales
-      const dailyRes = await fetch(`http://localhost:8080/api/reporting/daily-sales?startDate=${sdStr}&endDate=${edStr}`, { headers });
+      const dailyRes = await fetch(`/api/reporting/daily-sales?startDate=${sdStr}&endDate=${edStr}`, { headers });
       if (dailyRes.ok) setDailySales(await dailyRes.json());
 
       // Fetch top medicines
-      const topRes = await fetch(`http://localhost:8080/api/reporting/top-medicines?startDate=${sdStr}&endDate=${edStr}&limit=5`, { headers });
+      const topRes = await fetch(`/api/reporting/top-medicines?startDate=${sdStr}&endDate=${edStr}&limit=5`, { headers });
       if (topRes.ok) setTopMedicines(await topRes.json());
 
     } catch (err) {

@@ -10,7 +10,7 @@ export default function ProductExpiryAlerts() {
     setLoading(true);
     try {
       const headers = { 'Authorization': `Bearer ${localStorage.getItem('token')}` };
-      const response = await fetch('http://localhost:8080/api/operation/purchases', { headers });
+      const response = await fetch('/api/operation/purchases', { headers });
       if (!response.ok) throw new Error('Failed to fetch purchases');
       
       const purchases = await response.json();
@@ -139,7 +139,7 @@ export default function ProductExpiryAlerts() {
                           {item.product?.image ? (
                             <div className="w-10 h-10 rounded-md bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden mx-auto">
                               <img 
-                                src={`http://localhost:8080${item.product.image}`} 
+                                src={item.product.image.startsWith('http') || item.product.image.startsWith('data:') ? item.product.image : `/api/operation${item.product.image}`} 
                                 alt={item.productName} 
                                 className="w-full h-full object-cover"
                                 onError={(e) => {

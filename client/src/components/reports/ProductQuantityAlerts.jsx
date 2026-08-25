@@ -11,7 +11,7 @@ export default function ProductQuantityAlerts() {
     setLoading(true);
     try {
       const headers = { 'Authorization': `Bearer ${localStorage.getItem('token')}` };
-      const response = await fetch('http://localhost:8080/api/operation/products', { headers });
+      const response = await fetch('/api/operation/products', { headers });
       if (!response.ok) throw new Error('Failed to fetch products');
       
       const data = await response.json();
@@ -97,7 +97,7 @@ export default function ProductQuantityAlerts() {
                         {product.image ? (
                           <div className="w-10 h-10 rounded-md bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden mx-auto">
                             <img 
-                              src={`http://localhost:8080${product.image}`} 
+                              src={product.image.startsWith('http') || product.image.startsWith('data:') ? product.image : `/api/operation${product.image}`}
                               alt={product.name} 
                               className="w-full h-full object-cover"
                               onError={(e) => {

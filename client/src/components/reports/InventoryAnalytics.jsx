@@ -10,7 +10,7 @@ export default function InventoryAnalytics() {
     setLoading(true);
     try {
       const headers = { 'Authorization': `Bearer ${localStorage.getItem('token')}` };
-      const res = await fetch(`http://localhost:8080/api/reporting/inventory-status`, { headers });
+      const res = await fetch(`/api/reporting/inventory-status`, { headers });
       if (res.ok) setStatus(await res.json());
     } catch (err) {
       console.error(err);

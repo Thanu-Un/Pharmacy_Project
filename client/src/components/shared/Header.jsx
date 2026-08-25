@@ -1,0 +1,104 @@
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+
+export default function Header({ username, onLogout, onPOSClick, showBrand, onBrandClick }) {
+  const { t, i18n } = useTranslation();
+
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
+  return (
+    <div className="h-14 bg-white flex items-center justify-between px-6 text-slate-800 shrink-0 shadow-sm border-b border-slate-200 relative z-10 gap-6">
+      
+      {showBrand && (
+        <div 
+          onClick={onBrandClick}
+          className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+        >
+          <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center shrink-0">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+          </div>
+          <span className="font-bold text-slate-800 tracking-wider whitespace-nowrap hidden sm:block">NUTHEB PHARMACY</span>
+        </div>
+        
+      )}
+
+      <div className="flex-1 max-w-xl">
+        <div className="relative group">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg className="h-5 w-5 text-slate-400 group-focus-within:text-emerald-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input
+            type="text"
+            className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-lg leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm"
+            placeholder={t('header.search_placeholder')}
+          />
+        </div>
+      </div>
+
+      {/* Right side icons */}
+      <div className="flex items-center gap-5">
+
+        {/* Language Switcher */}
+        <select 
+          value={i18n.language} 
+          onChange={(e) => changeLanguage(e.target.value)}
+          className="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block px-2.5 py-1.5 transition-colors cursor-pointer outline-none"
+        >
+          <option value="en">English</option>
+          <option value="km">ខ្មែរ</option>
+        </select>
+
+        {/* Dispensing Button */}
+        <button 
+          onClick={onPOSClick}
+          className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm shadow-emerald-500/20"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11h-4V7a2 2 0 00-2-2h-2a2 2 0 00-2 2v4H5a2 2 0 00-2 2v2a2 2 0 002 2h4v4a2 2 0 002 2h2a2 2 0 002-2v-4h4a2 2 0 002-2v-2a2 2 0 00-2-2z" /></svg>
+          {t('header.dispensing')}
+        </button>
+
+        {/* Status Indicators */}
+        <div className="flex items-center bg-slate-50 rounded-md border border-slate-200 overflow-hidden">
+          <button className="p-2 hover:bg-slate-100 border-r border-slate-200 transition-colors relative">
+            <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </button>
+          <button className="p-2 hover:bg-slate-100 border-r border-slate-200 transition-colors relative">
+            <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          </button>
+          <button className="p-2 hover:bg-slate-100 border-r border-slate-200 transition-colors relative">
+            <span className="absolute top-1 right-1 w-2 h-2 bg-amber-400 rounded-full border border-white"></span>
+            <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </button>
+          <button className="p-2 hover:bg-slate-100 transition-colors">
+            <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+          </button>
+        </div>
+
+        {/* Warning Indicator */}
+        <button className="bg-amber-100 hover:bg-amber-200 text-amber-700 p-1.5 rounded-md relative transition-colors">
+          <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold shadow-sm border border-white">9</span>
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+        </button>
+
+        {/* User Profile */}
+        <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
+          <div className="w-9 h-9 bg-emerald-100 rounded-full overflow-hidden flex items-center justify-center border border-emerald-200 shadow-sm">
+            <svg className="w-5 h-5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path></svg>
+          </div>
+          <div className="text-sm hidden md:block">
+            <p className="text-slate-500 text-[11px] font-medium leading-tight">{t('header.welcome_back')}</p>
+            <p className="font-bold text-slate-800 leading-tight">{username || 'Admin'}</p>
+          </div>
+          <button onClick={onLogout} className="ml-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 p-2 rounded-lg transition-colors border border-transparent hover:border-rose-100" title="Logout">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

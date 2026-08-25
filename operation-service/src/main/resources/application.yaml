@@ -1,0 +1,31 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: operation-service
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  jackson:
+    parser:
+      max-string-length: 10MB
+  datasource:
+    url: jdbc:postgresql://localhost:5432/operation_db
+    username: postgres
+    password: "**aa12345"
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+telegram:
+  bot:
+    token: "8713224669:AAHFNV-K289rmB11tedO0Qel_hhkhOmRL2k"
+    chatId: "-5396206269"

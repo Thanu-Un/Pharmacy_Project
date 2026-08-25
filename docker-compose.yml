@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: pharmacy-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: pharmacy_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    depends_on:
+      - postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/pharmacy_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=mypassword
+    restart: unless-stopped
+
+  operation-service:
+    build: ./operation-service
+    container_name: operation-service
+    depends_on:
+      - postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/pharmacy_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=mypassword
+    restart: unless-stopped
+
+  reporting-service:
+    build: ./reporting-service
+    container_name: reporting-service
+    depends_on:
+      - postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/pharmacy_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=mypassword
+    restart: unless-stopped
+
+  gateway-service:
+    build: ./gateway-service
+    container_name: gateway-service
+    depends_on:
+      - auth-service
+      - operation-service
+      - reporting-service
+    environment:
+      - AUTH_SERVICE_HOST=auth-service
+      - OPERATION_SERVICE_HOST=operation-service
+      - REPORTING_SERVICE_HOST=reporting-service
+    restart: unless-stopped
+
+  client:
+    build: ./client
+    container_name: pharmacy-client
+    ports:
+      - "80:80"
+    depends_on:
+      - gateway-service
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

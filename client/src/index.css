@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Khmer:wght@300;400;500;600;700&family=Battambang:wght@300;400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body {
+    font-family: 'Inter', 'Khmer OS Battambang', 'Battambang', sans-serif !important;
+  }
+}
+
+body {
+  margin: 0;
+  background-color: #f8fafc;
+  color: #334155;
+}

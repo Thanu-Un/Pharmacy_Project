@@ -3,6 +3,7 @@ import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Dashboard from './components/dashboard/Dashboard';
 import ForgotPassword from './components/auth/ForgotPassword';
+import pharmacyIllustration from './assets/pharmacy_illustration.png';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || null);
@@ -82,7 +83,7 @@ function App() {
             <div className="hidden md:flex md:w-2/5 bg-gradient-to-br from-cyan-400 via-teal-500 flex-col items-center justify-center border-l">
               <div className="w-full text-center flex flex-col items-center">
                 <img
-                  src="/src/assets/pharmacy_illustration.png"
+                  src={pharmacyIllustration}
                   alt="Pharmacy Illustration"
                   className="w-full h-auto object-contain rounded-xl shadow-md border border-white/20 transform hover:scale-[1.01] transition-transform duration-300 mb-4 mix-blend-multiply"
                 />

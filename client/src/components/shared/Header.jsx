@@ -34,19 +34,8 @@ export default function Header({ username, onLogout, onPOSClick, showBrand, onBr
         
       )}
 
-      <div className="flex-1 max-w-xl hidden sm:block">
-        <div className="relative group">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg className="h-5 w-5 text-slate-400 group-focus-within:text-emerald-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <input
-            type="text"
-            className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-lg leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm"
-            placeholder={t('header.search_placeholder')}
-          />
-        </div>
+      <div className="flex-1 hidden sm:block">
+        {/* Search bar removed as requested */}
       </div>
 
       {/* Right side icons */}

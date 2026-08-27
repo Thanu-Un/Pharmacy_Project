@@ -58,8 +58,8 @@ export default function Header({ username, onLogout, onPOSClick, showBrand, onBr
           onChange={(e) => changeLanguage(e.target.value)}
           className="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block px-2.5 py-1.5 transition-colors cursor-pointer outline-none"
         >
-          <option value="en">English</option>
-          <option value="km">ខ្មែរ</option>
+          <option value="en">🇬🇧 English</option>
+          <option value="km">🇰🇭 ខ្មែរ</option>
         </select>
 
         {/* Dispensing Button */}

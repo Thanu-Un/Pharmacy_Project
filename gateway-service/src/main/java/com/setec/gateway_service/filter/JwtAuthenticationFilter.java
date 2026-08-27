@@ -48,9 +48,13 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
                     .parseClaimsJws(token)
                     .getBody();
 
-            // Optionally, we can pass claims down to other services using request headers
+            // Pass claims down to other services using request headers
+            Object perms = claims.get("permissions");
+            String permsString = perms != null ? perms.toString() : "";
+            
             ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
                     .header("X-Auth-Username", claims.getSubject())
+                    .header("X-Auth-Permissions", permsString)
                     .build();
 
             return chain.filter(exchange.mutate().request(mutatedRequest).build());

@@ -20,7 +20,7 @@ import java.util.List;
 @Component
 public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
-    private static final String SECRET_KEY_STRING = "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970";
+    private static final String SECRET_KEY_STRING = "9E8B4C2D1F3A5E7D8C9B0A1F2E3D4C5B6A7B8C9D0E1F2A3B4C5D6E7F8A9B0C1D";
     private final Key key = Keys.hmacShaKeyFor(SECRET_KEY_STRING.getBytes());
 
     @Override

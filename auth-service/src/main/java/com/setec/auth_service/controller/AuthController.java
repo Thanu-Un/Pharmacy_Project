@@ -49,7 +49,8 @@ public class AuthController {
         user.setProfile(request.getProfile());
         user.setPhone(request.getPhone());
         
-        String roleName = request.getRole() != null ? request.getRole() : "USER";
+        // FORCE role to USER for public registration to prevent privilege escalation
+        String roleName = "USER";
         Role role = roleRepository.findByName(roleName).orElseGet(() -> {
             Role newRole = new Role();
             newRole.setName(roleName);
@@ -116,17 +117,7 @@ public class AuthController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/reset-admin")
-    public ResponseEntity<String> resetAdmin() {
-        Optional<User> adminOpt = userRepository.findByUsername("admin");
-        if (adminOpt.isPresent()) {
-            User admin = adminOpt.get();
-            admin.setPassword(passwordEncoder.encode("admin123"));
-            userRepository.save(admin);
-            return ResponseEntity.ok("Admin password reset to admin123");
-        }
-        return ResponseEntity.ok("Admin user not found");
-    }
+    // Admin reset endpoint removed for security reasons
 
     @PutMapping("/users/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody RegisterRequest request) {

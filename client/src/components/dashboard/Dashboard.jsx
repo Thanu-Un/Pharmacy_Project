@@ -44,6 +44,7 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
     return localStorage.getItem('dashboard_currentView') || 'Dashboard';
   });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
 
   useEffect(() => {
     localStorage.setItem('dashboard_currentView', currentView);
@@ -233,7 +234,7 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
   useEffect(() => {
     if (currentView !== 'Dashboard') return;
     const headers = { 'Authorization': `Bearer ${localStorage.getItem('token')}` };
-    const today = new Date().toISOString().split('T')[0];
+    const dateToFetch = selectedDate;
 
     // Fetch inventory status (low stock) + product count
     fetch('/api/reporting/inventory-status', { headers })
@@ -266,7 +267,7 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
       }).catch(() => {});
 
     // Fetch today's sales summary
-    fetch(`/api/reporting/sales-summary?startDate=${today}&endDate=${today}`, { headers })
+    fetch(`/api/reporting/sales-summary?startDate=${dateToFetch}&endDate=${dateToFetch}`, { headers })
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         if (data) setDashData(prev => ({
@@ -293,7 +294,7 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
           setDashData(prev => ({ ...prev, todaysPatients: data.length }));
         }
       }).catch(() => {});
-  }, [currentView, refreshKey]);
+  }, [currentView, refreshKey, selectedDate]);
 
   const stats = [
     {
@@ -405,10 +406,14 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
                     <span className="font-semibold text-sm">Daily Summary</span>
                   </div>
-                  <div className="flex items-center gap-2 border border-gray-300 rounded px-2 py-1 text-sm text-gray-600 bg-white">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    01/07/2026 00:00 - 15/07/2026 14:25
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                  <div className="flex items-center gap-2 border border-gray-300 rounded px-2 py-1 text-sm text-gray-600 bg-white hover:border-emerald-500 transition-colors">
+                    <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <input 
+                      type="date" 
+                      value={selectedDate}
+                      onChange={(e) => setSelectedDate(e.target.value)}
+                      className="outline-none bg-transparent cursor-pointer font-medium"
+                    />
                   </div>
                 </div>
 

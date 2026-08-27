@@ -43,16 +43,16 @@ public class DataSeeder implements CommandLineRunner {
         }
 
         // Seed Admin User if it doesn't exist
-        if (userRepository.findByUsername("admin").isEmpty()) {
+        if (userRepository.findByUsername("owner").isEmpty()) {
             User adminUser = new User();
-            adminUser.setUsername("admin");
+            adminUser.setUsername("owner");
             adminUser.setPassword(passwordEncoder.encode("admin123"));
             adminUser.setFirstName("Super");
-            adminUser.setLastName("Admin");
+            adminUser.setLastName("Owner");
             adminUser.setRole(adminRole);
             
             userRepository.save(adminUser);
-            System.out.println("Seeded default 'admin' user with password 'admin123'.");
+            System.out.println("Seeded default 'owner' user with password 'admin123'.");
         }
     }
 }

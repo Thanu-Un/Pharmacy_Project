@@ -38,7 +38,14 @@ export default function StaffList({ onAddClick, onEditClick }) {
     }
   };
 
+  const currentUsername = localStorage.getItem('username');
+
   const filteredUsers = users.filter(u => {
+    // Hide OWNER accounts if the currently logged-in user is not the super admin 'owner'
+    if (u.role?.name === 'OWNER' && currentUsername !== 'owner') {
+      return false;
+    }
+
     const term = searchTerm.toLowerCase();
     const fullName = `${u.firstName || ''} ${u.lastName || ''}`.toLowerCase();
     return (

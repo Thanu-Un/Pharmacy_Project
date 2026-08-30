@@ -127,7 +127,9 @@ export default function GroupPermissionsSetting() {
       const res = await fetch('/api/auth/roles');
       if (res.ok) {
         const data = await res.json();
-        setRoles(data);
+        const currentUsername = localStorage.getItem('username');
+        const filteredRoles = data.filter(r => r.name !== 'OWNER' || currentUsername === 'owner');
+        setRoles(filteredRoles);
       }
     } catch (e) {
       console.error(e);

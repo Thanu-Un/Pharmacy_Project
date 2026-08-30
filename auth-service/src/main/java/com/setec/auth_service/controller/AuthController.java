@@ -65,10 +65,11 @@ public class AuthController {
             }
         }
 
-        Role role = roleRepository.findByName(roleName).orElseGet(() -> {
+        final String finalRoleName = roleName;
+        Role role = roleRepository.findByName(finalRoleName).orElseGet(() -> {
             Role newRole = new Role();
-            newRole.setName(roleName);
-            newRole.setDescription("Auto-created role: " + roleName);
+            newRole.setName(finalRoleName);
+            newRole.setDescription("Auto-created role: " + finalRoleName);
             return roleRepository.save(newRole);
         });
         

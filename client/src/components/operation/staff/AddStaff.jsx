@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function AddStaff({ onBack, onSave }) {
   const [formData, setFormData] = useState({
@@ -14,6 +14,30 @@ export default function AddStaff({ onBack, onSave }) {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [roles, setRoles] = useState([]);
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const res = await fetch('/api/auth/roles');
+        if (res.ok) {
+          const data = await res.json();
+          const filteredRoles = data.filter(r => r.name !== 'OWNER');
+          setRoles(filteredRoles);
+          
+          if (filteredRoles.length > 0) {
+            const hasPharmacist = filteredRoles.find(r => r.name === 'PHARMACIST');
+            if (!hasPharmacist) {
+               setFormData(prev => ({ ...prev, role: filteredRoles[0].name }));
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch roles", err);
+      }
+    };
+    fetchRoles();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -176,11 +200,19 @@ export default function AddStaff({ onBack, onSave }) {
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-white"
               >
-                <option value="PHARMACIST">Pharmacist</option>
-                <option value="CASHIER">Cashier</option>
-                <option value="MANAGER">Manager</option>
-                <option value="ADMIN">Admin</option>
-                <option value="USER">User / General Staff</option>
+                {roles.length > 0 ? (
+                  roles.map(r => (
+                    <option key={r.id} value={r.name}>{r.name} {r.description ? `(${r.description})` : ''}</option>
+                  ))
+                ) : (
+                  <>
+                    <option value="PHARMACIST">Pharmacist</option>
+                    <option value="CASHIER">Cashier</option>
+                    <option value="MANAGER">Manager</option>
+                    <option value="ADMIN">Admin</option>
+                    <option value="USER">User / General Staff</option>
+                  </>
+                )}
               </select>
             </div>
 

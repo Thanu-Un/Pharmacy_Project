@@ -14,8 +14,26 @@ export default function EditStaff({ staff, onBack, onSave }) {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [roles, setRoles] = useState([]);
 
   useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const res = await fetch('/api/auth/roles');
+        if (res.ok) {
+          const data = await res.json();
+          // Hide OWNER from the dropdown options unless the user we are editing is already the OWNER.
+          // Wait, actually, if the user being edited is the OWNER, the backend will prevent us from changing it anyway if we don't have OWNER in the list, but if we do submit another role, it will fail backend validation.
+          // But it's better to just include the role if the current staff is OWNER so they don't get an empty select box, OR just exclude it and they can't save.
+          const filteredRoles = data.filter(r => r.name !== 'OWNER' || (staff?.role?.name === 'OWNER'));
+          setRoles(filteredRoles);
+        }
+      } catch (err) {
+        console.error("Failed to fetch roles", err);
+      }
+    };
+    fetchRoles();
+
     if (staff) {
       setFormData({
         username: staff.username || '',
@@ -183,11 +201,19 @@ export default function EditStaff({ staff, onBack, onSave }) {
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-white"
               >
-                <option value="PHARMACIST">Pharmacist</option>
-                <option value="CASHIER">Cashier</option>
-                <option value="MANAGER">Manager</option>
-                <option value="ADMIN">Admin</option>
-                <option value="USER">User / General Staff</option>
+                {roles.length > 0 ? (
+                  roles.map(r => (
+                    <option key={r.id} value={r.name}>{r.name} {r.description ? `(${r.description})` : ''}</option>
+                  ))
+                ) : (
+                  <>
+                    <option value="PHARMACIST">Pharmacist</option>
+                    <option value="CASHIER">Cashier</option>
+                    <option value="MANAGER">Manager</option>
+                    <option value="ADMIN">Admin</option>
+                    <option value="USER">User / General Staff</option>
+                  </>
+                )}
               </select>
             </div>
 

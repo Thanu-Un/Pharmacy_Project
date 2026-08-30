@@ -49,8 +49,22 @@ public class AuthController {
         user.setProfile(request.getProfile());
         user.setPhone(request.getPhone());
         
-        // FORCE role to USER for public registration to prevent privilege escalation
         String roleName = "USER";
+        if (request.getRole() != null && !request.getRole().trim().isEmpty()) {
+            roleName = request.getRole().trim().toUpperCase();
+        }
+
+        if ("OWNER".equals(roleName)) {
+            long ownerCount = userRepository.findAll().stream()
+                    .filter(u -> u.getRole() != null && "OWNER".equalsIgnoreCase(u.getRole().getName()))
+                    .count();
+            if (ownerCount >= 1) {
+                AuthResponse response = new AuthResponse();
+                response.setMessage("System can only have one OWNER!");
+                return ResponseEntity.badRequest().body(response);
+            }
+        }
+
         Role role = roleRepository.findByName(roleName).orElseGet(() -> {
             Role newRole = new Role();
             newRole.setName(roleName);
@@ -141,7 +155,20 @@ public class AuthController {
         if (request.getProfile() != null) user.setProfile(request.getProfile());
 
         if (request.getRole() != null && !request.getRole().trim().isEmpty()) {
-            String roleName = request.getRole().trim();
+            String roleName = request.getRole().trim().toUpperCase();
+            
+            if ("OWNER".equals(roleName)) {
+                boolean isAlreadyOwner = user.getRole() != null && "OWNER".equalsIgnoreCase(user.getRole().getName());
+                if (!isAlreadyOwner) {
+                    long ownerCount = userRepository.findAll().stream()
+                            .filter(u -> u.getRole() != null && "OWNER".equalsIgnoreCase(u.getRole().getName()))
+                            .count();
+                    if (ownerCount >= 1) {
+                        return ResponseEntity.badRequest().body("System can only have one OWNER!");
+                    }
+                }
+            }
+
             Role role = roleRepository.findByName(roleName).orElseGet(() -> {
                 Role newRole = new Role();
                 newRole.setName(roleName);
@@ -156,7 +183,11 @@ public class AuthController {
     }
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        Optional<User> userOpt = userRepository.findById(id);
+        if (userOpt.isPresent() && userOpt.get().getRole() != null && "OWNER".equalsIgnoreCase(userOpt.get().getRole().getName())) {
+            return ResponseEntity.badRequest().body("Cannot delete the OWNER account!");
+        }
         userRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }

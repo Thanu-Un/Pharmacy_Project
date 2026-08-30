@@ -25,30 +25,33 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Seed Admin Role if it doesn't exist
-        Optional<Role> adminRoleOpt = roleRepository.findByName("Admin");
+        // Seed OWNER Role if it doesn't exist
+        Optional<Role> adminRoleOpt = roleRepository.findByName("OWNER");
         Role adminRole;
         if (adminRoleOpt.isEmpty()) {
             adminRole = new Role();
-            adminRole.setName("Admin");
-            adminRole.setDescription("System Administrator with all privileges");
+            adminRole.setName("OWNER");
+            adminRole.setDescription("System Owner with absolute privileges");
             
             // Comma-separated or JSON list of all possible permissions for the frontend
             adminRole.setPermissions("[\"dashboard_view\",\"category_view\",\"category_add\",\"category_edit\",\"category_delete\",\"unit_view\",\"unit_add\",\"unit_edit\",\"unit_delete\",\"medicine_view\",\"medicine_add\",\"medicine_edit\",\"medicine_delete\",\"medicine_import\",\"medicine_barcode\",\"purchase_view\",\"purchase_add\",\"purchase_edit\",\"purchase_delete\",\"pos_access\",\"pos_sales_view\",\"pos_discount\",\"pos_sale_delete\",\"supplier_view\",\"supplier_add\",\"supplier_edit\",\"supplier_delete\",\"patient_view\",\"patient_add\",\"patient_edit\",\"patient_delete\",\"staff_view\",\"staff_register\",\"staff_edit\",\"staff_delete\",\"setting_payment\",\"setting_currency\",\"setting_permissions\",\"report_view\",\"expense_view\",\"expense_add\",\"expense_edit\",\"expense_delete\"]");
             
             adminRole = roleRepository.save(adminRole);
-            System.out.println("Seeded default 'Admin' role.");
+            System.out.println("Seeded default 'OWNER' role.");
         } else {
             adminRole = adminRoleOpt.get();
         }
 
-        // Seed Admin User if it doesn't exist
+        // Seed Owner User if it doesn't exist
         if (userRepository.findByUsername("owner").isEmpty()) {
             User adminUser = new User();
             adminUser.setUsername("owner");
             adminUser.setPassword(passwordEncoder.encode("16042004nuza"));
-            adminUser.setFirstName("Super");
-            adminUser.setLastName("Owner");
+            adminUser.setFirstName("POS");
+            adminUser.setLastName("Manager");
+            adminUser.setGender("Male");
+            adminUser.setPhone("096168168");
+            adminUser.setEmail("posmanager168@gmail.com");
             adminUser.setRole(adminRole);
             
             userRepository.save(adminUser);

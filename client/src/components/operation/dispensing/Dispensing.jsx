@@ -626,10 +626,10 @@ export default function Dispensing({ onSaleComplete }) {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row h-[calc(100vh-5rem)] w-full bg-slate-100 p-2 gap-2 overflow-hidden">
+    <div className="flex flex-col lg:flex-row h-auto min-h-[calc(100vh-5rem)] lg:h-[calc(100vh-5rem)] w-full bg-slate-100 p-2 gap-2 overflow-y-auto lg:overflow-hidden">
 
       {/* LEFT PANEL: Products List (2/3 width) */}
-      <div className="w-full lg:w-[65%] bg-white rounded-lg shadow-sm border border-slate-200 flex flex-col h-1/2 lg:h-full overflow-hidden">
+      <div className="w-full lg:w-[65%] bg-white rounded-lg shadow-sm border border-slate-200 flex flex-col h-[55vh] lg:h-full overflow-hidden shrink-0 lg:shrink">
         {/* Category Tabs */}
         <div className="p-3 border-b border-slate-200 bg-slate-50 flex items-center gap-2 overflow-x-auto scrollbar-hide shadow-sm z-10 relative">
           <button
@@ -700,7 +700,7 @@ export default function Dispensing({ onSaleComplete }) {
       </div>
 
       {/* RIGHT PANEL: Cart & Checkout (1/3 width) */}
-      <div className="w-full lg:w-[35%] bg-white rounded-lg shadow-sm border border-slate-200 flex flex-col h-1/2 lg:h-full overflow-hidden">
+      <div className="w-full lg:w-[35%] bg-white rounded-lg shadow-sm border border-slate-200 flex flex-col h-[65vh] lg:h-full overflow-hidden shrink-0 lg:shrink">
 
         {/* Customer Selection & Search */}
         <div className="p-3 border-b border-slate-200 bg-slate-50 space-y-2">

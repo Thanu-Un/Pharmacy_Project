@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export default function Header({ username, onLogout, onPOSClick, showBrand, onBrandClick, onMobileMenuToggle }) {
@@ -6,7 +6,28 @@ export default function Header({ username, onLogout, onPOSClick, showBrand, onBr
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
+    setIsLangOpen(false);
   };
+
+  const [isLangOpen, setIsLangOpen] = useState(false);
+  const langDropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (langDropdownRef.current && !langDropdownRef.current.contains(event.target)) {
+        setIsLangOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const languages = [
+    { code: 'en', name: 'English', flag: 'https://flagcdn.com/w20/gb.png' },
+    { code: 'km', name: 'ខ្មែរ', flag: 'https://flagcdn.com/w20/kh.png' }
+  ];
+
+  const currentLangObj = languages.find(l => l.code === i18n.language) || languages[0];
   return (
     <div className="h-14 bg-white flex items-center justify-between px-3 md:px-6 text-slate-800 shrink-0 shadow-sm border-b border-slate-200 relative z-10 gap-3 md:gap-6">
       
@@ -42,14 +63,32 @@ export default function Header({ username, onLogout, onPOSClick, showBrand, onBr
       <div className="flex items-center gap-2 md:gap-5 ml-auto">
 
         {/* Language Switcher */}
-        <select 
-          value={i18n.language} 
-          onChange={(e) => changeLanguage(e.target.value)}
-          className="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block px-2.5 py-1.5 transition-colors cursor-pointer outline-none"
-        >
-          <option value="en">🇬🇧 English</option>
-          <option value="km">🇰🇭 ខ្មែរ</option>
-        </select>
+        {/* Custom Language Switcher (Fix for Windows Emojis) */}
+        <div className="relative" ref={langDropdownRef}>
+          <button 
+            onClick={() => setIsLangOpen(!isLangOpen)}
+            className="flex items-center gap-2 bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg hover:border-emerald-500 focus:border-emerald-500 px-2.5 py-1.5 transition-colors cursor-pointer outline-none"
+          >
+            <img src={currentLangObj.flag} alt={currentLangObj.name} className="w-5 rounded-[2px]" />
+            <span className="hidden sm:inline">{currentLangObj.name}</span>
+            <svg className={`w-4 h-4 transition-transform ${isLangOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+          
+          {isLangOpen && (
+            <div className="absolute right-0 mt-1 w-32 bg-white border border-slate-200 rounded-lg shadow-lg z-50 overflow-hidden">
+              {languages.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => changeLanguage(lang.code)}
+                  className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-slate-50 transition-colors ${i18n.language === lang.code ? 'bg-emerald-50 text-emerald-700 font-medium' : 'text-slate-700'}`}
+                >
+                  <img src={lang.flag} alt={lang.name} className="w-5 rounded-[2px]" />
+                  {lang.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Dispensing Button */}
         <button 

@@ -208,6 +208,50 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
     todaysPatients: 0
   });
 
+  // Recent orders for dashboard table
+  const [recentOrders, setRecentOrders] = useState([]);
+
+  // Weekly dispensations bar chart data
+  const [weeklyData, setWeeklyData] = useState([
+    { day: 'Mon', value: 0 }, { day: 'Tue', value: 0 }, { day: 'Wed', value: 0 },
+    { day: 'Thu', value: 0 }, { day: 'Fri', value: 0 }, { day: 'Sat', value: 0 }, { day: 'Sun', value: 0 }
+  ]);
+
+  // Fetch recent orders for the dashboard table
+  useEffect(() => {
+    if (currentView !== 'Dashboard') return;
+    const headers = { 'Authorization': `Bearer ${localStorage.getItem('token')}` };
+    fetch('/api/operation/sales', { headers })
+      .then(r => r.ok ? r.json() : [])
+      .then(data => {
+        if (Array.isArray(data)) {
+          const recent = data.slice(-7).reverse().map((sale, i) => ({
+            id: `#P${String(sale.id || (10000 + i)).padStart(5, '0')}`,
+            patient: sale.customerName || sale.patientName || 'Walk-in',
+            medication: sale.items?.[0]?.productName || sale.productName || 'N/A',
+            date: sale.saleDate ? new Date(sale.saleDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A',
+            status: sale.status === 'completed' || sale.paymentStatus === 'paid' ? 'Dispensed' : 'Processing'
+          }));
+          setRecentOrders(recent);
+
+          // Build weekly data from sales
+          const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+          const counts = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
+          data.forEach(sale => {
+            if (sale.saleDate) {
+              const d = new Date(sale.saleDate);
+              const now = new Date();
+              const weekAgo = new Date(now.getTime() - 7 * 86400000);
+              if (d >= weekAgo) {
+                counts[dayNames[d.getDay()]]++;
+              }
+            }
+          });
+          setWeeklyData(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => ({ day, value: counts[day] || 0 })));
+        }
+      }).catch(() => {});
+  }, [currentView, refreshKey]);
+
   useEffect(() => {
     if (currentView !== 'Dashboard') return;
     const headers = { 'Authorization': `Bearer ${localStorage.getItem('token')}` };
@@ -375,64 +419,129 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
         <main key={refreshKey} className={`flex-1 overflow-y-auto ${currentView === 'New Sale' ? '' : 'p-4 md:p-6'} bg-slate-50`}>
 
           {currentView === 'Dashboard' ? (
-            <>
-              {/* Breadcrumb Area */}
-              <div className="mb-4 text-sm text-gray-500">
-                <span>Dashboard</span>
+            <div className="space-y-6">
+              {/* Page Title */}
+              <div>
+                <h1 className="text-2xl font-bold text-slate-800">Pharmacy Overview</h1>
+                <p className="text-slate-400 text-sm mt-1">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
               </div>
 
-              {/* Daily Summary Box */}
-              <div className="bg-white rounded shadow-sm border border-gray-200">
-                {/* Box Header */}
-                <div className="flex justify-between items-center border-b border-gray-200 p-3 bg-gray-50">
-                  <div className="flex items-center gap-2 text-blue-600">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
-                    <span className="font-semibold text-sm">Daily Summary</span>
-                  </div>
-                  <div className="flex items-center gap-2 border border-gray-300 rounded px-2 py-1 text-sm text-gray-600 bg-white hover:border-emerald-500 transition-colors">
-                    <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    <input 
-                      type="date" 
-                      value={selectedDate}
-                      onChange={(e) => setSelectedDate(e.target.value)}
-                      className="outline-none bg-transparent cursor-pointer font-medium"
-                    />
-                  </div>
-                </div>
-
-                {/* Box Content - 6 Cards Grid */}
-                <div className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {stats.map((stat, idx) => (
-                      <div key={idx} className="bg-white rounded-2xl border-0 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] overflow-hidden group hover:shadow-md transition-all duration-300 ring-1 ring-slate-100">
-                        <div className="p-5 md:p-6">
-                          <div className="flex justify-between items-start mb-4">
-                            <div>
-                              <p className="text-slate-500 text-sm font-medium mb-1">{stat.title}</p>
-                              <h3 className="text-3xl font-bold text-slate-800 tracking-tight">{stat.amount}</h3>
-                            </div>
-                            <div className={`p-3 rounded-xl ${stat.iconBg}`}>
-                              <svg className={`w-6 h-6 ${stat.iconColor}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={stat.iconPath} />
-                              </svg>
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between text-sm mt-4 pt-4 border-t border-slate-50">
-                            <span className="text-slate-400 font-medium">{stat.subtext}</span>
-                            {stat.footerText && (
-                              <button className="text-indigo-600 font-medium hover:text-indigo-700 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                                {stat.footerText}
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
-                              </button>
-                            )}
-                          </div>
-                        </div>
+              {/* Stat Cards Row */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                {stats.slice(0, 4).map((stat, idx) => (
+                  <div key={idx} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 group">
+                    <div className="flex justify-between items-start mb-3">
+                      <p className="text-slate-500 text-sm font-medium">{stat.title}</p>
+                      <div className={`p-2.5 rounded-xl ${stat.iconBg}`}>
+                        <svg className={`w-5 h-5 ${stat.iconColor}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={stat.iconPath} />
+                        </svg>
                       </div>
-                    ))}
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-800 tracking-tight">{stat.amount}</h3>
+                    <p className="text-slate-400 text-xs mt-2 font-medium">{stat.subtext}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Two-Column Layout */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                {/* Left Column: Recent Orders Table */}
+                <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                    <h3 className="font-semibold text-slate-800">Recent Orders</h3>
+                    <button onClick={() => setCurrentView('Sales List')} className="text-indigo-600 text-sm font-medium hover:text-indigo-700 transition-colors flex items-center gap-1">
+                      View All
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+                    </button>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-slate-50">
+                          <th className="text-left py-3 px-6 text-slate-400 font-medium text-xs uppercase tracking-wider">Order ID</th>
+                          <th className="text-left py-3 px-6 text-slate-400 font-medium text-xs uppercase tracking-wider">Patient</th>
+                          <th className="text-left py-3 px-6 text-slate-400 font-medium text-xs uppercase tracking-wider">Medication</th>
+                          <th className="text-left py-3 px-6 text-slate-400 font-medium text-xs uppercase tracking-wider">Date</th>
+                          <th className="text-left py-3 px-6 text-slate-400 font-medium text-xs uppercase tracking-wider">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {recentOrders.map((order, i) => (
+                          <tr key={i} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
+                            <td className="py-3.5 px-6 text-slate-700 font-medium">{order.id}</td>
+                            <td className="py-3.5 px-6 text-slate-600">{order.patient}</td>
+                            <td className="py-3.5 px-6 text-slate-600">{order.medication}</td>
+                            <td className="py-3.5 px-6 text-slate-400 text-xs">{order.date}</td>
+                            <td className="py-3.5 px-6">
+                              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
+                                order.status === 'Dispensed' ? 'bg-emerald-50 text-emerald-700' :
+                                order.status === 'Processing' ? 'bg-amber-50 text-amber-700' :
+                                'bg-slate-100 text-slate-600'
+                              }`}>
+                                {order.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                        {recentOrders.length === 0 && (
+                          <tr><td colSpan="5" className="py-8 text-center text-slate-400">No recent orders</td></tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Right Column */}
+                <div className="space-y-6">
+                  {/* Weekly Dispensations Mini Chart */}
+                  <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                    <h3 className="font-semibold text-slate-800 mb-1">Weekly Dispensations</h3>
+                    <p className="text-slate-400 text-xs mb-5">{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(Date.now() + 6*86400000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+                    <div className="flex items-end justify-between gap-2 h-32">
+                      {weeklyData.map((d, i) => (
+                        <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
+                          <div className="w-full rounded-t-md bg-indigo-500 hover:bg-indigo-600 transition-colors" style={{ height: `${(d.value / Math.max(...weeklyData.map(x => x.value), 1)) * 100}%`, minHeight: '4px' }}></div>
+                          <span className="text-[10px] text-slate-400 font-medium">{d.day}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Quick Actions */}
+                  <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                    <h3 className="font-semibold text-slate-800 mb-4">Quick Actions</h3>
+                    <div className="space-y-2.5">
+                      <button onClick={() => setCurrentView('New Sale')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 transition-colors text-sm font-medium group">
+                        <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600 group-hover:bg-indigo-100 transition-colors">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                        </div>
+                        Create Order
+                      </button>
+                      <button onClick={() => setCurrentView('List Patients')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 transition-colors text-sm font-medium group">
+                        <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100 transition-colors">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
+                        </div>
+                        Add Patient
+                      </button>
+                      <button onClick={() => setCurrentView('Add Purchase')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-amber-50 text-slate-700 hover:text-amber-700 transition-colors text-sm font-medium group">
+                        <div className="p-2 rounded-lg bg-amber-50 text-amber-600 group-hover:bg-amber-100 transition-colors">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" /></svg>
+                        </div>
+                        New Purchase
+                      </button>
+                      <button onClick={() => setCurrentView('Reports')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-rose-50 text-slate-700 hover:text-rose-700 transition-colors text-sm font-medium group">
+                        <div className="p-2 rounded-lg bg-rose-50 text-rose-600 group-hover:bg-rose-100 transition-colors">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                        </div>
+                        View Reports
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </>
+            </div>
           ) : currentView === 'List Categories' ? (
             <CategoryList
               onAddClick={() => setCurrentView('Add Category')}

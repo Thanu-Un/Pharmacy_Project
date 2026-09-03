@@ -363,7 +363,9 @@ export default function Dispensing({ onSaleComplete }) {
     
     let admin = false;
     if (decoded) {
-      if (decoded.permissions && decoded.permissions.includes('setting_permissions')) {
+      const role = decoded.role?.toUpperCase();
+      const username = decoded.sub?.toLowerCase();
+      if (role === 'OWNER' || role === 'ADMIN' || username === 'admin' || username === 'owner' || (decoded.permissions && decoded.permissions.includes('setting_permissions'))) {
         admin = true;
         setIsAdmin(true);
       } else if (decoded.warehouseId) {

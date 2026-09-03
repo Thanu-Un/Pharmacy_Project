@@ -119,9 +119,38 @@ export default function Sidebar({ currentView, onMenuSelect, permissions = [], i
   const { t } = useTranslation();
   const [expandedMenus, setExpandedMenus] = useState({});
 
+  const parseJwt = (token) => {
+    try { return JSON.parse(atob(token.split('.')[1])); } catch (e) { return null; }
+  };
+
   const hasPermission = (perm) => {
-    // If no permission defined, or permissions array is empty (fallback), allow it.
-    if (!perm || permissions.length === 0) return true;
+    // If no permission defined, allow it
+    if (!perm) return true;
+    
+    // Check if user is OWNER via JWT
+    const token = localStorage.getItem('token');
+    let isOwner = false;
+    if (token) {
+      const decoded = parseJwt(token);
+      if (decoded) {
+        const role = decoded.role?.toUpperCase();
+        const username = decoded.sub?.toLowerCase();
+        if (role === 'OWNER' || username === 'owner') {
+          isOwner = true;
+        }
+      }
+    }
+
+    // Owner sees everything
+    if (isOwner) return true;
+
+    // Special case: Only Owner can see Warehouses and Group Permissions
+    if (perm === 'setting_permissions') {
+      return false; // Already returned true above if Owner
+    }
+
+    // Fallback to checking the permissions array
+    if (permissions.length === 0) return true;
     return permissions.includes(perm);
   };
 

@@ -20,7 +20,9 @@ export default function WarehouseSetting() {
   const fetchWarehouses = async () => {
     try {
       setIsLoading(true);
-      const res = await fetch('/api/operation/warehouses');
+      const res = await fetch('/api/operation/warehouses', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
       if (res.ok) {
         const data = await res.json();
         setWarehouses(data);
@@ -65,7 +67,10 @@ export default function WarehouseSetting() {
 
       const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
         body: JSON.stringify(form)
       });
 
@@ -84,7 +89,10 @@ export default function WarehouseSetting() {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this warehouse?')) return;
     try {
-      const res = await fetch(`/api/operation/warehouses/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/operation/warehouses/${id}`, { 
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
       if (res.ok) {
         fetchWarehouses();
       } else {

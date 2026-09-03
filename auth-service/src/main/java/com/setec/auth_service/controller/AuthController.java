@@ -115,8 +115,8 @@ public class AuthController {
         response.setPermissions(perms);
         response.setWarehouseId(userOpt.get().getWarehouseId());
         
-        // Generate real JWT token
-        String token = jwtUtil.generateToken(userOpt.get().getUsername(), perms, userOpt.get().getWarehouseId());
+        String roleName = userOpt.get().getRole() != null ? userOpt.get().getRole().getName() : "USER";
+        String token = jwtUtil.generateToken(userOpt.get().getUsername(), roleName, perms, userOpt.get().getWarehouseId());
         response.setToken(token);
         
         return ResponseEntity.ok(response);

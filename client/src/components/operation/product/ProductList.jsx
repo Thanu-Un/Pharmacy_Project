@@ -10,7 +10,9 @@ export default function ProductList({ onAddClick, onEditClick }) {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('/api/operation/products');
+        const response = await fetch('/api/operation/products', {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
         
         if (!response.ok) {
           throw new Error('Failed to fetch products');
@@ -31,7 +33,8 @@ export default function ProductList({ onAddClick, onEditClick }) {
   const handleDelete = async (id) => {
     try {
       const response = await fetch(`/api/operation/products/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       
       if (!response.ok) {

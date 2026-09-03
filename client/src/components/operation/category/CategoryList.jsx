@@ -93,7 +93,7 @@ export default function CategoryList({ onAddClick, onEditClick }) {
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[600px] text-left text-sm text-slate-600">
+          <table className="w-full min-w-[600px] whitespace-nowrap text-left text-sm text-slate-600">
             <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200 uppercase text-xs tracking-wider">
               <tr>
                 <th className="px-6 py-4">Code</th>

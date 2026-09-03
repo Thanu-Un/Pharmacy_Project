@@ -176,7 +176,7 @@ export default function Sidebar({ currentView, onMenuSelect, permissions = [], i
       md:relative md:translate-x-0
     `}>
       {/* Brand Header (click to go to Dashboard & refresh) */}
-      <div className="flex items-center justify-between px-4 h-14 bg-white border-b border-slate-100 shrink-0">
+      <div className="flex items-center justify-between px-4 h-11 bg-white border-b border-slate-100 shrink-0">
         <div
           onClick={() => {
             if (onMenuSelect) onMenuSelect('Dashboard');

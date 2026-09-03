@@ -29,7 +29,7 @@ export default function Header({ username, onLogout, onPOSClick, showBrand, onBr
 
   const currentLangObj = languages.find(l => l.code === i18n.language) || languages[0];
   return (
-    <div className="h-14 bg-white/90 backdrop-blur-md flex items-center justify-between px-3 md:px-6 text-slate-800 shrink-0 border-b border-slate-100 relative z-40 gap-3 md:gap-6">
+    <div className="h-11 bg-white/90 backdrop-blur-md flex items-center justify-between px-3 md:px-5 text-slate-800 shrink-0 border-b border-slate-100 relative z-40 gap-2 md:gap-4">
       
       {/* Mobile Hamburger Menu Button */}
       {!showBrand && (

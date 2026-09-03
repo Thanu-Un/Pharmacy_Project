@@ -5,6 +5,8 @@ import com.setec.operation_service.model.Purchase;
 import com.setec.operation_service.model.PurchaseItem;
 import com.setec.operation_service.repository.ProductRepository;
 import com.setec.operation_service.repository.PurchaseRepository;
+import com.setec.operation_service.model.Stock;
+import com.setec.operation_service.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,9 @@ public class PurchaseService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private StockRepository stockRepository;
 
     public List<Purchase> getAllPurchases() {
         return purchaseRepository.findAll();
@@ -93,34 +98,49 @@ public class PurchaseService {
     }
 
     private void updateStockAndCost(Purchase purchase) {
-        if (purchase.getItems() == null) return;
+        if (purchase.getItems() == null || purchase.getWarehouse() == null) return;
         
         for (PurchaseItem item : purchase.getItems()) {
             if (item.getProduct() != null && item.getQuantityReceived() != null && item.getQuantityReceived().compareTo(BigDecimal.ZERO) > 0) {
                 Product product = productRepository.findById(item.getProduct().getId()).orElse(null);
                 
                 if (product != null) {
-                    BigDecimal oldQty = product.getQuantity() != null ? product.getQuantity() : BigDecimal.ZERO;
+                    List<Stock> allStocks = stockRepository.findByProductId(product.getId());
+                    BigDecimal totalOldQty = allStocks.stream()
+                        .map(Stock::getQuantity)
+                        .filter(q -> q != null)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
                     BigDecimal oldCost = product.getCost() != null ? product.getCost() : BigDecimal.ZERO;
                     
                     BigDecimal receivedQty = item.getQuantityReceived();
                     BigDecimal newUnitCost = item.getUnitCost() != null ? item.getUnitCost() : BigDecimal.ZERO;
                     
-                    // Calculate New Average Cost: ((Old Qty * Old Cost) + (Received Qty * New Cost)) / (Old Qty + Received Qty)
-                    BigDecimal totalOldValue = oldQty.multiply(oldCost);
+                    // Calculate New Average Cost
+                    BigDecimal totalOldValue = totalOldQty.multiply(oldCost);
                     BigDecimal totalNewValue = receivedQty.multiply(newUnitCost);
-                    
-                    BigDecimal newTotalQty = oldQty.add(receivedQty);
+                    BigDecimal newTotalQty = totalOldQty.add(receivedQty);
                     
                     BigDecimal newAverageCost = oldCost;
                     if (newTotalQty.compareTo(BigDecimal.ZERO) > 0) {
                         newAverageCost = totalOldValue.add(totalNewValue).divide(newTotalQty, 2, RoundingMode.HALF_UP);
                     }
                     
-                    // Update Product
-                    product.setQuantity(newTotalQty);
+                    // Update Product Cost
                     product.setCost(newAverageCost);
                     productRepository.save(product);
+
+                    // Update Stock for Warehouse
+                    Stock stock = stockRepository.findByProductIdAndWarehouseId(product.getId(), purchase.getWarehouse().getId())
+                        .orElseGet(() -> {
+                            Stock newStock = new Stock();
+                            newStock.setProduct(product);
+                            newStock.setWarehouse(purchase.getWarehouse());
+                            newStock.setQuantity(BigDecimal.ZERO);
+                            return newStock;
+                        });
+                    stock.setQuantity(stock.getQuantity().add(receivedQty));
+                    stockRepository.save(stock);
                 }
             }
         }

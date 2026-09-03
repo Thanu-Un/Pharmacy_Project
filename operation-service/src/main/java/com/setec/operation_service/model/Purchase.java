@@ -28,6 +28,10 @@ public class Purchase {
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "warehouse_id")
+    private Warehouse warehouse;
+
     @Column(precision = 15, scale = 2)
     private BigDecimal total = BigDecimal.ZERO;
 

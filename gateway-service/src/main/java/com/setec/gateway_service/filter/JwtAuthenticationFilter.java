@@ -52,9 +52,13 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
             Object perms = claims.get("permissions");
             String permsString = perms != null ? perms.toString() : "";
             
+            Object warehouseId = claims.get("warehouseId");
+            String warehouseIdString = warehouseId != null ? warehouseId.toString() : "";
+            
             ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
                     .header("X-Auth-Username", claims.getSubject())
                     .header("X-Auth-Permissions", permsString)
+                    .header("X-Auth-WarehouseId", warehouseIdString)
                     .build();
 
             return chain.filter(exchange.mutate().request(mutatedRequest).build());

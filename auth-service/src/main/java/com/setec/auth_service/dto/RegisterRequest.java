@@ -14,4 +14,5 @@ public class RegisterRequest {
     private String gender;
     private String profile;
     private String phone;
+    private Long warehouseId;
 }

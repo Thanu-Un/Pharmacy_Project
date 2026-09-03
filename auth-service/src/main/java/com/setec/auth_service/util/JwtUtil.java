@@ -20,13 +20,14 @@ public class JwtUtil {
     // 7 days expiration for convenience
     private final long JWT_EXPIRATION = 7L * 24L * 60L * 60L * 1000L;
 
-    public String generateToken(String username, List<String> permissions) {
+    public String generateToken(String username, List<String> permissions, Long warehouseId) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + JWT_EXPIRATION);
 
         return Jwts.builder()
                 .setSubject(username)
                 .claim("permissions", permissions)
+                .claim("warehouseId", warehouseId)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(key, SignatureAlgorithm.HS256)

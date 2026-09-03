@@ -77,15 +77,18 @@ public class Product {
     @Column(nullable = false)
     private BigDecimal price = BigDecimal.ZERO;
 
-    // 4. Stock Management
-    @Column(nullable = false)
-    private BigDecimal quantity = BigDecimal.ZERO;
 
     @Column(name = "alert_quantity")
     private BigDecimal alertQuantity = BigDecimal.ZERO;
 
     @Column(name = "track_quantity")
     private Boolean trackQuantity = true;
+
+    @Transient
+    private BigDecimal quantity = BigDecimal.ZERO;
+
+    @Transient
+    private java.util.List<Stock> stocks;
 
     @Column(columnDefinition = "TEXT")
     private String image;

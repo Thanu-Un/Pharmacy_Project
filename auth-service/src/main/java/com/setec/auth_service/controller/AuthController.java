@@ -48,6 +48,7 @@ public class AuthController {
         user.setGender(request.getGender());
         user.setProfile(request.getProfile());
         user.setPhone(request.getPhone());
+        user.setWarehouseId(request.getWarehouseId());
         
         String roleName = "USER";
         if (request.getRole() != null && !request.getRole().trim().isEmpty()) {
@@ -112,9 +113,10 @@ public class AuthController {
         }
         
         response.setPermissions(perms);
+        response.setWarehouseId(userOpt.get().getWarehouseId());
         
         // Generate real JWT token
-        String token = jwtUtil.generateToken(userOpt.get().getUsername(), perms);
+        String token = jwtUtil.generateToken(userOpt.get().getUsername(), perms, userOpt.get().getWarehouseId());
         response.setToken(token);
         
         return ResponseEntity.ok(response);
@@ -154,6 +156,8 @@ public class AuthController {
         if (request.getPhone() != null) user.setPhone(request.getPhone());
         if (request.getGender() != null) user.setGender(request.getGender());
         if (request.getProfile() != null) user.setProfile(request.getProfile());
+        
+        user.setWarehouseId(request.getWarehouseId());
 
         if (request.getRole() != null && !request.getRole().trim().isEmpty()) {
             String roleName = request.getRole().trim().toUpperCase();

@@ -2,9 +2,12 @@ package com.setec.operation_service.service;
 
 import com.setec.operation_service.model.Product;
 import com.setec.operation_service.repository.ProductRepository;
+import com.setec.operation_service.model.Stock;
+import com.setec.operation_service.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,12 +17,31 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private StockRepository stockRepository;
+
     public List<Product> getAllProducts() {
-        return productRepository.findAll();
+        List<Product> products = productRepository.findAll();
+        for (Product product : products) {
+            populateStockInfo(product);
+        }
+        return products;
     }
 
     public Optional<Product> getProductById(Long id) {
-        return productRepository.findById(id);
+        Optional<Product> productOpt = productRepository.findById(id);
+        productOpt.ifPresent(this::populateStockInfo);
+        return productOpt;
+    }
+
+    private void populateStockInfo(Product product) {
+        List<Stock> stocks = stockRepository.findByProductId(product.getId());
+        product.setStocks(stocks);
+        BigDecimal total = stocks.stream()
+                .map(Stock::getQuantity)
+                .filter(q -> q != null)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        product.setQuantity(total);
     }
 
     public Product createProduct(Product product) {
@@ -58,7 +80,6 @@ public class ProductService {
 
         product.setCost(productDetails.getCost());
         product.setPrice(productDetails.getPrice());
-        product.setQuantity(productDetails.getQuantity());
         product.setAlertQuantity(productDetails.getAlertQuantity());
         product.setTrackQuantity(productDetails.getTrackQuantity());
 

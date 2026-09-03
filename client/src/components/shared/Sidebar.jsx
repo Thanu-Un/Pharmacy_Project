@@ -92,10 +92,10 @@ const navItems = [
     name: 'Settings',
     icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z',
     subItems: [
-      { name: 'System Settings', icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', permission: 'setting_permissions' },
+      { name: 'System Settings', icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', permission: 'setting_system_exclusive' },
       { name: 'Payment Methods', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', permission: 'setting_payment' },
       { name: 'Currency', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'setting_currency' },
-      { name: 'Warehouses', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4', permission: 'setting_permissions' },
+      { name: 'Warehouses', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4', permission: 'setting_warehouses_exclusive' },
       { name: 'Group Permissions', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', permission: 'setting_permissions' }
     ]
   },
@@ -130,6 +130,7 @@ export default function Sidebar({ currentView, onMenuSelect, permissions = [], i
     // Check if user is OWNER via JWT
     const token = localStorage.getItem('token');
     let isOwner = false;
+    let isAdmin = false;
     if (token) {
       const decoded = parseJwt(token);
       if (decoded) {
@@ -138,16 +139,22 @@ export default function Sidebar({ currentView, onMenuSelect, permissions = [], i
         if (role === 'OWNER' || username === 'owner') {
           isOwner = true;
         }
+        if (role === 'ADMIN' || username === 'admin') {
+          isAdmin = true;
+        }
       }
     }
 
     // Owner sees everything
     if (isOwner) return true;
 
-    // Special case: Only Owner can see Warehouses and Group Permissions
-    if (perm === 'setting_permissions') {
-      return false; // Already returned true above if Owner
+    // Special case: Only Owner can see Warehouses and System Settings
+    if (perm === 'setting_warehouses_exclusive' || perm === 'setting_system_exclusive') {
+      return false; 
     }
+
+    // Admin sees everything else
+    if (isAdmin) return true;
 
     // Fallback to checking the permissions array
     if (permissions.length === 0) return true;
@@ -210,11 +217,11 @@ export default function Sidebar({ currentView, onMenuSelect, permissions = [], i
             <div key={item.name} className="flex flex-col">
               <div
                 onClick={() => visibleSubItems ? toggleMenu(item.name) : (onMenuSelect ? onMenuSelect(item.name) : null)}
-                className={`flex items-center justify-between px-3 py-2.5 rounded-md cursor-pointer transition-all duration-200 group ${(!item.subItems && currentView === item.name) || (item.active && !item.subItems)
-                  ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600 font-semibold'
+                className={`flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 group ${(!item.subItems && currentView === item.name) || (item.active && !item.subItems)
+                  ? 'bg-indigo-50 text-indigo-700 font-semibold shadow-sm'
                   : item.subItems && expandedMenus[item.name]
-                    ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600 font-semibold'
-                    : 'hover:bg-slate-50 hover:text-slate-900 border-l-4 border-transparent font-medium'
+                    ? 'bg-indigo-50 text-indigo-700 font-semibold shadow-sm'
+                    : 'hover:bg-slate-50 hover:text-slate-900 text-slate-500 font-medium'
                   }`}
               >
                 <div className="flex items-center gap-3">
@@ -241,9 +248,9 @@ export default function Sidebar({ currentView, onMenuSelect, permissions = [], i
                         onClick={() => {
                           if (onMenuSelect) onMenuSelect(subItem.name);
                         }}
-                        className={`flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 group ${isActive
-                          ? 'bg-indigo-50/50 text-indigo-700 font-semibold'
-                          : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium'
+                        className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors duration-150 group ${isActive
+                          ? 'bg-white text-indigo-700 font-semibold shadow-sm border border-slate-100'
+                          : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50 font-medium'
                           }`}
                       >
                         <svg className={`w-4 h-4 transition-colors duration-150 ${isActive ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">

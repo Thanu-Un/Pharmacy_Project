@@ -51,52 +51,23 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
     localStorage.setItem('dashboard_currentView', currentView);
   }, [currentView]);
 
-  // Provide a safe wrapper for renderContent to handle errors gracefully
-  const safeRenderContent = () => {
-    try {
-      return renderContent();
-    } catch (err) {
-      console.error("Error rendering view:", err);
-      return <div className="p-8 text-rose-500">Error loading view: {err.message}</div>;
-    }
-  };
-
   const renderContent = () => {
     switch (currentView) {
       case 'Dashboard':
         return (
           <div className="p-6 h-full flex flex-col bg-slate-50/50">
             <h1 className="text-2xl font-bold text-slate-800 mb-6">Dashboard Overview</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
               {stats.map((stat, index) => (
-                <div key={index} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden group hover:shadow-md transition-all duration-300">
-                  <div className="p-5 md:p-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <p className="text-slate-500 text-sm font-medium mb-1">{stat.title}</p>
-                        <h3 className="text-3xl font-bold text-slate-800 tracking-tight">{stat.amount}</h3>
-                      </div>
-                      <div className={`p-3 rounded-xl ${stat.iconBg}`}>
-                        <svg className={`w-6 h-6 ${stat.iconColor}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={stat.iconPath} />
-                        </svg>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between text-sm mt-4 pt-4 border-t border-slate-50">
-                      <span className="text-slate-400 font-medium">{stat.subtext}</span>
-                      {stat.footerText && (
-                        <button className="text-indigo-600 font-medium hover:text-indigo-700 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                          {stat.footerText}
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
-                        </button>
-                      )}
-                    </div>
-                  </div>
+                <div key={index} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                  <p className="text-slate-500 text-sm font-medium mb-1">{stat.title}</p>
+                  <h3 className="text-2xl font-bold text-slate-800">{stat.amount}</h3>
+                  <p className="text-slate-400 text-xs mt-2">{stat.subtext}</p>
                 </div>
               ))}
             </div>
 
-            <div className="flex-1 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col items-center justify-center text-center">
+            <div className="flex-1 bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col items-center justify-center text-center">
               <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
                 <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -433,7 +404,7 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
                 <div className="p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {stats.map((stat, idx) => (
-                      <div key={idx} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden group hover:shadow-md transition-all duration-300">
+                      <div key={idx} className="bg-white rounded-2xl border-0 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] overflow-hidden group hover:shadow-md transition-all duration-300 ring-1 ring-slate-100">
                         <div className="p-5 md:p-6">
                           <div className="flex justify-between items-start mb-4">
                             <div>

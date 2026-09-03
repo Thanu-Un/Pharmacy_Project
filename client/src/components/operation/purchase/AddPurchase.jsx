@@ -41,6 +41,7 @@ const ProductSelect = ({ item, products, onChange }) => {
 export default function AddPurchase({ onBack, onSave }) {
   const [suppliers, setSuppliers] = useState([]);
   const [products, setProducts] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -49,6 +50,7 @@ export default function AddPurchase({ onBack, onSave }) {
     referenceNo: '',
     date: new Date().toISOString().slice(0, 16),
     supplier: null,
+    warehouse: null,
     status: 'pending',
     paymentStatus: 'due',
     note: ''
@@ -61,15 +63,17 @@ export default function AddPurchase({ onBack, onSave }) {
     const ref = 'PR-' + Math.floor(1000 + Math.random() * 9000);
     setFormData(prev => ({ ...prev, referenceNo: ref }));
 
-    // Fetch Suppliers and Products
+    // Fetch Suppliers, Products, and Warehouses
     Promise.all([
       fetch('/api/operation/suppliers').then(res => res.ok ? res.json() : []),
-      fetch('/api/operation/products').then(res => res.ok ? res.json() : [])
-    ]).then(([supps, prods]) => {
+      fetch('/api/operation/products').then(res => res.ok ? res.json() : []),
+      fetch('/api/operation/warehouses').then(res => res.ok ? res.json() : [])
+    ]).then(([supps, prods, whs]) => {
       setSuppliers(supps);
       setProducts(prods);
+      setWarehouses(whs);
     }).catch(err => {
-      setError('Failed to load suppliers or products.');
+      setError('Failed to load initial data.');
     });
   }, []);
 
@@ -218,6 +222,21 @@ export default function AddPurchase({ onBack, onSave }) {
               <select required onChange={handleSupplierChange} className="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
                 <option value="">Select a supplier</option>
                 {suppliers.map(s => <option key={s.id} value={s.id}>{s.company} ({s.name})</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Warehouse *</label>
+              <select 
+                required 
+                name="warehouse"
+                onChange={(e) => {
+                  const selected = warehouses.find(w => w.id === parseInt(e.target.value)) || null;
+                  setFormData(prev => ({ ...prev, warehouse: selected }));
+                }} 
+                className="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 outline-none bg-white"
+              >
+                <option value="">Select a warehouse</option>
+                {warehouses.map(w => <option key={w.id} value={w.id}>{w.name} ({w.code})</option>)}
               </select>
             </div>
             <div>

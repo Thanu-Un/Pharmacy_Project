@@ -9,12 +9,14 @@ export default function EditStaff({ staff, onBack, onSave }) {
     gender: 'Male',
     phone: '',
     email: '',
-    role: 'PHARMACIST'
+    role: 'PHARMACIST',
+    warehouseId: ''
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [roles, setRoles] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
 
   useEffect(() => {
     const fetchRoles = async () => {
@@ -22,9 +24,6 @@ export default function EditStaff({ staff, onBack, onSave }) {
         const res = await fetch('/api/auth/roles');
         if (res.ok) {
           const data = await res.json();
-          // Hide OWNER from the dropdown options unless the user we are editing is already the OWNER.
-          // Wait, actually, if the user being edited is the OWNER, the backend will prevent us from changing it anyway if we don't have OWNER in the list, but if we do submit another role, it will fail backend validation.
-          // But it's better to just include the role if the current staff is OWNER so they don't get an empty select box, OR just exclude it and they can't save.
           const filteredRoles = data.filter(r => r.name !== 'OWNER' || (staff?.role?.name === 'OWNER'));
           setRoles(filteredRoles);
         }
@@ -32,18 +31,33 @@ export default function EditStaff({ staff, onBack, onSave }) {
         console.error("Failed to fetch roles", err);
       }
     };
+
+    const fetchWarehouses = async () => {
+      try {
+        const res = await fetch('/api/operation/warehouses');
+        if (res.ok) {
+          const data = await res.json();
+          setWarehouses(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch warehouses", err);
+      }
+    };
+
     fetchRoles();
+    fetchWarehouses();
 
     if (staff) {
       setFormData({
         username: staff.username || '',
-        password: '', // Leave blank to keep current password
+        password: '', 
         firstName: staff.firstName || '',
         lastName: staff.lastName || '',
         gender: staff.gender || 'Male',
         phone: staff.phone || '',
         email: staff.email || '',
-        role: staff.role?.name || 'PHARMACIST'
+        role: staff.role?.name || 'PHARMACIST',
+        warehouseId: staff.warehouseId || ''
       });
     }
   }, [staff]);
@@ -215,6 +229,24 @@ export default function EditStaff({ staff, onBack, onSave }) {
                   </>
                 )}
               </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                Assigned Warehouse
+              </label>
+              <select
+                name="warehouseId"
+                value={formData.warehouseId}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-white"
+              >
+                <option value="">-- All Warehouses --</option>
+                {warehouses.map(w => (
+                  <option key={w.id} value={w.id}>{w.name} ({w.code})</option>
+                ))}
+              </select>
+              <p className="text-[10px] text-slate-500 mt-1">Leave empty to grant access to all warehouses.</p>
             </div>
 
             <div>

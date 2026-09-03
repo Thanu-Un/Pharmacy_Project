@@ -41,6 +41,7 @@ const ProductSelect = ({ item, products, onChange }) => {
 export default function EditPurchase({ purchase, onBack, onSave }) {
   const [suppliers, setSuppliers] = useState([]);
   const [products, setProducts] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -49,6 +50,7 @@ export default function EditPurchase({ purchase, onBack, onSave }) {
     referenceNo: purchase?.referenceNo || '',
     date: purchase?.date ? new Date(purchase.date).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16),
     supplier: purchase?.supplier || null,
+    warehouse: purchase?.warehouse || null,
     status: purchase?.status || 'received',
     paymentStatus: purchase?.paymentStatus || 'paid',
     note: purchase?.note || ''
@@ -57,13 +59,15 @@ export default function EditPurchase({ purchase, onBack, onSave }) {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    // Fetch Suppliers and Products
+    // Fetch Suppliers, Products, and Warehouses
     Promise.all([
       fetch('/api/operation/suppliers').then(res => res.ok ? res.json() : []),
-      fetch('/api/operation/products').then(res => res.ok ? res.json() : [])
-    ]).then(([supps, prods]) => {
+      fetch('/api/operation/products').then(res => res.ok ? res.json() : []),
+      fetch('/api/operation/warehouses').then(res => res.ok ? res.json() : [])
+    ]).then(([supps, prods, whs]) => {
       setSuppliers(supps);
       setProducts(prods);
+      setWarehouses(whs);
 
       // Populate items from purchase
       if (purchase?.items && purchase.items.length > 0) {
@@ -252,6 +256,23 @@ export default function EditPurchase({ purchase, onBack, onSave }) {
               {suppliers.map(s => (
                 <option key={s.id} value={s.id}>{s.name} {s.companyName ? `(${s.companyName})` : ''}</option>
               ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Warehouse *</label>
+            <select 
+              required 
+              name="warehouse"
+              value={formData.warehouse ? formData.warehouse.id : ''}
+              onChange={(e) => {
+                const selected = warehouses.find(w => w.id === parseInt(e.target.value)) || null;
+                setFormData(prev => ({ ...prev, warehouse: selected }));
+              }} 
+              className="w-full border border-slate-300 rounded-lg px-3.5 py-2.5 outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm bg-white"
+            >
+              <option value="">Select a warehouse</option>
+              {warehouses.map(w => <option key={w.id} value={w.id}>{w.name} ({w.code})</option>)}
             </select>
           </div>
 

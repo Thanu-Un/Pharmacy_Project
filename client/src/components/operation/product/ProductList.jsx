@@ -163,10 +163,23 @@ export default function ProductList({ onAddClick, onEditClick }) {
                       {p.saleUnit && <span className="text-xs text-slate-400 block font-normal">per {p.saleUnit.name}</span>}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <span className={`font-semibold ${Number(p.quantity) <= Number(p.alertQuantity) ? 'text-rose-600' : 'text-slate-700'}`}>
-                        {Number(p.quantity).toFixed(0)}
-                      </span>
-                      {p.unit && <span className="text-xs text-slate-500 ml-1">{p.unit.name}</span>}
+                      <div className="flex flex-col items-end">
+                        <div>
+                          <span className={`font-semibold ${Number(p.quantity) <= Number(p.alertQuantity) ? 'text-rose-600' : 'text-slate-700'}`}>
+                            {Number(p.quantity).toFixed(0)}
+                          </span>
+                          {p.unit && <span className="text-xs text-slate-500 ml-1">{p.unit.name}</span>}
+                        </div>
+                        {p.stocks && p.stocks.length > 0 && (
+                          <div className="text-[10px] text-slate-400 mt-1 flex flex-col items-end gap-0.5">
+                            {p.stocks.map(s => (
+                              <span key={s.id}>
+                                {s.warehouse?.name}: {Number(s.quantity).toFixed(0)}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-center">
                       {Number(p.quantity) > Number(p.alertQuantity) ? (

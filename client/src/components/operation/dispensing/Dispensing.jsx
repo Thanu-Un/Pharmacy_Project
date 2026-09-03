@@ -348,17 +348,46 @@ export default function Dispensing({ onSaleComplete }) {
   const [unitsList, setUnitsList] = useState([]);
   const [exchangeRate, setExchangeRate] = useState(4000);
 
+  const [warehouses, setWarehouses] = useState([]);
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const parseJwt = (token) => {
+    try { return JSON.parse(atob(token.split('.')[1])); } catch (e) { return null; }
+  };
+
   useEffect(() => {
-    const authHeaders = { 'Authorization': `Bearer ${localStorage.getItem('token')}` };
-    Promise.all([
+    const token = localStorage.getItem('token');
+    const authHeaders = { 'Authorization': `Bearer ${token}` };
+    const decoded = parseJwt(token);
+    
+    let admin = false;
+    if (decoded) {
+      if (decoded.permissions && decoded.permissions.includes('setting_permissions')) {
+        admin = true;
+        setIsAdmin(true);
+      } else if (decoded.warehouseId) {
+        setSelectedWarehouseId(decoded.warehouseId);
+      }
+    }
+
+    const fetches = [
       fetch('/api/operation/products', { headers: authHeaders }).then(res => res.ok ? res.json() : []),
       fetch('/api/operation/patients', { headers: authHeaders }).then(res => res.ok ? res.json() : []),
       fetch('/api/operation/units', { headers: authHeaders }).then(res => res.ok ? res.json() : []),
       fetch('/api/operation/settings', { headers: authHeaders }).then(res => res.ok ? res.json() : [])
-    ]).then(([prods, custs, unts, stgs]) => {
+    ];
+
+    if (admin) {
+      fetches.push(fetch('/api/operation/warehouses', { headers: authHeaders }).then(res => res.ok ? res.json() : []));
+    }
+
+    Promise.all(fetches).then((results) => {
+      const [prods, custs, unts, stgs, whs] = results;
       setProducts(prods);
       setCustomers(custs);
       setUnitsList(unts);
+      
       const exItem = stgs.find(s => s.settingKey === 'exchange_rate');
       if (exItem && parseFloat(exItem.settingValue)) {
         setExchangeRate(parseFloat(exItem.settingValue));
@@ -366,9 +395,17 @@ export default function Dispensing({ onSaleComplete }) {
       if (custs && custs.length > 0) {
         setSelectedCustomer(custs[0]);
       }
+      
+      if (admin && whs) {
+        setWarehouses(whs);
+        if (whs.length > 0) {
+          setSelectedWarehouseId(whs[0].id);
+        }
+      }
+      
       setIsLoading(false);
     }).catch(err => {
-      setError('Failed to load products or customers.');
+      setError('Failed to load initial data.');
       setIsLoading(false);
     });
   }, []);
@@ -552,6 +589,7 @@ export default function Dispensing({ onSaleComplete }) {
         referenceNo: ref,
         date: new Date().toISOString().slice(0, 19),
         customer: selectedCustomer,
+        warehouse: selectedWarehouseId ? { id: selectedWarehouseId } : null,
         total: subtotal,
         discount: parseFloat(discount) || 0,
         grandTotal: grandTotal,
@@ -702,8 +740,20 @@ export default function Dispensing({ onSaleComplete }) {
       {/* RIGHT PANEL: Cart & Checkout (1/3 width) */}
       <div className="w-full lg:w-[35%] bg-white rounded-lg shadow-sm border border-slate-200 flex flex-col h-[65vh] lg:h-full overflow-hidden shrink-0 lg:shrink">
 
-        {/* Customer Selection & Search */}
+        {/* Customer & Warehouse Selection */}
         <div className="p-3 border-b border-slate-200 bg-slate-50 space-y-2">
+          {isAdmin && (
+            <select
+              className="w-full bg-white border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 mb-2"
+              value={selectedWarehouseId || ''}
+              onChange={(e) => setSelectedWarehouseId(e.target.value ? parseInt(e.target.value) : null)}
+            >
+              <option value="">-- Global Warehouse --</option>
+              {warehouses.map(w => (
+                <option key={w.id} value={w.id}>{w.name} ({w.code})</option>
+              ))}
+            </select>
+          )}
           <select
             className="w-full bg-white border border-slate-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
             value={selectedCustomer ? selectedCustomer.id : ""}

@@ -9,12 +9,14 @@ export default function AddStaff({ onBack, onSave }) {
     gender: 'Male',
     phone: '',
     email: '',
-    role: 'PHARMACIST'
+    role: 'PHARMACIST',
+    warehouseId: '' // Added warehouse mapping
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [roles, setRoles] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
 
   useEffect(() => {
     const fetchRoles = async () => {
@@ -36,7 +38,21 @@ export default function AddStaff({ onBack, onSave }) {
         console.error("Failed to fetch roles", err);
       }
     };
+    
+    const fetchWarehouses = async () => {
+      try {
+        const res = await fetch('/api/operation/warehouses');
+        if (res.ok) {
+          const data = await res.json();
+          setWarehouses(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch warehouses", err);
+      }
+    };
+
     fetchRoles();
+    fetchWarehouses();
   }, []);
 
   const handleChange = (e) => {
@@ -214,6 +230,24 @@ export default function AddStaff({ onBack, onSave }) {
                   </>
                 )}
               </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                Assigned Warehouse
+              </label>
+              <select
+                name="warehouseId"
+                value={formData.warehouseId}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-white"
+              >
+                <option value="">-- All Warehouses --</option>
+                {warehouses.map(w => (
+                  <option key={w.id} value={w.id}>{w.name} ({w.code})</option>
+                ))}
+              </select>
+              <p className="text-[10px] text-slate-500 mt-1">Leave empty to grant access to all warehouses.</p>
             </div>
 
             <div>

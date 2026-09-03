@@ -27,6 +27,7 @@ import EditStaff from '../operation/staff/EditStaff';
 import SystemSettings from '../operation/settings/SystemSettings';
 import PaymentMethodsSetting from '../operation/settings/PaymentMethodsSetting';
 import CurrencySetting from '../operation/settings/CurrencySetting';
+import WarehouseSetting from '../operation/settings/WarehouseSetting';
 import GroupPermissionsSetting from '../operation/settings/GroupPermissionsSetting';
 import ReportsDashboard from '../reports/ReportsDashboard';
 import ProductQuantityAlerts from '../reports/ProductQuantityAlerts';
@@ -183,6 +184,8 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
         return <PaymentMethodsSetting />;
       case 'Currency Setting':
         return <CurrencySetting />;
+      case 'Warehouses':
+        return <WarehouseSetting />;
       case 'Group Permissions':
         return <GroupPermissionsSetting />;
 
@@ -590,6 +593,8 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
             <PaymentMethodsSetting />
           ) : currentView === 'Currency' ? (
             <CurrencySetting />
+          ) : currentView === 'Warehouses' ? (
+            <WarehouseSetting />
           ) : currentView === 'Group Permissions' ? (
             <GroupPermissionsSetting />
           ) : (currentView === 'Settings' || currentView === 'System Settings' || currentView === 'Pharmacy POS') ? (

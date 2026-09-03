@@ -37,8 +37,8 @@ const FinalizeSaleModal = ({ grandTotal, isSubmitting, error, onClose, onSubmit 
   const balanceKHR = balanceUSD * exchangeRate;
 
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl flex flex-col overflow-hidden">
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-2 sm:p-4">
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl flex flex-col max-h-[95vh] sm:max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex justify-between items-center p-4 border-b border-slate-200">
           <h2 className="text-lg font-bold text-slate-800 uppercase tracking-wide">Finalize Sale</h2>
@@ -48,7 +48,7 @@ const FinalizeSaleModal = ({ grandTotal, isSubmitting, error, onClose, onSubmit 
         </div>
 
         {/* Body */}
-        <div className="p-6 grid grid-cols-12 gap-8 bg-slate-50">
+        <div className="p-4 sm:p-6 grid grid-cols-12 gap-4 sm:gap-8 bg-slate-50 overflow-y-auto">
 
           {/* Left Column - Inputs */}
           <div className="col-span-12 lg:col-span-8 space-y-4">
@@ -98,10 +98,10 @@ const FinalizeSaleModal = ({ grandTotal, isSubmitting, error, onClose, onSubmit 
           </div>
 
           {/* Right Column - Quick Cash */}
-          <div className="col-span-12 lg:col-span-4 grid grid-cols-2 gap-4">
+          <div className="col-span-12 lg:col-span-4 grid grid-cols-2 gap-2 sm:gap-4">
             {/* KHR Buttons */}
             <div>
-              <div className="text-center font-bold text-slate-600 mb-3 text-xs uppercase tracking-wide">Quick Cash KHM</div>
+              <div className="text-center font-bold text-slate-600 mb-2 sm:mb-3 text-xs uppercase tracking-wide">Quick Cash KHM</div>
               <div className="space-y-2">
                 <button
                   onClick={() => setAmountKHR(Math.ceil(grandTotal * exchangeRate))}
@@ -126,7 +126,7 @@ const FinalizeSaleModal = ({ grandTotal, isSubmitting, error, onClose, onSubmit 
 
             {/* USD Buttons */}
             <div>
-              <div className="text-center font-bold text-slate-600 mb-3 text-xs uppercase tracking-wide">Quick Cash USD</div>
+              <div className="text-center font-bold text-slate-600 mb-2 sm:mb-3 text-xs uppercase tracking-wide">Quick Cash USD</div>
               <div className="space-y-2">
                 <button
                   onClick={() => setAmountUSD(grandTotal.toFixed(2))}

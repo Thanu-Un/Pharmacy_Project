@@ -270,7 +270,7 @@ export default function GroupPermissionsSetting() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-slate-600">
+          <table className="w-full min-w-[800px] whitespace-nowrap text-left text-sm text-slate-600">
             <thead className="bg-[#00a65a] text-white text-xs uppercase font-bold tracking-wider">
               <tr>
                 <th className="p-3">Role / Group Name</th>

@@ -134,13 +134,13 @@ export default function Sidebar({ currentView, onMenuSelect, permissions = [], i
 
   return (
     <div className={`
-      w-64 bg-[#0f172a] min-h-screen text-slate-300 flex flex-col shrink-0 overflow-y-auto border-r border-slate-800
+      w-64 bg-white min-h-screen text-slate-600 flex flex-col shrink-0 overflow-y-auto border-r border-slate-200
       fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out
       ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
       md:relative md:translate-x-0
     `}>
       {/* Brand Header (click to go to Dashboard & refresh) */}
-      <div className="flex items-center justify-between px-4 h-14 bg-[#020617] border-b border-slate-800 shrink-0">
+      <div className="flex items-center justify-between px-4 h-14 bg-white border-b border-slate-100 shrink-0">
         <div
           onClick={() => {
             if (onMenuSelect) onMenuSelect('Dashboard');
@@ -149,9 +149,9 @@ export default function Sidebar({ currentView, onMenuSelect, permissions = [], i
           role="button"
           tabIndex={0}
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { if (onMenuSelect) onMenuSelect('Dashboard'); try { window.dispatchEvent(new Event('refreshDashboard')); } catch (e) { } } }}
-          className="flex items-center gap-2 cursor-pointer text-white font-bold text-lg hover:opacity-80 transition-opacity"
+          className="flex items-center gap-2 cursor-pointer text-slate-800 font-bold text-lg hover:opacity-80 transition-opacity"
         >
-          <svg className="w-8 h-8 text-[#10b981] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <svg className="w-8 h-8 text-indigo-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <circle cx="12" cy="12" r="9" />
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v8M8 12h8" />
           </svg>
@@ -161,7 +161,7 @@ export default function Sidebar({ currentView, onMenuSelect, permissions = [], i
         {/* Mobile Close Button */}
         <button 
           onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)}
-          className="md:hidden text-slate-400 hover:text-white p-1"
+          className="md:hidden text-slate-400 hover:text-slate-600 p-1"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
@@ -182,20 +182,20 @@ export default function Sidebar({ currentView, onMenuSelect, permissions = [], i
               <div
                 onClick={() => visibleSubItems ? toggleMenu(item.name) : (onMenuSelect ? onMenuSelect(item.name) : null)}
                 className={`flex items-center justify-between px-3 py-2.5 rounded-md cursor-pointer transition-all duration-200 group ${(!item.subItems && currentView === item.name) || (item.active && !item.subItems)
-                  ? 'bg-[#10b981]/15 text-[#10b981] border-l-4 border-[#10b981]'
+                  ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600 font-semibold'
                   : item.subItems && expandedMenus[item.name]
-                    ? 'bg-[#10b981]/15 text-[#10b981] border-l-4 border-[#10b981]'
-                    : 'hover:bg-[#10b981]/10 hover:text-slate-200 border-l-4 border-transparent'
+                    ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600 font-semibold'
+                    : 'hover:bg-slate-50 hover:text-slate-900 border-l-4 border-transparent font-medium'
                   }`}
               >
                 <div className="flex items-center gap-3">
-                  <svg className={`w-5 h-5 transition-colors duration-200 ${(!item.subItems && currentView === item.name) || item.active || (item.subItems && expandedMenus[item.name]) ? 'text-[#10b981]' : 'text-slate-400 group-hover:text-[#10b981]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className={`w-5 h-5 transition-colors duration-200 ${(!item.subItems && currentView === item.name) || item.active || (item.subItems && expandedMenus[item.name]) ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={item.icon}></path>
                   </svg>
-                  <span className={`text-sm transition-colors duration-200 ${(!item.subItems && currentView === item.name) || item.active || (item.subItems && expandedMenus[item.name]) ? 'font-semibold tracking-wide' : 'font-medium group-hover:text-slate-200'}`}>{t(`sidebar.${item.name.toLowerCase()}`)}</span>
+                  <span className={`text-sm transition-colors duration-200 ${(!item.subItems && currentView === item.name) || item.active || (item.subItems && expandedMenus[item.name]) ? 'text-indigo-700' : 'text-slate-600 group-hover:text-slate-900'}`}>{t(`sidebar.${item.name.toLowerCase()}`)}</span>
                 </div>
                 {visibleSubItems ? (
-                  <svg className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${expandedMenus[item.name] ? 'rotate-180 text-[#10b981]' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${expandedMenus[item.name] ? 'rotate-180 text-indigo-600' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
                   </svg>
                 ) : null}
@@ -203,7 +203,7 @@ export default function Sidebar({ currentView, onMenuSelect, permissions = [], i
 
               {/* Sub Items Rendering */}
               {visibleSubItems && expandedMenus[item.name] && (
-                <div className="flex flex-col mt-1 ml-4 border-l border-slate-700/50 pl-2 space-y-1">
+                <div className="flex flex-col mt-1 ml-4 border-l border-slate-200 pl-2 space-y-1">
                   {visibleSubItems.map(subItem => {
                     const isActive = currentView === subItem.name || subItem.active;
                     return (
@@ -213,11 +213,11 @@ export default function Sidebar({ currentView, onMenuSelect, permissions = [], i
                           if (onMenuSelect) onMenuSelect(subItem.name);
                         }}
                         className={`flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors duration-150 group ${isActive
-                          ? 'bg-[#10b981]/20 text-white font-medium'
-                          : 'text-slate-400 hover:text-slate-200 hover:bg-[#10b981]/10'
+                          ? 'bg-indigo-50/50 text-indigo-700 font-semibold'
+                          : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium'
                           }`}
                       >
-                        <svg className={`w-4 h-4 transition-colors duration-150 ${isActive ? 'text-[#10b981]' : 'text-slate-500 group-hover:text-[#10b981]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className={`w-4 h-4 transition-colors duration-150 ${isActive ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={subItem.icon}></path>
                         </svg>
                         <span className="text-sm">{t(`sidebar.${subItem.name.toLowerCase()}`)}</span>

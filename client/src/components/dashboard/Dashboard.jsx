@@ -67,26 +67,29 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
         return (
           <div className="p-6 h-full flex flex-col bg-slate-50/50">
             <h1 className="text-2xl font-bold text-slate-800 mb-6">Dashboard Overview</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
               {stats.map((stat, index) => (
-                <div key={index} className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden group">
-                  <div className={`h-2 ${stat.color} w-full`}></div>
-                  <div className="p-6">
+                <div key={index} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden group hover:shadow-md transition-all duration-300">
+                  <div className="p-5 md:p-6">
                     <div className="flex justify-between items-start mb-4">
                       <div>
                         <p className="text-slate-500 text-sm font-medium mb-1">{stat.title}</p>
-                        <h3 className="text-3xl font-bold text-slate-800">{stat.amount}</h3>
+                        <h3 className="text-3xl font-bold text-slate-800 tracking-tight">{stat.amount}</h3>
                       </div>
                       <div className={`p-3 rounded-xl ${stat.iconBg}`}>
-                        {stat.icon}
+                        <svg className={`w-6 h-6 ${stat.iconColor}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={stat.iconPath} />
+                        </svg>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between text-sm mt-4 pt-4 border-t border-slate-100">
-                      <span className="text-slate-500 font-medium">{stat.subtext}</span>
-                      <button className="text-emerald-600 font-semibold hover:text-emerald-700 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                        {stat.footerText}
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
-                      </button>
+                    <div className="flex items-center justify-between text-sm mt-4 pt-4 border-t border-slate-50">
+                      <span className="text-slate-400 font-medium">{stat.subtext}</span>
+                      {stat.footerText && (
+                        <button className="text-indigo-600 font-medium hover:text-indigo-700 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                          {stat.footerText}
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -305,48 +308,54 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
       amount: dashData.totalMedicines.toLocaleString(),
       subtext: 'In Stock',
       footerText: 'View Inventory',
-      color: 'bg-gradient-to-br from-teal-400 to-teal-600',
-      icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
+      iconBg: 'bg-indigo-50',
+      iconColor: 'text-indigo-600',
+      iconPath: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
     },
     {
       title: 'Today\'s Sales',
       amount: `$${Number(dashData.todaySales).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
       subtext: `${dashData.invoiceCount} Invoices`,
       footerText: '',
-      color: 'bg-gradient-to-br from-emerald-400 to-emerald-600',
-      icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+      iconBg: 'bg-emerald-50',
+      iconColor: 'text-emerald-600',
+      iconPath: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
     },
     {
       title: 'Low Stock Alerts',
       amount: dashData.lowStockAlerts.toString(),
       subtext: 'Items below threshold',
       footerText: 'Order pending',
-      color: 'bg-gradient-to-br from-amber-400 to-amber-600',
-      icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z',
+      iconBg: 'bg-amber-50',
+      iconColor: 'text-amber-600',
+      iconPath: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z',
     },
     {
       title: 'Expiring Soon',
       amount: dashData.expiringSoon.toString(),
       subtext: 'Items expiring < 30 days',
       footerText: 'Review Items',
-      color: 'bg-gradient-to-br from-rose-400 to-rose-600',
-      icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
+      iconBg: 'bg-rose-50',
+      iconColor: 'text-rose-600',
+      iconPath: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
     },
     {
       title: 'Total Purchases',
       amount: dashData.totalPurchases.toString(),
       subtext: 'Stock In Records',
       footerText: '',
-      color: 'bg-gradient-to-br from-indigo-400 to-indigo-600',
-      icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z',
+      iconBg: 'bg-slate-100',
+      iconColor: 'text-slate-600',
+      iconPath: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z',
     },
     {
       title: 'Total Patients',
       amount: dashData.todaysPatients.toLocaleString(),
       subtext: 'Registered',
       footerText: '',
-      color: 'bg-gradient-to-br from-blue-400 to-blue-600',
-      icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z',
+      iconBg: 'bg-sky-50',
+      iconColor: 'text-sky-600',
+      iconPath: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z',
     }
   ];
 
@@ -424,27 +433,28 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
                 <div className="p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {stats.map((stat, idx) => (
-                      <div key={idx} className={`${stat.color} rounded-2xl text-white relative overflow-hidden shadow-lg shadow-${stat.color.split('-')[2]}-500/30 group hover:shadow-xl hover:-translate-y-1 transition-all duration-300`}>
-                        {/* Background Watermark Icon */}
-                        <div className="absolute -right-2 -bottom-2 opacity-[0.15] pointer-events-none group-hover:scale-125 group-hover:-rotate-12 transition-transform duration-500">
-                          <svg className="w-32 h-32" fill="currentColor" viewBox="0 0 24 24">
-                            <path d={stat.icon} stroke="currentColor" strokeWidth="1" fill="none"></path>
-                          </svg>
-                        </div>
-
-                        <div className="p-4 text-center relative z-10 flex flex-col items-center justify-center min-h-[140px]">
-                          <h3 className="text-[15px] font-medium opacity-90 mb-1">{stat.title}</h3>
-                          <div className="text-3xl font-bold mb-1 drop-shadow-sm">{stat.amount}</div>
-                          <div className="text-sm font-semibold opacity-95 mb-2">{stat.subtext}</div>
-
-                          {stat.footerText && (
-                            <div className="w-full text-xs py-1.5 mt-auto bg-black/20 backdrop-blur-sm rounded-lg font-medium tracking-wide">
-                              {stat.footerText}
+                      <div key={idx} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden group hover:shadow-md transition-all duration-300">
+                        <div className="p-5 md:p-6">
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <p className="text-slate-500 text-sm font-medium mb-1">{stat.title}</p>
+                              <h3 className="text-3xl font-bold text-slate-800 tracking-tight">{stat.amount}</h3>
                             </div>
-                          )}
-                          {!stat.footerText && (
-                            <div className="w-full text-xs py-1 mt-auto rounded opacity-0">.</div>
-                          )}
+                            <div className={`p-3 rounded-xl ${stat.iconBg}`}>
+                              <svg className={`w-6 h-6 ${stat.iconColor}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={stat.iconPath} />
+                              </svg>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between text-sm mt-4 pt-4 border-t border-slate-50">
+                            <span className="text-slate-400 font-medium">{stat.subtext}</span>
+                            {stat.footerText && (
+                              <button className="text-indigo-600 font-medium hover:text-indigo-700 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                {stat.footerText}
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ))}

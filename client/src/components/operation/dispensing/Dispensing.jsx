@@ -669,12 +669,12 @@ export default function Dispensing({ onSaleComplete }) {
       {/* LEFT PANEL: Products List (2/3 width) */}
       <div className="w-full lg:w-[65%] bg-white rounded-lg shadow-sm border border-slate-200 flex flex-col h-[55vh] lg:h-full overflow-hidden shrink-0 lg:shrink">
         {/* Category Tabs */}
-        <div className="p-3 border-b border-slate-200 bg-slate-50 flex items-center gap-2 overflow-x-auto scrollbar-hide shadow-sm z-10 relative">
+        <div className="p-3 border-b border-slate-200 bg-white flex items-center gap-2 overflow-x-auto scrollbar-hide shadow-[0_2px_4px_-2px_rgba(0,0,0,0.05)] z-10 relative">
           <button
             onClick={() => setSelectedCategory('All')}
-            className={`px-5 py-2 rounded-md text-sm font-bold whitespace-nowrap transition-all border ${selectedCategory === 'All'
-              ? 'bg-emerald-600 text-white border-emerald-700 shadow-md transform -translate-y-px'
-              : 'bg-white text-slate-600 border-slate-300 shadow-sm hover:bg-slate-100 hover:text-slate-900 hover:border-slate-400'
+            className={`px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all border ${selectedCategory === 'All'
+              ? 'bg-indigo-50 text-indigo-700 border-indigo-100 shadow-sm'
+              : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:text-slate-800'
               }`}
           >
             All Categories
@@ -683,9 +683,9 @@ export default function Dispensing({ onSaleComplete }) {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-5 py-2 rounded-md text-sm font-bold whitespace-nowrap transition-all border ${selectedCategory === cat
-                ? 'bg-emerald-600 text-white border-emerald-700 shadow-md transform -translate-y-px'
-                : 'bg-white text-slate-600 border-slate-300 shadow-sm hover:bg-slate-100 hover:text-slate-900 hover:border-slate-400'
+              className={`px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all border ${selectedCategory === cat
+                ? 'bg-indigo-50 text-indigo-700 border-indigo-100 shadow-sm'
+                : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:text-slate-800'
                 }`}
             >
               {cat}
@@ -700,13 +700,13 @@ export default function Dispensing({ onSaleComplete }) {
               <div
                 key={product.id}
                 onClick={() => addToCart(product)}
-                className={`bg-white rounded-lg p-3 border transition-all cursor-pointer shadow-sm hover:shadow-md ${product.quantity > 0 ? 'border-slate-200 hover:border-indigo-400' : 'border-rose-200 opacity-60'
+                className={`bg-white rounded-2xl p-3 border transition-all duration-300 cursor-pointer ${product.quantity > 0 ? 'border-slate-100 shadow-sm hover:shadow-md hover:border-indigo-200 hover:-translate-y-0.5' : 'border-rose-100 opacity-50 bg-slate-50/50'
                   }`}
               >
                 <div className="flex justify-end items-start mb-2">
-                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${product.quantity > 10 ? 'bg-emerald-100 text-emerald-700' :
-                    product.quantity > 0 ? 'bg-amber-100 text-amber-700' :
-                      'bg-rose-100 text-rose-700'
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${product.quantity > 10 ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' :
+                    product.quantity > 0 ? 'bg-amber-50 text-amber-600 border border-amber-100' :
+                      'bg-rose-50 text-rose-600 border border-rose-100'
                     }`}>
                     {product.quantity > 0 ? `${Math.round(product.quantity)} Qty` : 'Out'}
                   </span>
@@ -786,7 +786,7 @@ export default function Dispensing({ onSaleComplete }) {
         </div>
 
         {/* Cart Table Header */}
-        <div className="grid grid-cols-12 gap-1 bg-emerald-600 text-white text-xs font-bold px-2 py-2">
+        <div className="grid grid-cols-12 gap-1 bg-white border-b border-slate-200 text-slate-500 text-[11px] font-bold px-3 py-3 uppercase tracking-wider">
           <div className="col-span-5">Item</div>
           <div className="col-span-2 text-center">Qty</div>
           <div className="col-span-2 text-right">Price</div>
@@ -861,41 +861,41 @@ export default function Dispensing({ onSaleComplete }) {
         </div>
 
         {/* Checkout Section */}
-        <div className="bg-slate-800 text-white p-3 flex flex-col gap-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+        <div className="bg-white p-4 flex flex-col gap-3 border-t border-slate-200 shadow-[0_-4px_10px_-1px_rgba(0,0,0,0.03)] z-10">
           <div className="flex justify-between text-sm items-center">
-            <span className="text-slate-300">Subtotal:</span>
-            <span className="font-medium">${subtotal.toFixed(2)}</span>
+            <span className="text-slate-500 font-medium">Subtotal:</span>
+            <span className="font-semibold text-slate-800">${subtotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-sm items-center">
-            <span className="text-slate-300">Discount:</span>
+            <span className="text-slate-500 font-medium">Discount:</span>
             <div className="flex items-center gap-1">
               <span className="text-slate-400">$</span>
               <input
                 type="number"
                 min="0"
                 step="0.01"
-                className="w-16 text-right border-b border-slate-600 bg-transparent px-1 py-0.5 focus:outline-none focus:border-emerald-400"
+                className="w-16 text-right border-b border-slate-300 bg-transparent px-1 py-0.5 focus:outline-none focus:border-indigo-400 text-slate-800 font-medium"
                 value={discount}
                 onChange={(e) => setDiscount(e.target.value)}
               />
             </div>
           </div>
-          <div className="flex justify-between text-xl font-bold text-emerald-400 pt-2 border-t border-slate-600">
+          <div className="flex justify-between text-xl font-bold text-slate-800 pt-3 border-t border-slate-100">
             <span>Total:</span>
-            <span>${Math.max(0, grandTotal).toFixed(2)}</span>
+            <span className="text-indigo-600">${Math.max(0, grandTotal).toFixed(2)}</span>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 mt-2">
+          <div className="grid grid-cols-2 gap-3 mt-2">
             <button
               onClick={() => setCart([])}
-              className="bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 rounded uppercase text-sm tracking-wider transition-colors"
+              className="bg-white border border-slate-200 hover:bg-slate-50 hover:text-rose-600 text-slate-600 font-bold py-3.5 rounded-xl uppercase text-sm tracking-wider transition-colors shadow-sm"
             >
               Cancel
             </button>
             <button
               onClick={() => setShowFinalizeModal(true)}
               disabled={cart.length === 0 || isSubmitting}
-              className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold py-3 rounded-lg shadow-sm transition-colors"
+              className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl shadow-md transition-colors uppercase text-sm tracking-wider"
             >
               PAY
             </button>

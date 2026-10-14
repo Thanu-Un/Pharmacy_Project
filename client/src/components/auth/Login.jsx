@@ -22,13 +22,14 @@ export default function Login({ onLoginSuccess, onSwitchTab }) {
       });
 
       if (!response.ok) {
-        throw new Error('Login failed. Please check your credentials.');
+        const errData = await response.json().catch(() => null);
+        throw new Error(errData?.message || 'Login failed. Please check your credentials.');
       }
 
       const data = await response.json();
       onLoginSuccess(data.token, username, data.permissions || []);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Unable to connect to authentication server.');
     } finally {
       setIsLoading(false);
     }

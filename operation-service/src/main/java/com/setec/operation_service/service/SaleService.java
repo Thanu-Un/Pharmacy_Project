@@ -27,9 +27,6 @@ public class SaleService {
     private UnitRepository unitRepository;
 
     @Autowired
-    private com.setec.operation_service.repository.StockRepository stockRepository;
-
-    @Autowired
     private TelegramBotService telegramBotService;
 
     public List<Sale> getAllSales() {
@@ -85,18 +82,16 @@ public class SaleService {
                 .orElseThrow(() -> new RuntimeException("Sale not found"));
 
         // Revert stock when a sale is deleted
-        if (existing.getItems() != null && existing.getWarehouse() != null) {
+        if (existing.getItems() != null) {
             for (SaleItem item : existing.getItems()) {
                 if (item.getProduct() != null && item.getQuantity() != null) {
                     Product product = productRepository.findById(item.getProduct().getId()).orElse(null);
                     if (product != null) {
-                        com.setec.operation_service.model.Stock stock = stockRepository.findByProductIdAndWarehouseId(product.getId(), existing.getWarehouse().getId()).orElse(null);
-                        if (stock != null) {
-                            BigDecimal baseUnits = item.getQuantity()
-                                    .multiply(calculateBaseUnitsMultiplier(item.getUnit()));
-                            stock.setQuantity(stock.getQuantity().add(baseUnits)); // add back to stock
-                            stockRepository.save(stock);
-                        }
+                        BigDecimal oldQty = product.getQuantity() != null ? product.getQuantity() : BigDecimal.ZERO;
+                        BigDecimal baseUnits = item.getQuantity()
+                                .multiply(calculateBaseUnitsMultiplier(item.getUnit()));
+                        product.setQuantity(oldQty.add(baseUnits)); // add back to stock
+                        productRepository.save(product);
                     }
                 }
             }
@@ -106,7 +101,7 @@ public class SaleService {
     }
 
     private void updateStock(Sale sale) {
-        if (sale.getItems() == null || sale.getWarehouse() == null)
+        if (sale.getItems() == null)
             return;
 
         for (SaleItem item : sale.getItems()) {
@@ -115,24 +110,16 @@ public class SaleService {
                 Product product = productRepository.findById(item.getProduct().getId()).orElse(null);
 
                 if (product != null) {
-                    com.setec.operation_service.model.Stock stock = stockRepository.findByProductIdAndWarehouseId(product.getId(), sale.getWarehouse().getId())
-                            .orElseGet(() -> {
-                                com.setec.operation_service.model.Stock newStock = new com.setec.operation_service.model.Stock();
-                                newStock.setProduct(product);
-                                newStock.setWarehouse(sale.getWarehouse());
-                                newStock.setQuantity(BigDecimal.ZERO);
-                                return newStock;
-                            });
-
+                    BigDecimal oldQty = product.getQuantity() != null ? product.getQuantity() : BigDecimal.ZERO;
                     BigDecimal baseUnits = item.getQuantity().multiply(calculateBaseUnitsMultiplier(item.getUnit()));
 
-                    BigDecimal newQty = stock.getQuantity().subtract(baseUnits);
+                    BigDecimal newQty = oldQty.subtract(baseUnits);
                     if (newQty.compareTo(BigDecimal.ZERO) < 0) {
                         newQty = BigDecimal.ZERO; // Prevent negative stock
                     }
 
-                    stock.setQuantity(newQty);
-                    stockRepository.save(stock);
+                    product.setQuantity(newQty);
+                    productRepository.save(product);
                 }
             }
         }

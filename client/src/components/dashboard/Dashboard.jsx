@@ -39,6 +39,9 @@ import ProfitLossReport from '../reports/ProfitLossReport';
 import ExpenseCategoryList from '../expenses/ExpenseCategoryList';
 import ExpenseList from '../expenses/ExpenseList';
 import AddExpense from '../expenses/AddExpense';
+import Card from '../ui/Card';
+import Badge from '../ui/Badge';
+import Button from '../ui/Button';
 
 export default function Dashboard({ username, token, permissions = [], onLogout }) {
   const [currentView, setCurrentView] = useState(() => {
@@ -419,126 +422,334 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
         <main key={refreshKey} className={`flex-1 overflow-y-auto ${currentView === 'New Sale' ? '' : 'p-4 md:p-6'} bg-slate-50`}>
 
           {currentView === 'Dashboard' ? (
-            <div className="space-y-6">
-              {/* Page Title */}
-              <div>
-                <h1 className="text-2xl font-bold text-slate-800">Pharmacy Overview</h1>
-                <p className="text-slate-400 text-sm mt-1">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <div className="space-y-5 max-w-7xl mx-auto">
+              {/* Clinical Header & Status Strip */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200/80">
+                <div>
+                  <div className="flex items-center gap-2.5">
+                    <h1 className="text-xl font-bold text-slate-900 tracking-tight">Clinical Overview</h1>
+                    <Badge variant="brand" dot size="sm">LIVE OPS</Badge>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} • Pharmacological Intelligence
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <Button
+                    variant="brand"
+                    size="sm"
+                    icon={
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                      </svg>
+                    }
+                    onClick={() => setCurrentView('New Sale')}
+                  >
+                    New POS Sale
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    icon={
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                    }
+                    onClick={() => {
+                      try { window.dispatchEvent(new Event('refreshDashboard')); } catch (e) { }
+                    }}
+                  >
+                    Refresh
+                  </Button>
+                </div>
               </div>
 
-              {/* Stat Cards Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                {stats.slice(0, 4).map((stat, idx) => (
-                  <div key={idx} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 group">
-                    <div className="flex justify-between items-start mb-3">
-                      <p className="text-slate-500 text-sm font-medium">{stat.title}</p>
-                      <div className={`p-2.5 rounded-xl ${stat.iconBg}`}>
-                        <svg className={`w-5 h-5 ${stat.iconColor}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={stat.iconPath} />
-                        </svg>
-                      </div>
+              {/* Enterprise KPI Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                {/* 1. Today's Revenue */}
+                <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-card hover:border-slate-300 transition-all flex flex-col justify-between">
+                  <div className="flex items-start justify-between">
+                    <span className="micro-label">Today's Revenue</span>
+                    <Badge variant="success" size="sm" dot>Active</Badge>
+                  </div>
+                  <div className="mt-2.5">
+                    <div className="text-2xl font-bold text-slate-900 tracking-tight font-mono tabular-nums">
+                      ${Number(dashData.todaySales || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
-                    <h3 className="text-2xl font-bold text-slate-800 tracking-tight">{stat.amount}</h3>
-                    <p className="text-slate-400 text-xs mt-2 font-medium">{stat.subtext}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Two-Column Layout */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                
-                {/* Left Column: Recent Orders Table */}
-                <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                  <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-                    <h3 className="font-semibold text-slate-800">Recent Orders</h3>
-                    <button onClick={() => setCurrentView('Sales List')} className="text-indigo-600 text-sm font-medium hover:text-indigo-700 transition-colors flex items-center gap-1">
-                      View All
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
-                    </button>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-slate-50">
-                          <th className="text-left py-3 px-6 text-slate-400 font-medium text-xs uppercase tracking-wider">Order ID</th>
-                          <th className="text-left py-3 px-6 text-slate-400 font-medium text-xs uppercase tracking-wider">Patient</th>
-                          <th className="text-left py-3 px-6 text-slate-400 font-medium text-xs uppercase tracking-wider">Medication</th>
-                          <th className="text-left py-3 px-6 text-slate-400 font-medium text-xs uppercase tracking-wider">Date</th>
-                          <th className="text-left py-3 px-6 text-slate-400 font-medium text-xs uppercase tracking-wider">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {recentOrders.map((order, i) => (
-                          <tr key={i} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
-                            <td className="py-3.5 px-6 text-slate-700 font-medium">{order.id}</td>
-                            <td className="py-3.5 px-6 text-slate-600">{order.patient}</td>
-                            <td className="py-3.5 px-6 text-slate-600">{order.medication}</td>
-                            <td className="py-3.5 px-6 text-slate-400 text-xs">{order.date}</td>
-                            <td className="py-3.5 px-6">
-                              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
-                                order.status === 'Dispensed' ? 'bg-emerald-50 text-emerald-700' :
-                                order.status === 'Processing' ? 'bg-amber-50 text-amber-700' :
-                                'bg-slate-100 text-slate-600'
-                              }`}>
-                                {order.status}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                        {recentOrders.length === 0 && (
-                          <tr><td colSpan="5" className="py-8 text-center text-slate-400">No recent orders</td></tr>
-                        )}
-                      </tbody>
-                    </table>
+                    <div className="flex items-center justify-between text-xs text-slate-500 mt-1">
+                      <span>{dashData.invoiceCount || 0} Invoices</span>
+                      <span className="text-emerald-600 font-semibold font-mono text-[11px]">+8.2%</span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Right Column */}
-                <div className="space-y-6">
-                  {/* Weekly Dispensations Mini Chart */}
-                  <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-                    <h3 className="font-semibold text-slate-800 mb-1">Weekly Dispensations</h3>
-                    <p className="text-slate-400 text-xs mb-5">{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(Date.now() + 6*86400000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
-                    <div className="flex items-end justify-between gap-2 h-32">
-                      {weeklyData.map((d, i) => (
-                        <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
-                          <div className="w-full rounded-t-md bg-indigo-500 hover:bg-indigo-600 transition-colors" style={{ height: `${(d.value / Math.max(...weeklyData.map(x => x.value), 1)) * 100}%`, minHeight: '4px' }}></div>
-                          <span className="text-[10px] text-slate-400 font-medium">{d.day}</span>
-                        </div>
-                      ))}
+                {/* 2. Total Medicines */}
+                <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-card hover:border-slate-300 transition-all flex flex-col justify-between">
+                  <div className="flex items-start justify-between">
+                    <span className="micro-label">Total Medicines</span>
+                    <button 
+                      onClick={() => setCurrentView('List Medicines')}
+                      className="text-xs text-brand-600 hover:text-brand-700 font-medium cursor-pointer"
+                    >
+                      Catalog →
+                    </button>
+                  </div>
+                  <div className="mt-2.5">
+                    <div className="text-2xl font-bold text-slate-900 tracking-tight font-mono tabular-nums">
+                      {Number(dashData.totalMedicines || 0).toLocaleString()}
+                    </div>
+                    <div className="text-xs text-slate-500 mt-1">
+                      Active Formulary SKUs
                     </div>
                   </div>
+                </div>
 
-                  {/* Quick Actions */}
-                  <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-                    <h3 className="font-semibold text-slate-800 mb-4">Quick Actions</h3>
-                    <div className="space-y-2.5">
-                      <button onClick={() => setCurrentView('New Sale')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 transition-colors text-sm font-medium group">
-                        <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600 group-hover:bg-indigo-100 transition-colors">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
-                        </div>
-                        Create Order
-                      </button>
-                      <button onClick={() => setCurrentView('List Patients')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 transition-colors text-sm font-medium group">
-                        <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100 transition-colors">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
-                        </div>
-                        Add Patient
-                      </button>
-                      <button onClick={() => setCurrentView('Add Purchase')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-amber-50 text-slate-700 hover:text-amber-700 transition-colors text-sm font-medium group">
-                        <div className="p-2 rounded-lg bg-amber-50 text-amber-600 group-hover:bg-amber-100 transition-colors">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" /></svg>
-                        </div>
-                        New Purchase
-                      </button>
-                      <button onClick={() => setCurrentView('Reports')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-rose-50 text-slate-700 hover:text-rose-700 transition-colors text-sm font-medium group">
-                        <div className="p-2 rounded-lg bg-rose-50 text-rose-600 group-hover:bg-rose-100 transition-colors">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                        </div>
-                        View Reports
+                {/* 3. Low Stock Alerts */}
+                <div className={`p-4 rounded-xl border shadow-card transition-all flex flex-col justify-between ${
+                  Number(dashData.lowStockAlerts) > 0 
+                    ? 'bg-amber-50/40 border-amber-200/80' 
+                    : 'bg-white border-slate-200/80'
+                }`}>
+                  <div className="flex items-start justify-between">
+                    <span className="micro-label">Low Stock</span>
+                    {Number(dashData.lowStockAlerts) > 0 ? (
+                      <Badge variant="warning" size="sm" dot>Restock</Badge>
+                    ) : (
+                      <Badge variant="neutral" size="sm">Optimal</Badge>
+                    )}
+                  </div>
+                  <div className="mt-2.5">
+                    <div className="text-2xl font-bold text-slate-900 tracking-tight font-mono tabular-nums">
+                      {dashData.lowStockAlerts || 0}
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-slate-500 mt-1">
+                      <span>Items below reorder point</span>
+                      <button 
+                        onClick={() => setCurrentView('Product Quantity Alerts')}
+                        className="text-[11px] text-amber-700 font-semibold hover:underline"
+                      >
+                        View list
                       </button>
                     </div>
                   </div>
+                </div>
+
+                {/* 4. Expiring Soon */}
+                <div className={`p-4 rounded-xl border shadow-card transition-all flex flex-col justify-between ${
+                  Number(dashData.expiringSoon) > 0 
+                    ? 'bg-rose-50/40 border-rose-200/80' 
+                    : 'bg-white border-slate-200/80'
+                }`}>
+                  <div className="flex items-start justify-between">
+                    <span className="micro-label">Expiring &lt; 30d</span>
+                    {Number(dashData.expiringSoon) > 0 ? (
+                      <Badge variant="danger" size="sm" dot>Critical</Badge>
+                    ) : (
+                      <Badge variant="neutral" size="sm">Safe</Badge>
+                    )}
+                  </div>
+                  <div className="mt-2.5">
+                    <div className="text-2xl font-bold text-slate-900 tracking-tight font-mono tabular-nums">
+                      {dashData.expiringSoon || 0}
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-slate-500 mt-1">
+                      <span>Nearing shelf-life limit</span>
+                      <button 
+                        onClick={() => setCurrentView('Product Expiry Alerts')}
+                        className="text-[11px] text-rose-700 font-semibold hover:underline"
+                      >
+                        Audit
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Main Content: Two Columns */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                
+                {/* Left Column (2/3): Recent Orders Table */}
+                <div className="lg:col-span-2">
+                  <Card
+                    title="Recent Prescriptions & Orders"
+                    subtitle="Real-time dispensing transactions recorded across counter terminals"
+                    action={
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setCurrentView('Sales List')}
+                        iconRight={
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                          </svg>
+                        }
+                      >
+                        Full Ledger
+                      </Button>
+                    }
+                    contentClassName="p-0"
+                  >
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs text-left">
+                        <thead>
+                          <tr className="bg-slate-50/80 border-b border-slate-200/70 text-slate-500 font-semibold uppercase tracking-wider text-[10px] font-mono">
+                            <th className="py-2.5 px-4">Invoice #</th>
+                            <th className="py-2.5 px-4">Patient</th>
+                            <th className="py-2.5 px-4">Medication</th>
+                            <th className="py-2.5 px-4">Date & Time</th>
+                            <th className="py-2.5 px-4 text-right">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {recentOrders.map((order, i) => (
+                            <tr key={i} className="hover:bg-slate-50/70 transition-colors">
+                              <td className="py-2.5 px-4 font-mono font-medium text-slate-900">
+                                {order.id}
+                              </td>
+                              <td className="py-2.5 px-4 text-slate-700 font-medium">
+                                {order.patient || 'Walk-in Customer'}
+                              </td>
+                              <td className="py-2.5 px-4 text-slate-600 truncate max-w-[180px]">
+                                {order.medication}
+                              </td>
+                              <td className="py-2.5 px-4 text-slate-400 font-mono text-[11px]">
+                                {order.date}
+                              </td>
+                              <td className="py-2.5 px-4 text-right">
+                                <Badge
+                                  size="sm"
+                                  dot
+                                  variant={
+                                    order.status === 'Dispensed' ? 'success' :
+                                    order.status === 'Processing' ? 'warning' : 'neutral'
+                                  }
+                                >
+                                  {order.status}
+                                </Badge>
+                              </td>
+                            </tr>
+                          ))}
+                          {recentOrders.length === 0 && (
+                            <tr>
+                              <td colSpan="5" className="py-10 text-center text-slate-400">
+                                <div className="flex flex-col items-center justify-center gap-1.5">
+                                  <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                  </svg>
+                                  <span className="text-xs">No transactions recorded yet today</span>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </Card>
+                </div>
+
+                {/* Right Column (1/3): Mini Chart & Actions */}
+                <div className="space-y-5">
+                  {/* Weekly Dispensation Chart */}
+                  <Card
+                    title="Weekly Dispensations"
+                    subtitle="Rolling 7-day transaction velocity"
+                    contentClassName="pt-2 pb-4"
+                  >
+                    <div className="flex items-end justify-between gap-2 h-28 pt-4">
+                      {weeklyData.map((d, i) => {
+                        const maxVal = Math.max(...weeklyData.map(x => x.value), 1);
+                        const heightPct = Math.round((d.value / maxVal) * 100);
+                        const isPeak = d.value === maxVal && d.value > 0;
+                        return (
+                          <div key={i} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+                            <span className="text-[10px] text-slate-400 font-mono opacity-0 group-hover:opacity-100 transition-opacity">
+                              {d.value}
+                            </span>
+                            <div
+                              className={`w-full rounded-t transition-all ${
+                                isPeak ? 'bg-brand-600' : 'bg-slate-200 group-hover:bg-slate-300'
+                              }`}
+                              style={{ height: `${Math.max(heightPct, 6)}%` }}
+                              title={`${d.day}: ${d.value} orders`}
+                            />
+                            <span className="text-[10px] text-slate-500 font-mono font-medium">
+                              {d.day}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </Card>
+
+                  {/* Fast Clinical Shortcuts */}
+                  <Card
+                    title="Quick Workflows"
+                    subtitle="Frequent operational actions"
+                    contentClassName="p-3 space-y-1.5"
+                  >
+                    <button
+                      onClick={() => setCurrentView('New Sale')}
+                      className="w-full flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-transparent hover:border-slate-200/70 transition-all text-xs font-medium cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-6 h-6 rounded-md bg-brand-50 text-brand-700 flex items-center justify-center shrink-0">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                          </svg>
+                        </div>
+                        <span>POS Cashier Terminal</span>
+                      </div>
+                      <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-slate-100 text-slate-500 rounded border border-slate-200">
+                        F2
+                      </kbd>
+                    </button>
+
+                    <button
+                      onClick={() => setCurrentView('Add Medicine')}
+                      className="w-full flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-transparent hover:border-slate-200/70 transition-all text-xs font-medium cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-6 h-6 rounded-md bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                          </svg>
+                        </div>
+                        <span>Add Medicine SKU</span>
+                      </div>
+                      <span className="text-[10px] text-slate-400 font-mono">+New</span>
+                    </button>
+
+                    <button
+                      onClick={() => setCurrentView('Add Purchase')}
+                      className="w-full flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-transparent hover:border-slate-200/70 transition-all text-xs font-medium cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-6 h-6 rounded-md bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+                          </svg>
+                        </div>
+                        <span>Stock-In Purchase</span>
+                      </div>
+                      <span className="text-[10px] text-slate-400 font-mono">Invoice</span>
+                    </button>
+
+                    <button
+                      onClick={() => setCurrentView('Reports')}
+                      className="w-full flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-transparent hover:border-slate-200/70 transition-all text-xs font-medium cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-6 h-6 rounded-md bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                          </svg>
+                        </div>
+                        <span>Financial Analytics</span>
+                      </div>
+                      <span className="text-[10px] text-slate-400 font-mono">P&amp;L</span>
+                    </button>
+                  </Card>
                 </div>
               </div>
             </div>

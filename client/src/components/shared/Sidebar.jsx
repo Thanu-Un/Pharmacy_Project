@@ -1,162 +1,186 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const navItems = [
-  { name: 'Dashboard', icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z', active: false, permission: 'dashboard_view' },
+
+// Categorized navigation structure
+const navSections = [
   {
-    name: 'Categories',
-    icon: 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z',
-    permission: 'category_view',
-    subItems: [
-      { name: 'List Categories', icon: 'M4 6h16M4 10h16M4 14h16M4 18h16', permission: 'category_view' },
-      { name: 'Add Category', icon: 'M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'category_add' }
+    title: 'Overview',
+    items: [
+      { name: 'Dashboard', icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z', permission: 'dashboard_view' }
     ]
   },
   {
-    name: 'Unit',
-    icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
-    permission: 'unit_view',
-    subItems: [
-      { name: 'List Units', icon: 'M4 6h16M4 10h16M4 14h16M4 18h16', permission: 'unit_view' },
-      { name: 'Add Unit', icon: 'M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'unit_add' }
+    title: 'Clinical & POS',
+    items: [
+      {
+        name: 'Dispensing (POS)',
+        icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z',
+        permission: 'pos_access',
+        badge: 'POS',
+        subItems: [
+          { name: 'Sales List', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', permission: 'pos_sales_view' },
+          { name: 'New Sale', icon: 'M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'pos_access' },
+          { name: 'POS Cashier', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z', permission: 'pos_access' },
+        ]
+      },
+      {
+        name: 'Patients',
+        icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
+        permission: 'patient_view',
+        subItems: [
+          { name: 'List Patients', icon: 'M4 6h16M4 10h16M4 14h16M4 18h16', permission: 'patient_view' },
+          { name: 'Add Patient', icon: 'M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'patient_add' }
+        ]
+      }
     ]
   },
   {
-    name: 'Medicines',
-    icon: 'M4 6h16M4 10h16M4 14h16M4 18h16',
-    permission: 'medicine_view',
-    subItems: [
-      { name: 'List Medicines', icon: 'M4 6h16M4 10h16M4 14h16M4 18h16', permission: 'medicine_view' },
-      { name: 'Add Medicine', icon: 'M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'medicine_add' },
-      { name: 'Import Medicines', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', permission: 'medicine_import' },
-      { name: 'Print Barcode/Label', icon: 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z', permission: 'medicine_barcode' }
+    title: 'Inventory',
+    items: [
+      {
+        name: 'Medicines',
+        icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10',
+        permission: 'medicine_view',
+        subItems: [
+          { name: 'List Medicines', icon: 'M4 6h16M4 10h16M4 14h16M4 18h16', permission: 'medicine_view' },
+          { name: 'Add Medicine', icon: 'M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'medicine_add' },
+          { name: 'Import Medicines', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', permission: 'medicine_import' },
+          { name: 'Print Barcode/Label', icon: 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z', permission: 'medicine_barcode' }
+        ]
+      },
+      {
+        name: 'Categories',
+        icon: 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z',
+        permission: 'category_view',
+        subItems: [
+          { name: 'List Categories', icon: 'M4 6h16M4 10h16M4 14h16M4 18h16', permission: 'category_view' },
+          { name: 'Add Category', icon: 'M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'category_add' }
+        ]
+      },
+      {
+        name: 'Unit',
+        icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
+        permission: 'unit_view',
+        subItems: [
+          { name: 'List Units', icon: 'M4 6h16M4 10h16M4 14h16M4 18h16', permission: 'unit_view' },
+          { name: 'Add Unit', icon: 'M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'unit_add' }
+        ]
+      },
+      {
+        name: 'Stock In',
+        icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z',
+        permission: 'purchase_view',
+        subItems: [
+          { name: 'List Purchases', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z', permission: 'purchase_view' },
+          { name: 'Add Purchase', icon: 'M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'purchase_add' }
+        ]
+      },
+      {
+        name: 'Suppliers',
+        icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z',
+        permission: 'supplier_view',
+        subItems: [
+          { name: 'List Suppliers', icon: 'M4 6h16M4 10h16M4 14h16M4 18h16', permission: 'supplier_view' },
+          { name: 'Add Supplier', icon: 'M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'supplier_add' }
+        ]
+      }
     ]
   },
   {
-    name: 'Stock In',
-    icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z',
-    permission: 'purchase_view',
-    subItems: [
-      { name: 'List Purchases', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z', permission: 'purchase_view' },
-      { name: 'Add Purchase', icon: 'M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'purchase_add' }
+    title: 'Finance & Reports',
+    items: [
+      {
+        name: 'Expenses',
+        icon: 'M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3z M2 17l10 5 10-5M2 12l10 5 10-5M2 7l10 5 10-5',
+        permission: 'expense_view',
+        subItems: [
+          { name: 'Expense Categories', icon: 'M4 6h16M4 10h16M4 14h16M4 18h16', permission: 'expense_view' },
+          { name: 'List Expenses', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', permission: 'expense_view' },
+          { name: 'Add Expense', icon: 'M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'expense_add' }
+        ]
+      },
+      {
+        name: 'Reports',
+        icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
+        permission: 'report_view',
+        subItems: [
+          { name: 'Product Quantity Alerts', icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9', permission: 'report_view' },
+          { name: 'Product Expiry Alerts', icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z', permission: 'report_view' },
+          { name: 'Products Report', icon: 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', permission: 'report_view' },
+          { name: 'Categories Report', icon: 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z', permission: 'report_view' },
+          { name: 'Purchases Report', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z', permission: 'report_view' },
+          { name: 'Purchases Item Report', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', permission: 'report_view' },
+          { name: 'Profit and Loss Report', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'report_view' }
+        ]
+      }
     ]
   },
   {
-    name: 'Dispensing (POS)',
-    icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z',
-    permission: 'pos_access',
-    subItems: [
-      { name: 'Sales List', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z', permission: 'pos_sales_view' },
-      { name: 'New Sale', icon: 'M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'pos_access' },
-      { name: 'POS Cashier', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z', permission: 'pos_access' },
+    title: 'Administration',
+    items: [
+      {
+        name: 'Staff',
+        icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z',
+        permission: 'staff_view',
+        subItems: [
+          { name: 'List Staff', icon: 'M4 6h16M4 10h16M4 14h16M4 18h16', permission: 'staff_view' },
+          { name: 'Add Staff', icon: 'M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'staff_register' }
+        ]
+      },
+      {
+        name: 'Settings',
+        icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z',
+        subItems: [
+          { name: 'System Settings', icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', permission: 'setting_system_exclusive' },
+          { name: 'Payment Methods', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', permission: 'setting_payment' },
+          { name: 'Currency', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'setting_currency' },
+          { name: 'Warehouses', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4', permission: 'setting_warehouses_exclusive' },
+          { name: 'Group Permissions', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', permission: 'setting_permissions' }
+        ]
+      }
     ]
-  },
-  {
-    name: 'Suppliers',
-    icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7',
-    permission: 'supplier_view',
-    subItems: [
-      { name: 'List Suppliers', icon: 'M4 6h16M4 10h16M4 14h16M4 18h16', permission: 'supplier_view' },
-      { name: 'Add Supplier', icon: 'M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'supplier_add' }
-    ]
-  },
-  {
-    name: 'Patients',
-    icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
-    permission: 'patient_view',
-    subItems: [
-      { name: 'List Patients', icon: 'M4 6h16M4 10h16M4 14h16M4 18h16', permission: 'patient_view' },
-      { name: 'Add Patient', icon: 'M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'patient_add' }
-    ]
-  },
-  {
-    name: 'Staff',
-    icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
-    permission: 'staff_view',
-    subItems: [
-      { name: 'List Staff', icon: 'M4 6h16M4 10h16M4 14h16M4 18h16', permission: 'staff_view' },
-      { name: 'Add Staff', icon: 'M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'staff_register' }
-    ]
-  },
-  {
-    name: 'Expenses',
-    icon: 'M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3z M2 17l10 5 10-5M2 12l10 5 10-5M2 7l10 5 10-5',
-    permission: 'expense_view',
-    subItems: [
-      { name: 'Expense Categories', icon: 'M4 6h16M4 10h16M4 14h16M4 18h16', permission: 'expense_view' },
-      { name: 'List Expenses', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', permission: 'expense_view' },
-      { name: 'Add Expense', icon: 'M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'expense_add' }
-    ]
-  },
-  {
-    name: 'Settings',
-    icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z',
-    subItems: [
-      { name: 'System Settings', icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', permission: 'setting_system_exclusive' },
-      { name: 'Payment Methods', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', permission: 'setting_payment' },
-      { name: 'Currency', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'setting_currency' },
-      { name: 'Warehouses', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4', permission: 'setting_warehouses_exclusive' },
-      { name: 'Group Permissions', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', permission: 'setting_permissions' }
-    ]
-  },
-  {
-    name: 'Reports',
-    icon: 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
-    permission: 'report_view',
-    subItems: [
-      { name: 'Product Quantity Alerts', icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9', permission: 'report_view' },
-      { name: 'Product Expiry Alerts', icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z', permission: 'report_view' },
-      { name: 'Products Report', icon: 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', permission: 'report_view' },
-      { name: 'Categories Report', icon: 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z', permission: 'report_view' },
-      { name: 'Purchases Report', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z', permission: 'report_view' },
-      { name: 'Purchases Item Report', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', permission: 'report_view' },
-      { name: 'Profit and Loss Report', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'report_view' }
-    ]
-  },
+  }
 ];
 
-export default function Sidebar({ currentView, onMenuSelect, permissions = [], isMobileMenuOpen, setIsMobileMenuOpen }) {
+export default function Sidebar({ currentView, onMenuSelect, permissions = [], isMobileMenuOpen, setIsMobileMenuOpen, onLogout }) {
   const { t } = useTranslation();
-  const [expandedMenus, setExpandedMenus] = useState({});
+  
+  // Auto-expand menu if currentView is a sub-item
+  const [expandedMenus, setExpandedMenus] = useState(() => {
+    const initial = {};
+    navSections.forEach(section => {
+      section.items.forEach(item => {
+        if (item.subItems && item.subItems.some(sub => sub.name === currentView)) {
+          initial[item.name] = true;
+        }
+      });
+    });
+    return initial;
+  });
 
   const parseJwt = (token) => {
     try { return JSON.parse(atob(token.split('.')[1])); } catch (e) { return null; }
   };
 
+  const token = localStorage.getItem('token');
+  const userPayload = token ? parseJwt(token) : null;
+  const username = userPayload?.sub || 'User';
+  const roleName = userPayload?.role || 'Staff';
+
   const hasPermission = (perm) => {
-    // If no permission defined, allow it
     if (!perm) return true;
-    
-    // Check if user is OWNER via JWT
-    const token = localStorage.getItem('token');
     let isOwner = false;
     let isAdmin = false;
-    if (token) {
-      const decoded = parseJwt(token);
-      if (decoded) {
-        const role = decoded.role?.toUpperCase();
-        const username = decoded.sub?.toLowerCase();
-        if (role === 'OWNER' || username === 'owner') {
-          isOwner = true;
-        }
-        if (role === 'ADMIN' || username === 'admin') {
-          isAdmin = true;
-        }
-      }
+    if (userPayload) {
+      const role = userPayload.role?.toUpperCase();
+      const uname = userPayload.sub?.toLowerCase();
+      if (role === 'OWNER' || uname === 'owner') isOwner = true;
+      if (role === 'ADMIN' || uname === 'admin') isAdmin = true;
     }
-
-    // Owner sees everything
     if (isOwner) return true;
-
-    // Special case: Only Owner can see Warehouses and System Settings
-    if (perm === 'setting_warehouses_exclusive' || perm === 'setting_system_exclusive') {
-      return false; 
-    }
-
-    // Admin sees everything else
+    if (perm === 'setting_warehouses_exclusive' || perm === 'setting_system_exclusive') return false;
     if (isAdmin) return true;
-
-    // Fallback to checking the permissions array
     if (permissions.length === 0) return true;
     return permissions.includes(perm);
   };
@@ -169,14 +193,14 @@ export default function Sidebar({ currentView, onMenuSelect, permissions = [], i
   };
 
   return (
-    <div className={`
-      w-64 bg-white min-h-screen text-slate-600 flex flex-col shrink-0 overflow-y-auto border-r border-slate-200
-      fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out
-      ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
-      md:relative md:translate-x-0
+    <aside className={`
+      w-64 bg-white min-h-screen text-slate-600 flex flex-col shrink-0 border-r border-slate-200/90
+      fixed inset-y-0 left-0 z-50 transform transition-transform duration-200 ease-out
+      ${isMobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
+      md:relative md:translate-x-0 md:shadow-none
     `}>
-      {/* Brand Header (click to go to Dashboard & refresh) */}
-      <div className="flex items-center justify-between px-4 h-11 bg-white border-b border-slate-100 shrink-0">
+      {/* Brand Header */}
+      <div className="flex items-center justify-between px-4 h-12 bg-white border-b border-slate-100 shrink-0">
         <div
           onClick={() => {
             if (onMenuSelect) onMenuSelect('Dashboard');
@@ -184,89 +208,177 @@ export default function Sidebar({ currentView, onMenuSelect, permissions = [], i
           }}
           role="button"
           tabIndex={0}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { if (onMenuSelect) onMenuSelect('Dashboard'); try { window.dispatchEvent(new Event('refreshDashboard')); } catch (e) { } } }}
-          className="flex items-center gap-2 cursor-pointer text-slate-800 font-bold text-lg hover:opacity-80 transition-opacity"
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { if (onMenuSelect) onMenuSelect('Dashboard'); } }}
+          className="flex items-center gap-2.5 cursor-pointer group"
         >
-          <svg className="w-8 h-8 text-indigo-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <circle cx="12" cy="12" r="9" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v8M8 12h8" />
-          </svg>
-          <span className="whitespace-nowrap overflow-hidden text-ellipsis text-[14px] tracking-wide uppercase">NUTHEB PHARMACY</span>
+          <div className="w-7 h-7 rounded-lg bg-obsidian-900 text-white flex items-center justify-center shrink-0 shadow-sm shadow-obsidian-900/20 group-hover:bg-brand-600 transition-colors">
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <div className="flex flex-col">
+            <span className="font-bold text-slate-900 tracking-tight text-xs uppercase leading-none">Nutheb Pharmacy</span>
+            <span className="text-[10px] text-slate-400 font-mono tracking-wider">CLINICAL SUITE</span>
+          </div>
         </div>
 
         {/* Mobile Close Button */}
         <button 
           onClick={() => setIsMobileMenuOpen && setIsMobileMenuOpen(false)}
-          className="md:hidden text-slate-400 hover:text-slate-600 p-1"
+          className="md:hidden text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
       </div>
 
-      {/* Navigation Menu */}
-      <nav className="flex-1 py-4 space-y-1 px-2">
-        {currentView === 'New Sale' ? null : (
-          navItems.map((item) => {
-            if (item.permission && !hasPermission(item.permission)) return null;
-            
-            // Filter subItems based on permissions
-            const visibleSubItems = item.subItems ? item.subItems.filter(sub => hasPermission(sub.permission)) : null;
-            if (item.subItems && visibleSubItems.length === 0) return null;
+      {/* Navigation Sections */}
+      <nav className="flex-1 py-3 px-3 overflow-y-auto space-y-4">
+        {navSections.map((section) => {
+          const visibleItems = section.items.filter(item => {
+            if (item.permission && !hasPermission(item.permission)) return false;
+            if (item.subItems) {
+              const visibleSubItems = item.subItems.filter(sub => hasPermission(sub.permission));
+              return visibleSubItems.length > 0;
+            }
+            return true;
+          });
 
-            return (
-            <div key={item.name} className="flex flex-col">
-              <div
-                onClick={() => visibleSubItems ? toggleMenu(item.name) : (onMenuSelect ? onMenuSelect(item.name) : null)}
-                className={`flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 group ${(!item.subItems && currentView === item.name) || (item.active && !item.subItems)
-                  ? 'bg-indigo-50 text-indigo-700 font-semibold shadow-sm'
-                  : item.subItems && expandedMenus[item.name]
-                    ? 'bg-indigo-50 text-indigo-700 font-semibold shadow-sm'
-                    : 'hover:bg-slate-50 hover:text-slate-900 text-slate-500 font-medium'
-                  }`}
-              >
-                <div className="flex items-center gap-3">
-                  <svg className={`w-5 h-5 transition-colors duration-200 ${(!item.subItems && currentView === item.name) || item.active || (item.subItems && expandedMenus[item.name]) ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={item.icon}></path>
-                  </svg>
-                  <span className={`text-sm transition-colors duration-200 ${(!item.subItems && currentView === item.name) || item.active || (item.subItems && expandedMenus[item.name]) ? 'text-indigo-700' : 'text-slate-600 group-hover:text-slate-900'}`}>{t(`sidebar.${item.name.toLowerCase()}`)}</span>
-                </div>
-                {visibleSubItems ? (
-                  <svg className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${expandedMenus[item.name] ? 'rotate-180 text-indigo-600' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                ) : null}
+          if (visibleItems.length === 0) return null;
+
+          return (
+            <div key={section.title} className="space-y-1">
+              <div className="px-2.5 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">
+                {section.title}
               </div>
 
-              {/* Sub Items Rendering */}
-              {visibleSubItems && expandedMenus[item.name] && (
-                <div className="flex flex-col mt-1 ml-4 border-l border-slate-200 pl-2 space-y-1">
-                  {visibleSubItems.map(subItem => {
-                    const isActive = currentView === subItem.name || subItem.active;
-                    return (
-                      <div
-                        key={subItem.name}
-                        onClick={() => {
-                          if (onMenuSelect) onMenuSelect(subItem.name);
-                        }}
-                        className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors duration-150 group ${isActive
-                          ? 'bg-white text-indigo-700 font-semibold shadow-sm border border-slate-100'
-                          : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50 font-medium'
+              {visibleItems.map(item => {
+                const visibleSubItems = item.subItems ? item.subItems.filter(sub => hasPermission(sub.permission)) : null;
+                const isExpanded = !!expandedMenus[item.name];
+                const isDirectActive = !item.subItems && currentView === item.name;
+                const isChildActive = visibleSubItems && visibleSubItems.some(s => s.name === currentView);
+
+                return (
+                  <div key={item.name} className="flex flex-col">
+                    <button
+                      type="button"
+                      onClick={() => visibleSubItems ? toggleMenu(item.name) : (onMenuSelect ? onMenuSelect(item.name) : null)}
+                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-left cursor-pointer transition-all duration-150 select-none group ${
+                        isDirectActive
+                          ? 'bg-obsidian-900 text-white font-medium shadow-sm shadow-obsidian-900/10'
+                          : isChildActive
+                            ? 'bg-slate-100 text-slate-900 font-medium'
+                            : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 font-normal'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <svg
+                          className={`w-4 h-4 shrink-0 transition-colors ${
+                            isDirectActive
+                              ? 'text-white'
+                              : isChildActive
+                                ? 'text-brand-600'
+                                : 'text-slate-400 group-hover:text-slate-600'
                           }`}
-                      >
-                        <svg className={`w-4 h-4 transition-colors duration-150 ${isActive ? 'text-indigo-600' : 'text-slate-400 group-hover:text-slate-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={subItem.icon}></path>
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
                         </svg>
-                        <span className="text-sm">{t(`sidebar.${subItem.name.toLowerCase()}`)}</span>
+                        <span className="text-xs truncate">
+                          {t(`sidebar.${item.name.toLowerCase()}`)}
+                        </span>
                       </div>
-                    )
-                  })}
-                </div>
-              )}
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {item.badge && (
+                          <span className={`text-[10px] font-mono font-semibold px-1.5 py-0.2 rounded ${
+                            isDirectActive ? 'bg-white/20 text-white' : 'bg-brand-50 text-brand-700 ring-1 ring-inset ring-brand-600/20'
+                          }`}>
+                            {item.badge}
+                          </span>
+                        )}
+                        {visibleSubItems && (
+                          <svg
+                            className={`w-3.5 h-3.5 transition-transform duration-150 ${
+                              isExpanded ? 'rotate-180' : ''
+                            } ${isDirectActive ? 'text-white' : 'text-slate-400'}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                          </svg>
+                        )}
+                      </div>
+                    </button>
+
+                    {/* Sub Items */}
+                    {visibleSubItems && isExpanded && (
+                      <div className="mt-0.5 ml-3.5 pl-3 border-l border-slate-200/80 space-y-0.5 py-0.5">
+                        {visibleSubItems.map(subItem => {
+                          const isActive = currentView === subItem.name;
+                          return (
+                            <button
+                              key={subItem.name}
+                              type="button"
+                              onClick={() => {
+                                if (onMenuSelect) onMenuSelect(subItem.name);
+                              }}
+                              className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-colors text-left ${
+                                isActive
+                                  ? 'bg-brand-50 text-brand-700 font-semibold ring-1 ring-inset ring-brand-600/15'
+                                  : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                              }`}
+                            >
+                              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                                isActive ? 'bg-brand-600' : 'bg-slate-300'
+                              }`} />
+                              <span className="truncate">{t(`sidebar.${subItem.name.toLowerCase()}`)}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-            );
-          })
-        )}
+          );
+        })}
       </nav>
-    </div>
+
+      {/* Profile & Live Status Footer */}
+      <div className="p-3 border-t border-slate-100 bg-slate-50/60 shrink-0">
+        <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-white border border-slate-200/70 shadow-subtle">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="w-7 h-7 rounded-full bg-slate-800 text-white font-mono text-xs flex items-center justify-center shrink-0 uppercase font-semibold">
+              {username.charAt(0)}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="text-xs font-semibold text-slate-800 truncate leading-tight capitalize">
+                {username}
+              </div>
+              <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse" />
+                <span className="font-mono uppercase">{roleName}</span>
+              </div>
+            </div>
+          </div>
+          {onLogout && (
+            <button
+              onClick={onLogout}
+              title="Sign Out"
+              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors shrink-0"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
+    </aside>
   );
 }

@@ -100,36 +100,35 @@ export default function SalesList({ onNewSaleClick }) {
         )}
 
         {isLoading ? (
-          <div className="p-12 text-center text-slate-500">
-            <svg className="animate-spin h-8 w-8 text-emerald-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24">
+          <div className="p-16 text-center text-slate-400">
+            <svg className="animate-spin h-6 w-6 text-sky-600 mx-auto mb-3" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
             </svg>
-            <span>Loading sales records...</span>
+            <span className="text-xs font-medium tracking-wide">Loading dispensary audit log...</span>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-sm">
-              {/* Table Header matching App Emerald Theme */}
+            <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-emerald-600 text-white font-semibold text-xs tracking-wider uppercase">
-                  <th className="p-3 border-r border-emerald-500/40">Date</th>
-                  <th className="p-3 border-r border-emerald-500/40">Reference No</th>
-                  <th className="p-3 border-r border-emerald-500/40">Customer</th>
-                  <th className="p-3 border-r border-emerald-500/40 text-right">Grand Total</th>
-                  <th className="p-3 border-r border-emerald-500/40 text-right">Paid</th>
-                  <th className="p-3 border-r border-emerald-500/40 text-right">Balance</th>
-                  <th className="p-3 border-r border-emerald-500/40 text-center">Sale Status</th>
-                  <th className="p-3 border-r border-emerald-500/40 text-center">Payment Status</th>
-                  <th className="p-3 border-r border-emerald-500/40 text-center">Paid by</th>
-                  <th className="p-3 text-center">Actions</th>
+                <tr className="bg-slate-50/80 border-b border-slate-200/80 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                  <th className="py-3 px-4">Date & Time</th>
+                  <th className="py-3 px-4">Reference</th>
+                  <th className="py-3 px-4">Patient / Client</th>
+                  <th className="py-3 px-4 text-right">Grand Total</th>
+                  <th className="py-3 px-4 text-right">Settled</th>
+                  <th className="py-3 px-4 text-right">Balance</th>
+                  <th className="py-3 px-4 text-center">Dispensation</th>
+                  <th className="py-3 px-4 text-center">Payment</th>
+                  <th className="py-3 px-4 text-center">Method</th>
+                  <th className="py-3 px-4 text-center">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200">
+              <tbody className="divide-y divide-slate-100">
                 {filteredSales.length === 0 ? (
                   <tr>
-                    <td colSpan="10" className="p-12 text-center text-slate-500">
-                      No sales records found.
+                    <td colSpan="10" className="py-12 text-center text-slate-400 text-xs">
+                      No matching dispensation records found.
                     </td>
                   </tr>
                 ) : (
@@ -137,44 +136,60 @@ export default function SalesList({ onNewSaleClick }) {
                     const dateFormatted = sale.date ? new Date(sale.date).toLocaleString('en-GB') : '-';
                     let customerName = sale.customer?.name || 'Walk-in Patient';
                     customerName = customerName.replace(' (General)', '');
-                    const grandTotalVal = Number(sale.grandTotal || 0).toFixed(3) + '$';
-                    const paidVal = Number(sale.grandTotal || 0).toFixed(3) + '$';
-                    const balanceVal = '0.000$';
+                    const grandTotalVal = Number(sale.grandTotal || 0).toFixed(2);
+                    const grandTotalKHR = (Number(sale.grandTotal || 0) * exchangeRate).toLocaleString();
 
                     return (
-                      <tr key={sale.id || idx} className="hover:bg-sky-50/50 transition-colors border-b border-slate-100">
-                        <td className="p-3 text-slate-700 font-medium whitespace-nowrap">{dateFormatted}</td>
-                        <td className="p-3 text-slate-800 font-semibold whitespace-nowrap">{sale.referenceNo}</td>
-                        <td className="p-3 text-slate-800 font-medium whitespace-nowrap">{customerName}</td>
-                        <td className="p-3 text-right font-bold text-slate-900 whitespace-nowrap">{grandTotalVal}</td>
-                        <td className="p-3 text-right font-semibold text-emerald-700 whitespace-nowrap">{paidVal}</td>
-                        <td className="p-3 text-right font-medium text-slate-600 whitespace-nowrap">{balanceVal}</td>
-                        <td className="p-3 text-center whitespace-nowrap">
-                          <span className="bg-[#5cb85c] text-white text-xs px-2.5 py-1 rounded font-bold inline-block shadow-sm">
+                      <tr key={sale.id || idx} className="hover:bg-slate-50/70 transition-colors group">
+                        <td className="py-3 px-4 text-slate-600 font-mono text-[11px] whitespace-nowrap">{dateFormatted}</td>
+                        <td className="py-3 px-4 whitespace-nowrap">
+                          <span className="font-mono text-xs font-semibold text-sky-700 bg-sky-50 border border-sky-100 px-2 py-0.5 rounded">
+                            {sale.referenceNo}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-slate-800 font-medium whitespace-nowrap">{customerName}</td>
+                        <td className="py-3 px-4 text-right whitespace-nowrap">
+                          <div className="font-mono font-semibold text-slate-900 tabular-nums">${grandTotalVal}</div>
+                          <div className="font-mono text-[10px] text-slate-400 tabular-nums">៛{grandTotalKHR}</div>
+                        </td>
+                        <td className="py-3 px-4 text-right whitespace-nowrap">
+                          <span className="font-mono text-xs font-medium text-emerald-700 tabular-nums">${grandTotalVal}</span>
+                        </td>
+                        <td className="py-3 px-4 text-right whitespace-nowrap font-mono text-slate-400 text-xs tabular-nums">
+                          $0.00
+                        </td>
+                        <td className="py-3 px-4 text-center whitespace-nowrap">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                             Completed
                           </span>
                         </td>
-                        <td className="p-3 text-center whitespace-nowrap">
-                          <span className="bg-[#5cb85c] text-white text-xs px-2.5 py-1 rounded font-bold inline-block shadow-sm">
+                        <td className="py-3 px-4 text-center whitespace-nowrap">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-sky-50 text-sky-700 border border-sky-200/60">
+                            <span className="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
                             Paid
                           </span>
                         </td>
-                        <td className="p-3 text-center text-slate-700 font-medium whitespace-nowrap capitalize">{sale.paymentMethod || 'Cash'}</td>
-                        <td className="p-3 text-center whitespace-nowrap">
-                          <div className="flex items-center justify-center gap-2">
+                        <td className="py-3 px-4 text-center whitespace-nowrap">
+                          <span className="px-2 py-0.5 text-[11px] font-medium bg-slate-100 text-slate-600 rounded">
+                            {sale.paymentMethod || 'Cash'}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-center whitespace-nowrap">
+                          <div className="flex items-center justify-center gap-1">
                             <button
                               onClick={() => setSelectedSaleForReceipt(sale)}
-                              title="View Receipt"
-                              className="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded transition-colors"
+                              title="Print / View Receipt"
+                              className="p-1.5 text-slate-400 hover:text-sky-600 hover:bg-sky-50 rounded-md transition-colors"
                             >
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                             </button>
                             <button
                               onClick={() => handleDelete(sale.id)}
                               title="Delete Record"
-                              className="p-1.5 text-rose-500 hover:bg-rose-50 rounded transition-colors"
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors"
                             >
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                             </button>
                           </div>
                         </td>

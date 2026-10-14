@@ -143,13 +143,13 @@ export default function CurrencySetting() {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-200 flex justify-end">
+            <div className="pt-4 border-t border-slate-100 flex justify-end">
               <button
                 type="submit"
                 disabled={isSaving}
-                className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-lg text-sm font-semibold shadow-sm transition-colors"
+                className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white rounded-lg text-xs font-semibold shadow-sm transition-all active:scale-[0.98]"
               >
-                {isSaving ? 'Saving Settings...' : 'Save Currency Settings'}
+                {isSaving ? 'Synchronizing Rates...' : 'Save Currency Configuration'}
               </button>
             </div>
           </form>

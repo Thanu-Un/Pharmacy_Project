@@ -53,90 +53,94 @@ export default function PatientList({ onAddClick, onEditClick }) {
         <div className="p-6">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Patients</h1>
-                    <p className="text-sm text-slate-500 mt-1">Manage registered patients and profiles</p>
+                    <h1 className="text-xl font-bold tracking-tight text-slate-900">Patient Registry</h1>
+                    <p className="text-xs text-slate-500 mt-0.5">Clinical profiles, medical records, and contact directory</p>
                 </div>
                 <button
                     onClick={onAddClick}
-                    className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors shadow-sm shadow-emerald-500/10"
+                    className="bg-slate-900 hover:bg-slate-800 text-white text-xs px-3.5 py-2 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all whitespace-nowrap active:scale-[0.98]"
                 >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
-                    Add Patient
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
+                    Register Patient
                 </button>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
-                <div className="p-4 border-b border-slate-100 bg-slate-50/50">
-                    <div className="relative max-w-md">
+            <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden mb-6">
+                <div className="p-3.5 border-b border-slate-100 bg-slate-50/50">
+                    <div className="relative max-w-sm">
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                         </span>
                         <input
                             type="text"
-                            placeholder="Search by code, name, phone, email, or city..."
+                            placeholder="Search patient code, name, phone, city..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm"
+                            className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/20 text-slate-700 placeholder:text-slate-400"
                         />
                     </div>
                 </div>
 
                 {error && (
-                    <div className="p-6 text-center text-rose-600">
-                        <p className="font-semibold">Error: {error}</p>
-                        <button onClick={fetchPatients} className="mt-2 text-sm text-emerald-600 underline">Try again</button>
+                    <div className="m-4 bg-rose-50 text-rose-700 text-xs p-3 rounded-lg flex items-center gap-2 border border-rose-200/60">
+                        <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <span>{error}</span>
+                        <button onClick={fetchPatients} className="ml-auto text-sky-600 underline font-medium">Retry</button>
                     </div>
                 )}
 
                 {isLoading ? (
-                    <div className="p-12 text-center text-slate-500">
-                        <svg className="animate-spin h-8 w-8 text-emerald-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24">
+                    <div className="py-12 text-center text-slate-400 text-xs">
+                        <svg className="animate-spin h-6 w-6 text-sky-600 mx-auto mb-3" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                         </svg>
-                        <span>Loading patients...</span>
+                        <span>Loading patient directory...</span>
                     </div>
                 ) : filteredPatients.length === 0 ? (
-                    <div className="p-12 text-center text-slate-500">
-                        <svg className="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M7 7h10M7 3h10a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z" /></svg>
-                        <p className="text-lg font-bold text-slate-700">No Patients Found</p>
-                        <p className="text-sm text-slate-400 mt-1">Try another search or add a new patient.</p>
+                    <div className="py-12 text-center text-slate-400 text-xs">
+                        <p className="font-semibold text-slate-700 text-sm">No Patients Found</p>
+                        <p className="text-slate-400 mt-1">Try another search or register a new patient.</p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
+                        <table className="w-full text-left border-collapse text-xs">
                             <thead>
-                                <tr className="bg-slate-50 text-slate-500 font-semibold text-xs uppercase tracking-wider border-b border-slate-100">
-                                    <th className="px-6 py-4">Code</th>
-                                    <th className="px-6 py-4">Name</th>
-                                    <th className="px-6 py-4">Phone</th>
-                                    <th className="px-6 py-4">Email</th>
-                                    <th className="px-6 py-4">City</th>
-                                    <th className="px-6 py-4">Address</th>
-                                    <th className="px-6 py-4 text-right">Actions</th>
+                                <tr className="bg-slate-50/80 text-slate-500 font-semibold text-[11px] uppercase tracking-wider border-b border-slate-200/80">
+                                    <th className="py-3 px-4">Code</th>
+                                    <th className="py-3 px-4">Patient Name</th>
+                                    <th className="py-3 px-4">Contact Phone</th>
+                                    <th className="py-3 px-4">Email Address</th>
+                                    <th className="py-3 px-4">Location</th>
+                                    <th className="py-3 px-4">Residential Address</th>
+                                    <th className="py-3 px-4 text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
+                            <tbody className="divide-y divide-slate-100 text-slate-700">
                                 {filteredPatients.map((patient) => (
-                                    <tr key={patient.id} className="hover:bg-slate-50 transition-colors">
-                                        <td className="px-6 py-4 font-medium text-slate-800">{patient.code}</td>
-                                        <td className="px-6 py-4">{patient.name}</td>
-                                        <td className="px-6 py-4 font-medium text-slate-600">{patient.phone}</td>
-                                        <td className="px-6 py-4 text-slate-500">{patient.emailAddress || '—'}</td>
-                                        <td className="px-6 py-4 text-slate-500">{patient.city || '—'}</td>
-                                        <td className="px-6 py-4 text-slate-500 max-w-[220px] truncate" title={patient.address}>{patient.address || '—'}</td>
-                                        <td className="px-6 py-4 text-right">
+                                    <tr key={patient.id} className="hover:bg-slate-50/70 transition-colors group">
+                                        <td className="py-3 px-4">
+                                            <span className="font-mono text-xs font-semibold text-sky-700 bg-sky-50 border border-sky-100 px-2 py-0.5 rounded">
+                                                {patient.code}
+                                            </span>
+                                        </td>
+                                        <td className="py-3 px-4 font-medium text-slate-900">{patient.name}</td>
+                                        <td className="py-3 px-4 font-mono text-slate-600">{patient.phone || '—'}</td>
+                                        <td className="py-3 px-4 text-slate-500">{patient.emailAddress || '—'}</td>
+                                        <td className="py-3 px-4 text-slate-500">{patient.city || '—'}</td>
+                                        <td className="py-3 px-4 text-slate-500 max-w-[200px] truncate" title={patient.address}>{patient.address || '—'}</td>
+                                        <td className="py-3 px-4 text-right whitespace-nowrap">
                                             <button
                                                 onClick={() => onEditClick(patient)}
                                                 title="Edit Patient"
-                                                className="text-indigo-600 bg-indigo-50 hover:bg-indigo-100 p-1.5 rounded-md transition-colors mr-2 border border-indigo-100"
+                                                className="p-1.5 text-slate-400 hover:text-sky-600 hover:bg-sky-50 rounded-md transition-colors mr-1"
                                             >
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                                             </button>
                                             <button
                                                 onClick={() => setPatientToDelete(patient.id)}
                                                 title="Delete Patient"
-                                                className="text-rose-600 bg-rose-50 hover:bg-rose-100 p-1.5 rounded-md transition-colors border border-rose-100"
+                                                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors"
                                             >
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                             </button>

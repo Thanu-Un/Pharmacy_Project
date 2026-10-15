@@ -65,35 +65,35 @@ export default function CurrencySetting() {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-6 max-w-4xl mx-auto space-y-6">
       {/* Top Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-800">Currency & Exchange Rate</h1>
-        <p className="text-sm text-slate-500 mt-1">Configure primary base currency, secondary currency, and POS exchange rate (KHR / USD)</p>
+      <div>
+        <h1 className="text-xl font-bold tracking-tight text-slate-900">Currency & Exchange Rate</h1>
+        <p className="text-xs text-slate-500 mt-0.5">Configure primary base currency, secondary currency, and POS exchange rate (KHR / USD)</p>
       </div>
 
       {/* Card */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200/80 p-6">
         {successMessage && (
-          <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-sm font-semibold flex items-center gap-2">
-            <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
-            Currency and Exchange Rate settings saved successfully!
+          <div className="mb-6 p-3 bg-emerald-50 border border-emerald-200/70 text-emerald-800 rounded-lg text-xs font-semibold flex items-center gap-2">
+            <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+            <span>Currency and exchange rate settings saved successfully!</span>
           </div>
         )}
 
         {isLoading ? (
-          <div className="p-8 text-center text-slate-400">Loading currency settings...</div>
+          <div className="p-8 text-center text-slate-400 text-xs">Loading currency settings...</div>
         ) : (
-          <form onSubmit={handleSave} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <form onSubmit={handleSave} className="space-y-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  Base Currency
+                <label className="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+                  Base System Currency
                 </label>
                 <select
                   value={currencySettings.base_currency}
                   onChange={e => setCurrencySettings(prev => ({ ...prev, base_currency: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-white"
+                  className="w-full bg-white border border-slate-200/90 rounded-lg px-3.5 py-2 text-xs text-slate-800 focus:outline-none focus:border-sky-500 font-medium transition-all"
                 >
                   <option value="USD">USD ($ - US Dollar)</option>
                   <option value="KHR">KHR (៛ - Cambodian Riel)</option>
@@ -101,25 +101,25 @@ export default function CurrencySetting() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                <label className="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
                   Currency Symbol
                 </label>
                 <input
                   type="text"
                   value={currencySettings.currency_symbol}
                   onChange={e => setCurrencySettings(prev => ({ ...prev, currency_symbol: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-semibold text-slate-800"
+                  className="w-full bg-white border border-slate-200/90 rounded-lg px-3.5 py-2 text-xs text-slate-800 focus:outline-none focus:border-sky-500 font-medium transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                <label className="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
                   Secondary Currency
                 </label>
                 <select
                   value={currencySettings.secondary_currency}
                   onChange={e => setCurrencySettings(prev => ({ ...prev, secondary_currency: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-white"
+                  className="w-full bg-white border border-slate-200/90 rounded-lg px-3.5 py-2 text-xs text-slate-800 focus:outline-none focus:border-sky-500 font-medium transition-all"
                 >
                   <option value="KHR">KHR (៛ - Cambodian Riel)</option>
                   <option value="USD">USD ($ - US Dollar)</option>
@@ -127,7 +127,7 @@ export default function CurrencySetting() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                <label className="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
                   Exchange Rate (KHR per 1 USD) <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -137,17 +137,17 @@ export default function CurrencySetting() {
                   placeholder="4000"
                   value={currencySettings.exchange_rate}
                   onChange={e => setCurrencySettings(prev => ({ ...prev, exchange_rate: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-slate-300 rounded-lg text-sm font-bold text-slate-900 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                  className="w-full bg-white border border-slate-200/90 rounded-lg px-3.5 py-2 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-sky-500 transition-all"
                 />
-                <p className="text-[11px] text-slate-400 mt-1">Example: 4000 KHR = $1.00 USD</p>
+                <p className="text-[10px] text-slate-400 mt-1">Example: 4,000 KHR = $1.00 USD</p>
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-100 flex justify-end">
+            <div className="pt-3 border-t border-slate-100 flex justify-end">
               <button
                 type="submit"
                 disabled={isSaving}
-                className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white rounded-lg text-xs font-semibold shadow-sm transition-all active:scale-[0.98]"
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white text-xs font-semibold shadow-sm transition-all disabled:opacity-50"
               >
                 {isSaving ? 'Synchronizing Rates...' : 'Save Currency Configuration'}
               </button>

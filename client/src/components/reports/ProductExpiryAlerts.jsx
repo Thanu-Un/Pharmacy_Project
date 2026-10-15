@@ -15,7 +15,6 @@ export default function ProductExpiryAlerts() {
       
       const purchases = await response.json();
       
-      // Flatten all purchase items that have an expiry date within 3 months
       let expiringItems = [];
       const today = new Date();
       const threeMonthsFromNow = new Date();
@@ -29,7 +28,7 @@ export default function ProductExpiryAlerts() {
               if (expiryDate <= threeMonthsFromNow) {
                 expiringItems.push({
                   ...item,
-                  supplierName: purchase.supplier?.name || 'N/A',
+                  supplierName: purchase.supplier?.name || purchase.supplier?.company || 'N/A',
                   purchaseDate: purchase.date,
                   referenceNo: purchase.referenceNo
                 });
@@ -39,7 +38,6 @@ export default function ProductExpiryAlerts() {
         }
       });
       
-      // Sort by expiry date (nearest first)
       expiringItems.sort((a, b) => new Date(a.expiry) - new Date(b.expiry));
       
       setItems(expiringItems);
@@ -56,11 +54,16 @@ export default function ProductExpiryAlerts() {
   }, []);
 
   if (loading) {
-    return <div className="flex justify-center items-center h-64 text-slate-500">Loading expiry alerts...</div>;
+    return (
+      <div className="flex flex-col justify-center items-center h-64">
+        <div className="w-6 h-6 border-2 border-slate-300 border-t-slate-800 rounded-full animate-spin mb-2"></div>
+        <p className="text-xs text-slate-400 font-medium">Scanning lot expiration dates...</p>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="text-red-500 p-4 bg-red-50 rounded-lg">{error}</div>;
+    return <div className="text-rose-600 text-xs p-4 bg-rose-50 border border-rose-200/60 rounded-xl">{error}</div>;
   }
 
   const filteredItems = items.filter(p => 
@@ -69,7 +72,6 @@ export default function ProductExpiryAlerts() {
     (p.supplierName && p.supplierName.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  // Helper to check if item is already expired or expiring soon (within 30 days)
   const getExpiryStatus = (dateString) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -77,118 +79,110 @@ export default function ProductExpiryAlerts() {
     const diffTime = expiryDate - today;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     
-    if (diffDays < 0) return { label: 'Expired', color: 'text-rose-600 bg-rose-50 border-rose-100' };
-    if (diffDays <= 30) return { label: `In ${diffDays} days`, color: 'text-amber-600 bg-amber-50 border-amber-100' };
-    return { label: `In ${diffDays} days`, color: 'text-emerald-600 bg-emerald-50 border-emerald-100' };
+    if (diffDays < 0) return { label: 'Expired', color: 'text-rose-700 bg-rose-50 border-rose-200/70' };
+    if (diffDays <= 30) return { label: `${diffDays} days left`, color: 'text-amber-700 bg-amber-50 border-amber-200/70' };
+    return { label: `${diffDays} days left`, color: 'text-emerald-700 bg-emerald-50 border-emerald-200/70' };
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#f8fafc]">
-      <div className="bg-white px-8 py-6 border-b border-slate-200">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-800">Product Expiry Alerts</h1>
-            <p className="text-slate-500 mt-1">Track products that are nearing their expiration date.</p>
-          </div>
-          <span className="bg-amber-100 text-amber-700 py-1 px-3 rounded-full text-sm font-bold">
-            {items.length} {items.length === 1 ? 'Item' : 'Items'} with expiry dates
-          </span>
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900">Formulary Expiry Surveillance</h1>
+          <p className="text-xs text-slate-500 mt-0.5">Track items expiring within 90 days to prevent clinical dispensing hazards</p>
         </div>
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/60 w-fit">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+          <span>{items.length} {items.length === 1 ? 'Batch' : 'Batches'} Monitored</span>
+        </span>
       </div>
-      
-      <div className="flex-1 overflow-auto p-8">
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-          {/* Header Controls */}
-          <div className="p-4 border-b border-slate-200 bg-white flex justify-between items-center">
-            <div className="relative w-72">
-              <input
-                type="text"
-                placeholder="Search by name, code or supplier..."
-                className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition-shadow"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              <svg className="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-          </div>
-          
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-600 whitespace-nowrap">
-              <thead className="bg-emerald-600 text-white font-semibold border-b border-emerald-700 uppercase text-xs tracking-wider">
-                <tr>
-                  <th className="px-6 py-4 w-16 text-center">Image</th>
-                  <th className="px-6 py-4">Product Code</th>
-                  <th className="px-6 py-4">Product Name</th>
-                  <th className="px-6 py-4 text-right">Quantity</th>
-                  <th className="px-6 py-4">Supplier</th>
-                  <th className="px-6 py-4 text-center">Expiry Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filteredItems.length > 0 ? (
-                  filteredItems.map((item, index) => {
-                    const status = getExpiryStatus(item.expiry);
-                    return (
-                      <tr 
-                        key={`${item.id}-${index}`} 
-                        className="hover:bg-slate-50 transition-colors group"
-                      >
-                        <td className="px-6 py-4 text-center">
-                          {item.product?.image ? (
-                            <div className="w-10 h-10 rounded-md bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden mx-auto">
-                              <img 
-                                src={item.product.image.startsWith('http') || item.product.image.startsWith('data:') ? item.product.image : `/api/operation${item.product.image}`} 
-                                alt={item.productName} 
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                   e.target.onerror = null; 
-                                   e.target.src = 'https://via.placeholder.com/40?text=No+Image';
-                                }}
-                              />
-                            </div>
-                          ) : (
-                            <div className="w-10 h-10 rounded-md bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 mx-auto">
-                              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                            </div>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 font-medium text-emerald-600">
-                          <span className="bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-md text-xs font-bold border border-emerald-100">
-                            {item.productCode}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 font-medium text-slate-800">{item.productName}</td>
-                        <td className="px-6 py-4 text-right">
-                          <span className="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md text-sm font-bold border border-slate-200">
-                            {item.quantityReceived}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-slate-700">
-                          {item.supplierName}
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <div className="flex flex-col items-center justify-center gap-1">
-                            <span className="font-semibold text-slate-700">{item.expiry}</span>
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${status.color}`}>
-                              {status.label}
-                            </span>
+
+      {/* Main Table Card */}
+      <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden space-y-3 p-4">
+        {/* Search Control */}
+        <div className="relative max-w-sm">
+          <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          </span>
+          <input
+            type="text"
+            placeholder="Search by medicine, code, or vendor..."
+            className="w-full bg-white border border-slate-200/90 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-sky-500 font-medium transition-all"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        
+        <div className="overflow-x-auto rounded-lg border border-slate-200/70">
+          <table className="w-full text-left text-xs text-slate-600 whitespace-nowrap">
+            <thead className="bg-slate-50/80 text-slate-600 text-[11px] uppercase font-semibold tracking-wider border-b border-slate-200/80">
+              <tr>
+                <th className="py-2.5 px-3 w-14 text-center">Asset</th>
+                <th className="py-2.5 px-3">Product Identifier</th>
+                <th className="py-2.5 px-3">Medicine Formulation</th>
+                <th className="py-2.5 px-3 text-right">Batch Qty</th>
+                <th className="py-2.5 px-3">Supplier Distributor</th>
+                <th className="py-2.5 px-3 text-center">Expiration Date</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {filteredItems.length > 0 ? (
+                filteredItems.map((item, index) => {
+                  const status = getExpiryStatus(item.expiry);
+                  return (
+                    <tr key={`${item.id}-${index}`} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-2 px-3 text-center">
+                        {item.product?.image ? (
+                          <div className="w-9 h-9 rounded-md bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden mx-auto">
+                            <img 
+                              src={item.product.image.startsWith('http') || item.product.image.startsWith('data:') ? item.product.image : `/api/operation${item.product.image}`} 
+                              alt={item.productName} 
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                 e.target.onerror = null; 
+                                 e.target.src = 'https://via.placeholder.com/40?text=No+Img';
+                              }}
+                            />
                           </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                ) : (
-                  <tr>
-                    <td colSpan="6" className="px-6 py-8 text-center text-slate-400">
-                      {searchTerm ? 'No products matching your search.' : 'No products with expiry dates found.'}
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                        ) : (
+                          <div className="w-9 h-9 rounded-md bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-300 mx-auto">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                          </div>
+                        )}
+                      </td>
+                      <td className="py-2 px-3 font-mono font-semibold text-slate-800">
+                        {item.productCode}
+                      </td>
+                      <td className="py-2 px-3 font-medium text-slate-900">{item.productName}</td>
+                      <td className="py-2 px-3 text-right">
+                        <span className="font-mono text-xs font-semibold text-slate-800">
+                          {item.quantityReceived}
+                        </span>
+                      </td>
+                      <td className="py-2 px-3 text-slate-600">
+                        {item.supplierName}
+                      </td>
+                      <td className="py-2 px-3 text-center">
+                        <div className="inline-flex items-center gap-2">
+                          <span className="font-mono text-xs text-slate-700">{item.expiry}</span>
+                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${status.color}`}>
+                            {status.label}
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan="6" className="py-8 text-center text-slate-400 italic">
+                    {searchTerm ? 'No products matching your search.' : 'No active purchase items nearing expiration.'}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

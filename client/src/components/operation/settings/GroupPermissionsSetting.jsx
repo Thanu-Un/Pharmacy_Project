@@ -239,21 +239,21 @@ export default function GroupPermissionsSetting() {
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="p-6 max-w-6xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold tracking-tight text-slate-900">Group Roles & Security Clearance</h1>
           <p className="text-xs text-slate-500 mt-0.5">RBAC security profiles, modular permission assignments, and privilege policies</p>
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="bg-slate-900 hover:bg-slate-800 text-white text-xs px-3.5 py-2 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all whitespace-nowrap active:scale-[0.98]"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white text-xs font-semibold shadow-sm transition-all whitespace-nowrap"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
           </svg>
-          Create Role Group
+          <span>Create Role Group</span>
         </button>
       </div>
 
@@ -263,7 +263,7 @@ export default function GroupPermissionsSetting() {
           <span className="text-xs font-semibold text-slate-700">Security Clearance Profiles ({roles.length})</span>
           <button
             onClick={fetchRoles}
-            className="text-xs text-slate-500 hover:text-slate-700 font-medium flex items-center gap-1.5"
+            className="text-xs text-slate-500 hover:text-slate-700 font-medium flex items-center gap-1.5 transition-colors"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
             Refresh
@@ -273,7 +273,7 @@ export default function GroupPermissionsSetting() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs whitespace-nowrap">
             <thead>
-              <tr className="bg-slate-50/80 border-b border-slate-200/80 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+              <tr className="bg-slate-50/80 border-b border-slate-200/80 text-[11px] font-semibold text-slate-600 uppercase tracking-wider">
                 <th className="py-3 px-4">Role / Group Identifier</th>
                 <th className="py-3 px-4">Policy Description</th>
                 <th className="py-3 px-4 text-center">Assigned Permissions</th>
@@ -299,38 +299,33 @@ export default function GroupPermissionsSetting() {
                   }
 
                   return (
-                    <tr key={role.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="p-3 font-bold text-slate-900">
-                        <span className={`text-xs px-3 py-1 rounded font-bold uppercase tracking-wider ${
-                          role.name === 'ADMIN' ? 'bg-purple-100 text-purple-800 border border-purple-200' :
-                          role.name === 'PHARMACIST' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
-                          role.name === 'CASHIER' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
-                          'bg-slate-100 text-slate-700 border border-slate-200'
-                        }`}>
+                    <tr key={role.id} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-3 px-4 font-bold text-slate-900">
+                        <span className="text-[11px] px-2.5 py-0.5 rounded font-mono font-semibold uppercase tracking-wider bg-slate-100 text-slate-800 border border-slate-200">
                           {role.name}
                         </span>
                       </td>
-                      <td className="p-3 text-slate-600 text-sm">{role.description || 'No description provided'}</td>
-                      <td className="p-3 text-center">
-                        <span className="bg-slate-100 text-slate-800 font-semibold px-2.5 py-1 rounded-full text-xs">
-                          {permCount} permissions granted
+                      <td className="py-3 px-4 text-slate-600">{role.description || 'No description provided'}</td>
+                      <td className="py-3 px-4 text-center">
+                        <span className="bg-slate-50 text-slate-700 font-medium px-2.5 py-0.5 rounded-full text-[11px] border border-slate-200">
+                          {permCount} permissions
                         </span>
                       </td>
-                      <td className="p-3 text-center">
-                        <div className="flex items-center justify-center gap-2">
+                      <td className="py-3 px-4 text-right">
+                        <div className="inline-flex items-center gap-1">
                           <button
                             onClick={() => handleOpenModal(role)}
-                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                            className="p-1.5 text-slate-400 hover:text-sky-600 hover:bg-sky-50 rounded transition-colors"
                             title="Edit Permissions"
                           >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                           </button>
                           <button
                             onClick={() => handleDeleteRole(role.id)}
-                            className="p-1.5 text-rose-600 hover:bg-rose-50 rounded transition-colors"
+                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors"
                             title="Delete Group"
                           >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                           </button>
                         </div>
                       </td>
@@ -345,23 +340,23 @@ export default function GroupPermissionsSetting() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-3xl w-full flex flex-col max-h-[90vh] shadow-2xl overflow-hidden">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-w-3xl w-full flex flex-col max-h-[90vh] shadow-xl border border-slate-200/80 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             {/* Modal Header */}
-            <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
-              <h3 className="text-lg font-bold text-slate-800">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+              <h3 className="text-sm font-bold text-slate-900">
                 {editingRole ? `Edit Group Permissions: ${editingRole.name}` : 'Add New Permission Group'}
               </h3>
-              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-rose-500 transition-colors">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
 
             {/* Modal Body */}
-            <form onSubmit={handleSaveRole} className="flex-1 overflow-y-auto p-6 space-y-6">
+            <form onSubmit={handleSaveRole} className="flex-1 overflow-y-auto p-5 space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
                     Group / Role Name <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -370,12 +365,12 @@ export default function GroupPermissionsSetting() {
                     placeholder="e.g. PHARMACIST, CASHIER, SUPERVISOR"
                     value={roleForm.name}
                     onChange={e => setRoleForm(prev => ({ ...prev, name: e.target.value }))}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-bold uppercase"
+                    className="w-full bg-white border border-slate-200/90 rounded-lg px-3.5 py-2 text-xs text-slate-800 font-mono font-bold uppercase focus:outline-none focus:border-sky-500 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
                     Description
                   </label>
                   <input
@@ -383,42 +378,42 @@ export default function GroupPermissionsSetting() {
                     placeholder="Brief description of access privileges..."
                     value={roleForm.description}
                     onChange={e => setRoleForm(prev => ({ ...prev, description: e.target.value }))}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                    className="w-full bg-white border border-slate-200/90 rounded-lg px-3.5 py-2 text-xs text-slate-800 focus:outline-none focus:border-sky-500 transition-all"
                   />
                 </div>
               </div>
 
               <div>
-                <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">
+                <h4 className="text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-2.5">
                   Module Permissions Checklist
                 </h4>
 
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {MODULE_PERMISSIONS.map(mod => {
                     const allSelected = mod.items.every(i => roleForm.selectedPermissions.includes(i.id));
 
                     return (
-                      <div key={mod.module} className="border border-slate-200 rounded-lg p-4 bg-slate-50/50">
-                        <div className="flex items-center justify-between mb-3 border-b border-slate-200 pb-2">
-                          <span className="font-bold text-sm text-slate-800">{mod.module}</span>
+                      <div key={mod.module} className="border border-slate-200/80 rounded-lg p-3.5 bg-slate-50/50">
+                        <div className="flex items-center justify-between mb-2.5 border-b border-slate-200/60 pb-2">
+                          <span className="font-semibold text-xs text-slate-900">{mod.module}</span>
                           <button
                             type="button"
                             onClick={() => handleSelectAllModule(mod.items)}
-                            className="text-xs text-emerald-700 font-semibold hover:underline"
+                            className="text-[11px] text-sky-600 font-semibold hover:underline"
                           >
                             {allSelected ? 'Deselect All' : 'Select All'}
                           </button>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                           {mod.items.map(item => {
                             const checked = roleForm.selectedPermissions.includes(item.id);
                             return (
-                              <label key={item.id} className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer select-none">
+                              <label key={item.id} className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer select-none">
                                 <input
                                   type="checkbox"
                                   checked={checked}
                                   onChange={() => handleTogglePermission(item.id)}
-                                  className="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 cursor-pointer"
+                                  className="w-3.5 h-3.5 rounded border-slate-300 text-slate-900 focus:ring-slate-900/20 accent-slate-900 cursor-pointer"
                                 />
                                 <span className={checked ? 'font-semibold text-slate-900' : ''}>{item.label}</span>
                               </label>
@@ -432,17 +427,17 @@ export default function GroupPermissionsSetting() {
               </div>
 
               {/* Modal Footer */}
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50 font-medium"
+                  className="px-4 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-xs font-medium transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-sm font-semibold shadow-sm"
+                  className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white text-xs font-semibold shadow-sm transition-all"
                 >
                   Save Group Permissions
                 </button>

@@ -100,13 +100,7 @@ function App() {
           />
 
           {/* Top Bar on Login Screen */}
-          <div className="w-full flex items-center justify-between py-2 relative z-20">
-            {/* System Status Pill */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-slate-800 text-[11px] font-mono text-slate-400 backdrop-blur-sm">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Gateway v2.4 Active</span>
-            </div>
-
+          <div className="w-full flex items-center justify-end py-2 relative z-20">
             {/* Language & Night Mode Switcher */}
             <div className="flex items-center gap-2">
               {/* Night Mode Toggle */}

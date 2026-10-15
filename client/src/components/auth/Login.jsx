@@ -1,11 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function Login({ onLoginSuccess, onSwitchTab }) {
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState(() => localStorage.getItem('remembered_username') || '');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(() => !!localStorage.getItem('remembered_username'));
+  const [capsLockActive, setCapsLockActive] = useState(false);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Monitor Caps Lock status for better UX
+  const handleKeyDown = (e) => {
+    if (e.getModifierState) {
+      setCapsLockActive(e.getModifierState('CapsLock'));
+    }
+  };
+
+  const handleQuickFill = (u, p) => {
+    setUsername(u);
+    setPassword(p);
+    setError(null);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,18 +33,25 @@ export default function Login({ onLoginSuccess, onSwitchTab }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username: username.trim(), password }),
       });
 
       if (!response.ok) {
         const errData = await response.json().catch(() => null);
-        throw new Error(errData?.message || 'Login failed. Please check your credentials.');
+        throw new Error(errData?.message || 'Invalid username or password. Please verify your credentials.');
       }
 
       const data = await response.json();
-      onLoginSuccess(data.token, username, data.permissions || []);
+
+      if (rememberMe) {
+        localStorage.setItem('remembered_username', username.trim());
+      } else {
+        localStorage.removeItem('remembered_username');
+      }
+
+      onLoginSuccess(data.token, username.trim(), data.permissions || []);
     } catch (err) {
-      setError(err.message || 'Unable to connect to authentication server.');
+      setError(err.message || 'Unable to establish secure connection with Authentication Gateway.');
     } finally {
       setIsLoading(false);
     }
@@ -37,59 +59,82 @@ export default function Login({ onLoginSuccess, onSwitchTab }) {
 
   return (
     <div className="w-full">
-      <div className="text-center mb-6">
-        <h3 className="text-2xl font-black text-slate-800 mb-1 tracking-tight">Welcome Back</h3>
-        <p className="text-slate-400 text-xs font-light">Sign in to access your dashboard</p>
+      {/* Form Header */}
+      <div className="mb-6">
+        <h3 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+          Workstation Sign In
+        </h3>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          Enter your authorized credentials to access clinical operations and the dispensary ledger.
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Username Field */}
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2" htmlFor="username">
-            Username
-          </label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider" htmlFor="username">
+              Username or Staff ID
+            </label>
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">Required</span>
+          </div>
           <div className="relative">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
-              <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400 dark:text-slate-500">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </span>
             <input
               id="username"
               type="text"
-              className="w-full bg-slate-50/50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 focus:outline-none transition-all duration-200 font-medium"
-              placeholder="Enter your username"
+              autoComplete="username"
+              className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all font-medium"
+              placeholder="e.g. admin or staff"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
+              autoFocus
             />
           </div>
         </div>
 
         {/* Password Field */}
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2" htmlFor="password">
-            Password
-          </label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider" htmlFor="password">
+              Password
+            </label>
+            {capsLockActive && (
+              <span className="text-[10px] text-amber-500 dark:text-amber-400 font-medium flex items-center gap-1">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                Caps Lock is ON
+              </span>
+            )}
+          </div>
           <div className="relative">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
-              <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400 dark:text-slate-500">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </span>
             <input
               id="password"
               type={showPassword ? "text" : "password"}
-              className="w-full bg-slate-50/50 border border-slate-200 rounded-xl pl-10 pr-10 py-3 text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 focus:outline-none transition-all duration-200 font-medium"
-              placeholder="Enter your password"
+              autoComplete="current-password"
+              className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-10 py-2.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all font-medium font-mono"
+              placeholder="••••••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={handleKeyDown}
               required
             />
             <button
               type="button"
-              className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 transition-colors"
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors cursor-pointer"
               onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,49 +145,90 @@ export default function Login({ onLoginSuccess, onSwitchTab }) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
-
               )}
             </button>
           </div>
         </div>
 
+        {/* Remember Me & Forgot Password Row */}
+        <div className="flex items-center justify-between text-xs pt-0.5">
+          <label className="flex items-center gap-2 cursor-pointer select-none text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="w-3.5 h-3.5 rounded text-brand-600 border-slate-300 dark:border-slate-600 focus:ring-brand-500 focus:ring-offset-0 bg-slate-50 dark:bg-slate-800"
+            />
+            <span>Remember terminal</span>
+          </label>
+
+          <button
+            type="button"
+            onClick={() => onSwitchTab('forgot_password')}
+            className="text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 font-medium transition-colors cursor-pointer"
+          >
+            Forgot password?
+          </button>
+        </div>
+
+        {/* Error Alert Box */}
         {error && (
-          <div className="bg-rose-50 border border-rose-100 text-rose-600 p-3 rounded-xl text-xs flex items-start gap-2 animate-shake">
-            <svg className="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200/80 dark:border-rose-800 text-rose-700 dark:text-rose-300 p-3 rounded-lg text-xs flex items-start gap-2.5">
+            <svg className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
-            <span className="font-medium">{error}</span>
+            <div className="flex-1 leading-relaxed">
+              <span className="font-semibold block mb-0.5">Authentication Error</span>
+              <span>{error}</span>
+            </div>
           </div>
         )}
 
+        {/* Submit Sign In Button */}
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold py-3 px-4 rounded-xl text-sm shadow-md shadow-emerald-600/10 hover:shadow-lg hover:shadow-emerald-600/20 active:scale-[0.98] transform transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 mt-4"
+          className="w-full bg-obsidian-900 hover:bg-obsidian-800 active:bg-obsidian-950 dark:bg-brand-600 dark:hover:bg-brand-500 text-white font-medium py-2.5 px-4 rounded-lg text-xs shadow-sm hover:shadow transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 cursor-pointer group mt-2"
         >
           {isLoading ? (
-            <svg className="animate-spin h-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
+            <>
+              <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              <span>Verifying Credentials...</span>
+            </>
           ) : (
             <>
-              <span>Sign In</span>
-              <svg className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <span>Sign In to Terminal</span>
+              <svg className="w-3.5 h-3.5 transition-transform duration-150 group-hover:translate-x-0.5 text-brand-400 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
             </>
           )}
         </button>
 
-        <div className="text-center pt-2">
-          <button
-            type="button"
-            onClick={() => onSwitchTab('forgot_password')}
-            className="text-xs text-emerald-600 hover:text-emerald-700 font-bold transition-colors duration-200"
-          >
-            Forgot Password?
-          </button>
+        {/* Quick Fill Helper for Dev / Testing */}
+        <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500">
+            <span>Quick Terminal Fill:</span>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => handleQuickFill('admin', 'admin123')}
+                className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono transition-colors cursor-pointer text-[10px]"
+              >
+                admin
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickFill('owner', 'owner123')}
+                className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono transition-colors cursor-pointer text-[10px]"
+              >
+                owner
+              </button>
+            </div>
+          </div>
         </div>
       </form>
     </div>

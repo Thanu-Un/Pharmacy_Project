@@ -10,6 +10,12 @@
     @apply bg-slate-50 text-slate-800 antialiased selection:bg-brand-100 selection:text-brand-900;
   }
 
+  html.dark, html.dark body {
+    background-color: #030712 !important;
+    color: #f1f5f9 !important;
+    color-scheme: dark;
+  }
+
   /* Custom Precision Clinical Scrollbar */
   ::-webkit-scrollbar {
     width: 5px;
@@ -26,6 +32,14 @@
 
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-slate-400;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background-color: #334155 !important;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background-color: #475569 !important;
   }
 
   body {
@@ -45,12 +59,29 @@
     @apply bg-white border border-slate-200/80 rounded-xl shadow-card transition-all;
   }
 
+  .dark .surface-card {
+    background-color: #0b1120 !important;
+    border-color: #1e293b !important;
+    box-shadow: none !important;
+  }
+
   .surface-card-hover {
     @apply bg-white border border-slate-200/80 rounded-xl shadow-card hover:shadow-card-hover hover:border-slate-300/90 transition-all;
   }
 
+  .dark .surface-card-hover {
+    background-color: #0b1120 !important;
+    border-color: #1e293b !important;
+    box-shadow: none !important;
+  }
+
   .surface-inset {
     @apply bg-slate-100/60 border border-slate-200/60 rounded-lg;
+  }
+
+  .dark .surface-inset {
+    background-color: rgba(30, 41, 59, 0.6) !important;
+    border-color: rgba(51, 65, 85, 0.6) !important;
   }
 
   /* Hairline Borders */
@@ -58,8 +89,115 @@
     border-color: rgba(226, 232, 240, 0.85);
   }
 
+  .dark .border-hairline {
+    border-color: rgba(51, 65, 85, 0.85);
+  }
+
   /* Micro Label */
   .micro-label {
     @apply text-[11px] font-semibold uppercase tracking-wider text-slate-400;
   }
+
+  .dark .micro-label {
+    color: #64748b;
+  }
+}
+
+/* Comprehensive Global Night Mode Engine */
+html.dark aside,
+html.dark header {
+  background-color: #0b1120 !important;
+  border-color: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
+html.dark header .bg-white\/95 {
+  background-color: rgba(11, 17, 32, 0.95) !important;
+}
+
+html.dark main {
+  background-color: #030712 !important;
+}
+
+html.dark .bg-white {
+  background-color: #0b1120 !important;
+}
+
+html.dark .bg-slate-50 {
+  background-color: #030712 !important;
+}
+
+html.dark .bg-slate-50\/50,
+html.dark .bg-slate-50\/70,
+html.dark .bg-slate-50\/80 {
+  background-color: #0b1120 !important;
+}
+
+html.dark .bg-slate-100,
+html.dark .bg-slate-100\/60,
+html.dark .bg-slate-100\/70,
+html.dark .bg-slate-100\/80 {
+  background-color: #1e293b !important;
+}
+
+html.dark .hover\:bg-slate-50:hover,
+html.dark .hover\:bg-slate-50\/70:hover,
+html.dark .hover\:bg-slate-100:hover,
+html.dark .hover\:bg-slate-100\/70:hover,
+html.dark .hover\:bg-slate-100\/80:hover {
+  background-color: #1e293b !important;
+}
+
+html.dark .border-slate-100,
+html.dark .border-slate-200,
+html.dark .border-slate-200\/60,
+html.dark .border-slate-200\/70,
+html.dark .border-slate-200\/80,
+html.dark .border-slate-200\/90,
+html.dark .border-slate-300 {
+  border-color: #1e293b !important;
+}
+
+html.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #1e293b !important;
+}
+
+html.dark .text-slate-900,
+html.dark .text-slate-800 {
+  color: #f8fafc !important;
+}
+
+html.dark .text-slate-700,
+html.dark .text-slate-600 {
+  color: #cbd5e1 !important;
+}
+
+html.dark .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+html.dark .text-slate-400 {
+  color: #64748b !important;
+}
+
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #64748b !important;
+}
+
+html.dark table thead tr {
+  background-color: #0f172a !important;
+}
+
+html.dark table thead th {
+  color: #94a3b8 !important;
 }

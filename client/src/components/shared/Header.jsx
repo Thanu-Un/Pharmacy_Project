@@ -79,9 +79,9 @@ export default function Header({ username, onLogout, onPOSClick, showBrand, onBr
           </div>
         ) : (
           <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400">
-            <span className="font-medium text-slate-500 dark:text-slate-400">Workspace</span>
+            <span className="font-medium text-slate-500 dark:text-slate-400">{t('header.workspace') || 'Workspace'}</span>
             <span>/</span>
-            <span className="font-semibold text-slate-800 dark:text-slate-200">Pharmacy System</span>
+            <span className="font-semibold text-slate-800 dark:text-slate-200">{t('header.pharmacy_system') || 'Pharmacy System'}</span>
           </div>
         )}
       </div>
@@ -98,7 +98,7 @@ export default function Header({ username, onLogout, onPOSClick, showBrand, onBr
             <svg className="w-3.5 h-3.5 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
-            <span>POS Cashier</span>
+            <span>{t('header.pos_cashier') || 'POS Cashier'}</span>
             <kbd className="hidden md:inline-block ml-1 px-1.5 py-0.2 bg-white/20 text-white text-[10px] font-mono rounded">
               POS
             </kbd>
@@ -110,7 +110,7 @@ export default function Header({ username, onLogout, onPOSClick, showBrand, onBr
           onClick={toggleTheme}
           type="button"
           aria-label={isDark ? "Switch to light mode" : "Switch to night mode"}
-          title={isDark ? "Switch to Light Mode" : "Switch to Night Mode"}
+          title={isDark ? (t('header.light_mode') || 'Light Mode') : (t('header.night_mode') || 'Night Mode')}
           className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-slate-600 dark:text-amber-400 hover:text-slate-900 dark:hover:text-amber-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all cursor-pointer shadow-sm"
         >
           {isDark ? (

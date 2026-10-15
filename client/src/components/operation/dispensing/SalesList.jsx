@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function SalesList({ onNewSaleClick }) {
+  const { t } = useTranslation();
   const [sales, setSales] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -57,51 +59,61 @@ export default function SalesList({ onNewSaleClick }) {
   });
 
   const handlePrintReceipt = (sale) => {
-    window.print();
+    setSelectedSaleForReceipt(sale);
+    setTimeout(() => {
+      window.print();
+    }, 200);
   };
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6 space-y-5">
       {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-2 border-b border-slate-200/80 dark:border-slate-800">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Sales List</h1>
-          <p className="text-sm text-slate-500 mt-1">Manage recorded sales, invoices, and dispensing history</p>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+            {t('sales.sales_list') || 'Sales List'}
+          </h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            {t('sales.sales_desc') || 'Manage recorded sales, invoices, and dispensing history'}
+          </p>
         </div>
       </div>
 
       {/* Main Table Card */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mb-6">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-card overflow-hidden">
         {/* Search Header */}
-        <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between gap-4">
+        <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between gap-4">
           <div className="relative max-w-md w-full">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400 dark:text-slate-500">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
             </span>
             <input
               type="text"
-              placeholder="Search by reference no, customer, date..."
+              placeholder={t('sales.search_sales') || 'Search by reference no, customer, date...'}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm"
+              className="w-full pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400"
             />
           </div>
-          <button onClick={fetchSales} className="text-slate-500 hover:text-slate-700 text-sm font-medium flex items-center gap-1">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-            Refresh
+          <button 
+            onClick={fetchSales} 
+            className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-medium flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 transition-colors cursor-pointer"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+            <span>{t('common.refresh') || 'Refresh'}</span>
           </button>
         </div>
 
         {error && (
-          <div className="p-6 text-center text-rose-600">
-            <p className="font-semibold">Error: {error}</p>
-            <button onClick={fetchSales} className="mt-2 text-sm text-emerald-600 underline">Try again</button>
+          <div className="p-6 text-center text-rose-600 dark:text-rose-400 text-xs">
+            <p className="font-semibold">{t('common.error')}: {error}</p>
+            <button onClick={fetchSales} className="mt-2 text-brand-600 underline">Try again</button>
           </div>
         )}
 
         {isLoading ? (
           <div className="p-16 text-center text-slate-400">
-            <svg className="animate-spin h-6 w-6 text-sky-600 mx-auto mb-3" fill="none" viewBox="0 0 24 24">
+            <svg className="animate-spin h-6 w-6 text-brand-600 mx-auto mb-3" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
             </svg>
@@ -111,24 +123,24 @@ export default function SalesList({ onNewSaleClick }) {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-200/80 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                  <th className="py-3 px-4">Date & Time</th>
-                  <th className="py-3 px-4">Reference</th>
-                  <th className="py-3 px-4">Patient / Client</th>
-                  <th className="py-3 px-4 text-right">Grand Total</th>
-                  <th className="py-3 px-4 text-right">Settled</th>
-                  <th className="py-3 px-4 text-right">Balance</th>
-                  <th className="py-3 px-4 text-center">Dispensation</th>
-                  <th className="py-3 px-4 text-center">Payment</th>
-                  <th className="py-3 px-4 text-center">Method</th>
-                  <th className="py-3 px-4 text-center">Actions</th>
+                <tr className="bg-slate-50/80 dark:bg-slate-800/80 border-b border-slate-200/80 dark:border-slate-800 text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider font-mono">
+                  <th className="py-2.5 px-4">{t('dashboard.date_time') || 'Date & Time'}</th>
+                  <th className="py-2.5 px-4">{t('sales.reference') || 'Reference'}</th>
+                  <th className="py-2.5 px-4">{t('sales.patient_client') || 'Patient / Client'}</th>
+                  <th className="py-2.5 px-4 text-right">{t('sales.grand_total') || 'Grand Total'}</th>
+                  <th className="py-2.5 px-4 text-right">{t('sales.settled') || 'Settled'}</th>
+                  <th className="py-2.5 px-4 text-right">{t('sales.balance') || 'Balance'}</th>
+                  <th className="py-2.5 px-4 text-center">{t('sales.dispensation') || 'Dispensation'}</th>
+                  <th className="py-2.5 px-4 text-center">{t('sales.payment') || 'Payment'}</th>
+                  <th className="py-2.5 px-4 text-center">{t('sales.method') || 'Method'}</th>
+                  <th className="py-2.5 px-4 text-center">{t('sales.actions') || 'Actions'}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {filteredSales.length === 0 ? (
                   <tr>
-                    <td colSpan="10" className="py-12 text-center text-slate-400 text-xs">
-                      No matching dispensation records found.
+                    <td colSpan="10" className="py-12 text-center text-slate-400 dark:text-slate-500 text-xs">
+                      {t('sales.no_records') || 'No matching dispensation records found.'}
                     </td>
                   </tr>
                 ) : (

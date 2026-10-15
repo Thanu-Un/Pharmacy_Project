@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const FinalizeSaleModal = ({ grandTotal, isSubmitting, error, onClose, onSubmit }) => {
+  const { t } = useTranslation();
   const [paymentMethodsList, setPaymentMethodsList] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState('Cash');
   const [exchangeRate, setExchangeRate] = useState(4000);
@@ -41,7 +43,7 @@ const FinalizeSaleModal = ({ grandTotal, isSubmitting, error, onClose, onSubmit 
       <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl flex flex-col max-h-[95vh] sm:max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex justify-between items-center p-4 border-b border-slate-200">
-          <h2 className="text-lg font-bold text-slate-800 uppercase tracking-wide">Finalize Sale</h2>
+          <h2 className="text-lg font-bold text-slate-800 uppercase tracking-wide">{t('pos.finalize_sale')}</h2>
           <button onClick={onClose} className="text-slate-400 hover:text-rose-500 transition-colors">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
@@ -54,15 +56,15 @@ const FinalizeSaleModal = ({ grandTotal, isSubmitting, error, onClose, onSubmit 
           <div className="col-span-12 lg:col-span-8 space-y-4">
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Amount (៛)</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">{t('pos.amount_received')} (៛)</label>
                 <input type="number" value={amountKHR} onChange={e => setAmountKHR(e.target.value)} className="w-full border border-slate-300 rounded px-3 py-2 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Amount ($)</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">{t('pos.amount_received')} ($)</label>
                 <input type="number" value={amountUSD} onChange={e => setAmountUSD(e.target.value)} className="w-full border border-slate-300 rounded px-3 py-2 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Paying by</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">{t('pos.paying_by')}</label>
                 <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)} className="w-full border border-slate-300 rounded px-3 py-2 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 bg-white">
                   {paymentMethodsList.map(m => (
                     <option key={m.id || m.name} value={m.name}>{m.name}</option>
@@ -71,7 +73,7 @@ const FinalizeSaleModal = ({ grandTotal, isSubmitting, error, onClose, onSubmit 
               </div>
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Payment Note</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">{t('pos.payment_note')}</label>
               <input type="text" value={note} onChange={e => setNote(e.target.value)} className="w-full border border-slate-300 rounded px-3 py-2 outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500" />
             </div>
 
@@ -79,15 +81,15 @@ const FinalizeSaleModal = ({ grandTotal, isSubmitting, error, onClose, onSubmit 
               <table className="w-full text-right text-sm">
                 <tbody>
                   <tr className="border-b border-slate-100">
-                    <td className="p-3 text-left font-bold text-slate-700 w-1/3">Total Payable</td>
+                    <td className="p-3 text-left font-bold text-slate-700 w-1/3">{t('pos.total_payable')}</td>
                     <td className="p-3 font-bold text-slate-900">៛ {(grandTotal * exchangeRate).toLocaleString()} <br /> $ {grandTotal.toFixed(2)}</td>
                   </tr>
                   <tr className="border-b border-slate-100 bg-slate-50">
-                    <td className="p-3 text-left font-bold text-slate-700">Total Paying</td>
+                    <td className="p-3 text-left font-bold text-slate-700">{t('pos.total_paying')}</td>
                     <td className="p-3 font-bold text-slate-900">៛ {(totalPayingUSD * exchangeRate).toLocaleString()} <br /> $ {totalPayingUSD.toFixed(2)}</td>
                   </tr>
                   <tr>
-                    <td className="p-3 text-left font-bold text-slate-700">Balance</td>
+                    <td className="p-3 text-left font-bold text-slate-700">{t('pos.change')}</td>
                     <td className={`p-3 font-bold ${balanceUSD >= 0 ? 'text-slate-900' : 'text-rose-600'}`}>
                       ៛ {balanceKHR.toLocaleString()} <br /> $ {balanceUSD.toFixed(2)}
                     </td>
@@ -101,11 +103,11 @@ const FinalizeSaleModal = ({ grandTotal, isSubmitting, error, onClose, onSubmit 
           <div className="col-span-12 lg:col-span-4 grid grid-cols-2 gap-2 sm:gap-4">
             {/* KHR Buttons */}
             <div>
-              <div className="text-center font-bold text-slate-600 mb-2 sm:mb-3 text-xs uppercase tracking-wide">Quick Cash KHM</div>
+              <div className="text-center font-bold text-slate-600 mb-2 sm:mb-3 text-xs uppercase tracking-wide">{t('pos.quick_cash_khm')}</div>
               <div className="space-y-2">
                 <button
                   onClick={() => setAmountKHR(Math.ceil(grandTotal * exchangeRate))}
-                  className="w-full bg-indigo-50 text-indigo-700 font-bold py-2.5 rounded border border-indigo-200 shadow-sm hover:bg-indigo-100 transition-colors text-sm flex justify-between px-4"
+                  className="w-full bg-indigo-50 text-indigo-700 font-bold py-2.5 rounded border border-indigo-200 shadow-sm hover:bg-indigo-100 transition-colors text-sm flex justify-between px-4 cursor-pointer"
                 >
                   <span className="opacity-50 font-normal">៛</span>
                   <span>{(Math.ceil(grandTotal * exchangeRate)).toLocaleString()}</span>
@@ -114,23 +116,23 @@ const FinalizeSaleModal = ({ grandTotal, isSubmitting, error, onClose, onSubmit 
                   <button
                     key={val}
                     onClick={() => setAmountKHR((parseFloat(amountKHR) || 0) + val)}
-                    className="w-full bg-white text-slate-700 font-bold py-2.5 rounded border border-slate-300 shadow-sm hover:bg-slate-50 transition-colors text-sm flex justify-between px-4"
+                    className="w-full bg-white text-slate-700 font-bold py-2.5 rounded border border-slate-300 shadow-sm hover:bg-slate-50 transition-colors text-sm flex justify-between px-4 cursor-pointer"
                   >
                     <span className="text-slate-400 font-normal">៛</span>
                     <span>{val.toLocaleString()}</span>
                   </button>
                 ))}
-                <button onClick={() => setAmountKHR('')} className="w-full bg-white text-rose-600 font-bold py-2 rounded border border-rose-200 shadow-sm hover:bg-rose-50 transition-colors text-sm">Clear</button>
+                <button onClick={() => setAmountKHR('')} className="w-full bg-white text-rose-600 font-bold py-2 rounded border border-rose-200 shadow-sm hover:bg-rose-50 transition-colors text-sm cursor-pointer">{t('common.clear')}</button>
               </div>
             </div>
 
             {/* USD Buttons */}
             <div>
-              <div className="text-center font-bold text-slate-600 mb-2 sm:mb-3 text-xs uppercase tracking-wide">Quick Cash USD</div>
+              <div className="text-center font-bold text-slate-600 mb-2 sm:mb-3 text-xs uppercase tracking-wide">{t('pos.quick_cash_usd')}</div>
               <div className="space-y-2">
                 <button
                   onClick={() => setAmountUSD(grandTotal.toFixed(2))}
-                  className="w-full bg-indigo-50 text-indigo-700 font-bold py-2.5 rounded border border-indigo-200 shadow-sm hover:bg-indigo-100 transition-colors text-sm flex justify-between px-4"
+                  className="w-full bg-indigo-50 text-indigo-700 font-bold py-2.5 rounded border border-indigo-200 shadow-sm hover:bg-indigo-100 transition-colors text-sm flex justify-between px-4 cursor-pointer"
                 >
                   <span className="opacity-50 font-normal">$</span>
                   <span>{grandTotal.toFixed(2)}</span>
@@ -139,13 +141,13 @@ const FinalizeSaleModal = ({ grandTotal, isSubmitting, error, onClose, onSubmit 
                   <button
                     key={val}
                     onClick={() => setAmountUSD((parseFloat(amountUSD) || 0) + val)}
-                    className="w-full bg-white text-slate-700 font-bold py-2.5 rounded border border-slate-300 shadow-sm hover:bg-slate-50 transition-colors text-sm flex justify-between px-4"
+                    className="w-full bg-white text-slate-700 font-bold py-2.5 rounded border border-slate-300 shadow-sm hover:bg-slate-50 transition-colors text-sm flex justify-between px-4 cursor-pointer"
                   >
                     <span className="text-slate-400 font-normal">$</span>
                     <span>{val.toFixed(2)}</span>
                   </button>
                 ))}
-                <button onClick={() => setAmountUSD('')} className="w-full bg-white text-rose-600 font-bold py-2 rounded border border-rose-200 shadow-sm hover:bg-rose-50 transition-colors text-sm">Clear</button>
+                <button onClick={() => setAmountUSD('')} className="w-full bg-white text-rose-600 font-bold py-2 rounded border border-rose-200 shadow-sm hover:bg-rose-50 transition-colors text-sm cursor-pointer">{t('common.clear')}</button>
               </div>
             </div>
           </div>
@@ -171,10 +173,10 @@ const FinalizeSaleModal = ({ grandTotal, isSubmitting, error, onClose, onSubmit 
               note
             })}
             disabled={isSubmitting}
-            className={`w-full text-white font-bold py-3 rounded shadow-sm uppercase tracking-wider transition-colors text-lg ${isSubmitting ? 'bg-emerald-400 cursor-not-allowed opacity-70' : 'bg-emerald-600 hover:bg-emerald-700'
+            className={`w-full text-white font-bold py-3 rounded shadow-sm uppercase tracking-wider transition-colors text-lg cursor-pointer ${isSubmitting ? 'bg-emerald-400 cursor-not-allowed opacity-70' : 'bg-emerald-600 hover:bg-emerald-700'
               }`}
           >
-            {isSubmitting ? 'PROCESSING...' : 'SUBMIT'}
+            {isSubmitting ? t('common.processing') : t('common.submit')}
           </button>
         </div>
       </div>
@@ -183,6 +185,7 @@ const FinalizeSaleModal = ({ grandTotal, isSubmitting, error, onClose, onSubmit 
 };
 
 const ReceiptModal = ({ sale, onClose }) => {
+  const { t, i18n } = useTranslation();
   const handlePrint = () => {
     window.print();
   };
@@ -218,8 +221,8 @@ const ReceiptModal = ({ sale, onClose }) => {
         <div className="bg-white rounded-lg shadow-2xl w-full max-w-sm flex flex-col overflow-hidden">
           {/* Header */}
           <div className="flex justify-between items-center p-4 border-b border-slate-200 no-print">
-            <h2 className="text-lg font-bold text-slate-800 uppercase tracking-wide">Receipt</h2>
-            <button onClick={onClose} className="text-slate-400 hover:text-rose-500 transition-colors">
+            <h2 className="text-lg font-bold text-slate-800 uppercase tracking-wide">{t('common.receipt')}</h2>
+            <button onClick={onClose} className="text-slate-400 hover:text-rose-500 transition-colors cursor-pointer">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
@@ -231,25 +234,25 @@ const ReceiptModal = ({ sale, onClose }) => {
               <div style={{ textAlign: 'center', fontSize: '12px', marginBottom: '16px' }}>Phnom Penh, Cambodia<br />Tel: 096 573 4996</div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px' }}>
-                <span>Date:</span>
-                <span>{sale?.date ? new Date(sale.date).toLocaleString() : ''}</span>
+                <span>{t('common.date')}:</span>
+                <span>{sale?.date ? new Date(sale.date).toLocaleString(i18n.language === 'km' ? 'km-KH' : 'en-US') : ''}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px' }}>
-                <span>Ref No:</span>
+                <span>{t('sales.reference')}:</span>
                 <span style={{ fontWeight: 'bold' }}>{sale?.referenceNo}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '8px', borderBottom: '1px dashed #999', paddingBottom: '8px' }}>
-                <span>Customer:</span>
-                <span>{(sale?.customer?.name || 'Walk-in Patient').replace(' (General)', '')}</span>
+                <span>{t('sales.patient_client')}:</span>
+                <span>{(sale?.customer?.name || t('pos.walk_in_patient')).replace(' (General)', '')}</span>
               </div>
 
               <table style={{ width: '100%', fontSize: '12px', marginBottom: '16px', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px dashed #999' }}>
-                    <th style={{ textAlign: 'left', fontWeight: 'normal', paddingBottom: '4px' }}>Item</th>
-                    <th style={{ textAlign: 'center', fontWeight: 'normal', paddingBottom: '4px' }}>Qty</th>
-                    <th style={{ textAlign: 'right', fontWeight: 'normal', paddingBottom: '4px' }}>Price</th>
-                    <th style={{ textAlign: 'right', fontWeight: 'normal', paddingBottom: '4px' }}>Total</th>
+                    <th style={{ textAlign: 'left', fontWeight: 'normal', paddingBottom: '4px' }}>{t('pos.item')}</th>
+                    <th style={{ textAlign: 'center', fontWeight: 'normal', paddingBottom: '4px' }}>{t('pos.qty')}</th>
+                    <th style={{ textAlign: 'right', fontWeight: 'normal', paddingBottom: '4px' }}>{t('pos.price')}</th>
+                    <th style={{ textAlign: 'right', fontWeight: 'normal', paddingBottom: '4px' }}>{t('pos.total')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -269,40 +272,40 @@ const ReceiptModal = ({ sale, onClose }) => {
 
               <div style={{ borderTop: '1px dashed #999', paddingTop: '8px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px' }}>
-                  <span>Subtotal:</span>
+                  <span>{t('pos.subtotal')}:</span>
                   <span>${Number(sale?.total || 0).toFixed(2)}</span>
                 </div>
                 {Number(sale?.discount || 0) > 0 && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px' }}>
-                    <span>Discount:</span>
+                    <span>{t('pos.discount')}:</span>
                     <span>${Number(sale?.discount || 0).toFixed(2)}</span>
                   </div>
                 )}
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '14px', marginTop: '4px', paddingTop: '4px', borderTop: '1px dashed #999' }}>
-                  <span>Grand Total:</span>
+                  <span>{t('pos.grand_total')}:</span>
                   <span>${Number(sale?.grandTotal || 0).toFixed(2)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginTop: '2px', color: '#555' }}>
-                  <span>Grand Total (៛):</span>
+                  <span>{t('pos.grand_total')} (៛):</span>
                   <span>៛ {Number((sale?.grandTotal || 0) * (sale?.exchangeRate || 4000)).toLocaleString()}</span>
                 </div>
 
                 {/* Paid Amount and Change */}
                 <div style={{ marginTop: '8px', paddingTop: '6px', borderTop: '1px dashed #999' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px' }}>
-                    <span>Paid ($):</span>
+                    <span>{t('sales.settled')} ($):</span>
                     <span>${Number(sale?.paidUSD || sale?.grandTotal || 0).toFixed(2)}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px' }}>
-                    <span>Paid (៛):</span>
+                    <span>{t('sales.settled')} (៛):</span>
                     <span>៛ {Number(sale?.paidKHR || (sale?.grandTotal || 0) * (sale?.exchangeRate || 4000)).toLocaleString()}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontWeight: 'bold', marginTop: '6px', paddingTop: '6px', borderTop: '1px dashed #999' }}>
-                    <span>Change ($):</span>
+                    <span>{t('pos.change')} ($):</span>
                     <span>${Number(sale?.changeUSD || 0).toFixed(2)}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontWeight: 'bold', marginTop: '2px', color: '#16a34a' }}>
-                    <span>Change (៛):</span>
+                    <span>{t('pos.change')} (៛):</span>
                     <span>៛ {Number(sale?.changeKHR || (sale?.changeUSD || 0) * 4000).toLocaleString()}</span>
                   </div>
                 </div>
@@ -314,12 +317,12 @@ const ReceiptModal = ({ sale, onClose }) => {
 
           {/* Footer */}
           <div className="p-4 bg-white border-t border-slate-200 flex gap-4 no-print">
-            <button onClick={onClose} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded uppercase tracking-wider transition-colors">
-              Close
+            <button onClick={onClose} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded uppercase tracking-wider transition-colors cursor-pointer">
+              {t('common.close')}
             </button>
-            <button onClick={handlePrint} className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded shadow-sm uppercase tracking-wider transition-colors flex items-center justify-center gap-2">
+            <button onClick={handlePrint} className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded shadow-sm uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-              Print
+              {t('common.print')}
             </button>
           </div>
         </div>
@@ -329,6 +332,7 @@ const ReceiptModal = ({ sale, onClose }) => {
 };
 
 export default function Dispensing({ onSaleComplete }) {
+  const { t } = useTranslation();
   const [products, setProducts] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -692,7 +696,7 @@ export default function Dispensing({ onSaleComplete }) {
                   : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200/60'
               }`}
             >
-              {cat}
+              {cat === 'All' ? t('common.all') : cat}
             </button>
           ))}
         </div>
@@ -722,7 +726,7 @@ export default function Dispensing({ onSaleComplete }) {
                         product.quantity > 0 ? 'bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20' :
                         'bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-600/20'
                       }`}>
-                        {inStock ? `${Math.round(product.quantity)} In Stock` : 'Out'}
+                        {inStock ? `${Math.round(product.quantity)} ${t('pos.in_stock')}` : t('pos.out_of_stock')}
                       </span>
                     </div>
 
@@ -762,7 +766,7 @@ export default function Dispensing({ onSaleComplete }) {
             })}
             {filteredProducts.length === 0 && (
               <div className="col-span-full py-16 text-center text-slate-400 text-xs">
-                No matching medications found in catalog.
+                {t('pos.no_medications_found')}
               </div>
             )}
           </div>
@@ -790,7 +794,7 @@ export default function Dispensing({ onSaleComplete }) {
               }}
             >
               {customers.length === 0 && (
-                <option value="">Walk-in Patient</option>
+                <option value="">{t('pos.walk_in_patient')}</option>
               )}
               {customers.map(c => (
                 <option key={c.id} value={c.id}>
@@ -806,7 +810,7 @@ export default function Dispensing({ onSaleComplete }) {
             </svg>
             <input
               type="text"
-              placeholder="Barcode scan or medication search..."
+              placeholder={t('pos.search_medicine_placeholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-200/80 rounded-lg text-xs placeholder:text-slate-400 focus:outline-none focus:border-brand-500 shadow-subtle"
@@ -816,10 +820,10 @@ export default function Dispensing({ onSaleComplete }) {
 
         {/* Cart Column Headers */}
         <div className="grid grid-cols-12 gap-1 bg-white border-b border-slate-200/70 text-slate-400 text-[10px] font-mono uppercase tracking-wider px-3 py-2 shrink-0">
-          <div className="col-span-5 font-semibold">Medication</div>
-          <div className="col-span-2 text-center font-semibold">Qty</div>
-          <div className="col-span-2 text-right font-semibold">Price</div>
-          <div className="col-span-2 text-right font-semibold">Total</div>
+          <div className="col-span-5 font-semibold">{t('dashboard.medication')}</div>
+          <div className="col-span-2 text-center font-semibold">{t('pos.qty')}</div>
+          <div className="col-span-2 text-right font-semibold">{t('pos.price')}</div>
+          <div className="col-span-2 text-right font-semibold">{t('pos.total')}</div>
           <div className="col-span-1 text-center"></div>
         </div>
 
@@ -832,8 +836,8 @@ export default function Dispensing({ onSaleComplete }) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
               </div>
-              <p className="text-xs font-medium text-slate-500">Cart is empty</p>
-              <p className="text-[11px] text-slate-400 mt-0.5">Click medications on the left or scan a barcode</p>
+              <p className="text-xs font-medium text-slate-500">{t('pos.empty_cart')}</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">{t('pos.cart_instruction')}</p>
             </div>
           ) : (
             <div className="divide-y divide-slate-100">
@@ -911,11 +915,11 @@ export default function Dispensing({ onSaleComplete }) {
         <div className="bg-white p-3.5 flex flex-col gap-2.5 border-t border-slate-200/90 shadow-[0_-4px_12px_-2px_rgba(0,0,0,0.03)] shrink-0">
           <div className="space-y-1.5 text-xs text-slate-600">
             <div className="flex justify-between items-center">
-              <span className="text-slate-500">Subtotal:</span>
+              <span className="text-slate-500">{t('pos.subtotal')}:</span>
               <span className="font-mono font-medium text-slate-900 tabular-nums">${subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-slate-500">Discount:</span>
+              <span className="text-slate-500">{t('pos.discount')}:</span>
               <div className="flex items-center gap-1">
                 <span className="text-slate-400 font-mono text-[11px]">$</span>
                 <input
@@ -932,7 +936,7 @@ export default function Dispensing({ onSaleComplete }) {
 
           <div className="pt-2 border-t border-slate-100 flex items-baseline justify-between">
             <div>
-              <span className="text-xs uppercase font-bold tracking-wider text-slate-500 font-mono">Net Due:</span>
+              <span className="text-xs uppercase font-bold tracking-wider text-slate-500 font-mono">{t('pos.net_due')}:</span>
               <span className="block text-[11px] text-slate-400 font-mono">
                 ៛{Math.round(Math.max(0, grandTotal) * exchangeRate).toLocaleString()}
               </span>
@@ -948,14 +952,14 @@ export default function Dispensing({ onSaleComplete }) {
               disabled={cart.length === 0}
               className="bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 disabled:opacity-40 font-semibold py-2.5 rounded-lg text-xs uppercase tracking-wider transition-all cursor-pointer"
             >
-              Clear Cart
+              {t('pos.clear_cart')}
             </button>
             <button
               onClick={() => setShowFinalizeModal(true)}
               disabled={cart.length === 0 || isSubmitting}
               className="bg-obsidian-900 hover:bg-obsidian-800 active:bg-obsidian-950 disabled:opacity-40 text-white font-semibold py-2.5 rounded-lg text-xs uppercase tracking-wider transition-all shadow-sm shadow-obsidian-900/20 cursor-pointer flex items-center justify-center gap-1.5"
             >
-              <span>Charge Due</span>
+              <span>{t('pos.charge_due')}</span>
               <span className="font-mono tabular-nums">(${Math.max(0, grandTotal).toFixed(2)})</span>
             </button>
           </div>

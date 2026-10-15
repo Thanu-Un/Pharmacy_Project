@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function Login({ onLoginSuccess, onSwitchTab }) {
+  const { t } = useTranslation();
   const [username, setUsername] = useState(() => localStorage.getItem('remembered_username') || '');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -62,10 +64,10 @@ export default function Login({ onLoginSuccess, onSwitchTab }) {
       {/* Form Header */}
       <div className="mb-6">
         <h3 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-          Workstation Sign In
+          {t('auth.workstation_sign_in') || 'Workstation Sign In'}
         </h3>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Enter your authorized credentials to access clinical operations and the dispensary ledger.
+          {t('auth.sign_in_desc') || 'Enter your authorized credentials to access clinical operations and the dispensary ledger.'}
         </p>
       </div>
 
@@ -74,9 +76,11 @@ export default function Login({ onLoginSuccess, onSwitchTab }) {
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider" htmlFor="username">
-              Username or Staff ID
+              {t('auth.username_label') || 'Username or Staff ID'}
             </label>
-            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">Required</span>
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
+              {t('auth.required') || 'Required'}
+            </span>
           </div>
           <div className="relative">
             <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400 dark:text-slate-500">
@@ -102,14 +106,14 @@ export default function Login({ onLoginSuccess, onSwitchTab }) {
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider" htmlFor="password">
-              Password
+              {t('auth.password_label') || 'Password'}
             </label>
             {capsLockActive && (
               <span className="text-[10px] text-amber-500 dark:text-amber-400 font-medium flex items-center gap-1">
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
-                Caps Lock is ON
+                {t('auth.caps_lock_on') || 'Caps Lock is ON'}
               </span>
             )}
           </div>
@@ -159,7 +163,7 @@ export default function Login({ onLoginSuccess, onSwitchTab }) {
               onChange={(e) => setRememberMe(e.target.checked)}
               className="w-3.5 h-3.5 rounded text-brand-600 border-slate-300 dark:border-slate-600 focus:ring-brand-500 focus:ring-offset-0 bg-slate-50 dark:bg-slate-800"
             />
-            <span>Remember terminal</span>
+            <span>{t('auth.remember_terminal') || 'Remember terminal'}</span>
           </label>
 
           <button
@@ -167,7 +171,7 @@ export default function Login({ onLoginSuccess, onSwitchTab }) {
             onClick={() => onSwitchTab('forgot_password')}
             className="text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 font-medium transition-colors cursor-pointer"
           >
-            Forgot password?
+            {t('auth.forgot_password') || 'Forgot password?'}
           </button>
         </div>
 
@@ -178,7 +182,7 @@ export default function Login({ onLoginSuccess, onSwitchTab }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
             <div className="flex-1 leading-relaxed">
-              <span className="font-semibold block mb-0.5">Authentication Error</span>
+              <span className="font-semibold block mb-0.5">{t('auth.auth_error') || 'Authentication Error'}</span>
               <span>{error}</span>
             </div>
           </div>
@@ -196,11 +200,11 @@ export default function Login({ onLoginSuccess, onSwitchTab }) {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
               </svg>
-              <span>Verifying Credentials...</span>
+              <span>{t('auth.verifying') || 'Verifying Credentials...'}</span>
             </>
           ) : (
             <>
-              <span>Sign In to Terminal</span>
+              <span>{t('auth.sign_in_button') || 'Sign In to Terminal'}</span>
               <svg className="w-3.5 h-3.5 transition-transform duration-150 group-hover:translate-x-0.5 text-brand-400 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
@@ -211,7 +215,7 @@ export default function Login({ onLoginSuccess, onSwitchTab }) {
         {/* Quick Fill Helper for Dev / Testing */}
         <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
           <div className="flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500">
-            <span>Quick Terminal Fill:</span>
+            <span>{t('auth.quick_fill') || 'Quick Terminal Fill:'}</span>
             <div className="flex items-center gap-1.5">
               <button
                 type="button"

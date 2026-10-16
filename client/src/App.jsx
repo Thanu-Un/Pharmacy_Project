@@ -25,6 +25,17 @@ function App() {
     }
   });
 
+  // Ensure HTML element class matches isDark state
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDark]);
+
   // Language Dropdown state for auth pages
   const [isLangOpen, setIsLangOpen] = useState(false);
   const langDropdownRef = useRef(null);
@@ -46,15 +57,7 @@ function App() {
   const currentLangObj = languages.find(l => l.code === i18n.language) || languages[0];
 
   const toggleTheme = () => {
-    const nextDark = !isDark;
-    setIsDark(nextDark);
-    if (nextDark) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
+    setIsDark(prev => !prev);
   };
 
   const changeLanguage = (lng) => {
@@ -83,7 +86,7 @@ function App() {
   };
 
   return (
-    <div className={currentTab === 'dashboard' ? 'w-full h-screen' : 'min-h-screen w-full bg-slate-950 text-slate-100 flex flex-col justify-between p-3 sm:p-4 lg:py-3 lg:px-6 relative selection:bg-brand-500 selection:text-white'}>
+    <div className={currentTab === 'dashboard' ? 'w-full h-screen' : 'min-h-screen w-full bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col justify-between p-3 sm:p-4 lg:py-3 lg:px-6 relative selection:bg-brand-500 selection:text-white transition-colors duration-200'}>
       {currentTab === 'dashboard' ? (
         <main className="w-full h-full">
           <Dashboard username={username} token={token} permissions={permissions} onLogout={handleLogout} />
@@ -92,9 +95,11 @@ function App() {
         <div className="w-full max-w-5xl mx-auto flex flex-col flex-1 justify-between relative z-10">
           {/* Subtle Ambient Grid Background */}
           <div 
-            className="fixed inset-0 opacity-[0.035] pointer-events-none"
+            className="fixed inset-0 opacity-[0.035] dark:opacity-[0.035] pointer-events-none transition-opacity"
             style={{ 
-              backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', 
+              backgroundImage: isDark 
+                ? 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)' 
+                : 'radial-gradient(circle at 1px 1px, #0f172a 1px, transparent 0)', 
               backgroundSize: '24px 24px' 
             }}
           />
@@ -108,14 +113,14 @@ function App() {
                 type="button"
                 onClick={toggleTheme}
                 title={isDark ? "Switch to Light Mode" : "Switch to Night Mode"}
-                className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-colors cursor-pointer shadow-sm"
+                className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-900/90 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer shadow-sm"
               >
                 {isDark ? (
                   <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                   </svg>
                 ) : (
-                  <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                   </svg>
                 )}
@@ -126,29 +131,29 @@ function App() {
                 <button
                   type="button"
                   onClick={() => setIsLangOpen(!isLangOpen)}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-900/90 hover:bg-slate-800 border border-slate-800 text-slate-200 text-xs font-medium rounded-lg transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-900/90 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs font-medium rounded-lg transition-colors cursor-pointer shadow-sm"
                 >
                   <img src={currentLangObj.flag} alt={currentLangObj.name} className="w-4 h-2.5 object-cover rounded-sm" />
                   <span className="hidden sm:inline">{currentLangObj.name}</span>
-                  <svg className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isLangOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className={`w-3.5 h-3.5 text-slate-500 dark:text-slate-400 transition-transform ${isLangOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
 
                 {isLangOpen && (
-                  <div className="absolute right-0 mt-1.5 w-36 bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden py-1 z-30">
+                  <div className="absolute right-0 mt-1.5 w-36 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl overflow-hidden py-1 z-30">
                     {languages.map((lang) => (
                       <button
                         key={lang.code}
                         onClick={() => changeLanguage(lang.code)}
-                        className={`w-full flex items-center justify-between px-3 py-2 text-xs hover:bg-slate-800 transition-colors ${i18n.language === lang.code ? 'bg-brand-950/60 text-brand-400 font-semibold' : 'text-slate-300'}`}
+                        className={`w-full flex items-center justify-between px-3 py-2 text-xs hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${i18n.language === lang.code ? 'bg-brand-50 text-brand-600 dark:bg-brand-950/60 dark:text-brand-400 font-semibold' : 'text-slate-700 dark:text-slate-300'}`}
                       >
                         <div className="flex items-center gap-2">
                           <img src={lang.flag} alt={lang.name} className="w-4 h-2.5 object-cover rounded-sm" />
                           <span>{lang.name}</span>
                         </div>
                         {i18n.language === lang.code && (
-                          <svg className="w-3.5 h-3.5 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
                           </svg>
                         )}
@@ -162,7 +167,7 @@ function App() {
 
           {/* Main Unified Modal/Card */}
           <div className="my-auto py-1">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden flex flex-col md:flex-row w-full max-w-4xl mx-auto">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl shadow-slate-300/50 dark:shadow-2xl border border-slate-200/90 dark:border-slate-800 overflow-hidden flex flex-col md:flex-row w-full max-w-4xl mx-auto">
               
               {/* Left Pane: Clean Clinical Form */}
               <div className="w-full md:w-7/12 p-5 sm:p-7 lg:p-8 flex flex-col justify-between bg-white dark:bg-slate-900">

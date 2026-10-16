@@ -83,7 +83,7 @@ function App() {
   };
 
   return (
-    <div className={currentTab === 'dashboard' ? 'w-full h-screen' : 'min-h-screen w-full bg-slate-950 text-slate-100 flex flex-col justify-between p-4 sm:p-6 lg:p-8 relative selection:bg-brand-500 selection:text-white'}>
+    <div className={currentTab === 'dashboard' ? 'w-full h-screen' : 'min-h-screen w-full bg-slate-950 text-slate-100 flex flex-col justify-between p-3 sm:p-4 lg:py-3 lg:px-6 relative selection:bg-brand-500 selection:text-white'}>
       {currentTab === 'dashboard' ? (
         <main className="w-full h-full">
           <Dashboard username={username} token={token} permissions={permissions} onLogout={handleLogout} />
@@ -100,7 +100,7 @@ function App() {
           />
 
           {/* Top Bar on Login Screen */}
-          <div className="w-full flex items-center justify-end py-2 relative z-20">
+          <div className="w-full flex items-center justify-end py-1 relative z-20">
             {/* Language & Night Mode Switcher */}
             <div className="flex items-center gap-2">
               {/* Night Mode Toggle */}
@@ -161,23 +161,23 @@ function App() {
           </div>
 
           {/* Main Unified Modal/Card */}
-          <div className="my-auto py-4">
+          <div className="my-auto py-1">
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden flex flex-col md:flex-row w-full max-w-4xl mx-auto">
               
               {/* Left Pane: Clean Clinical Form */}
-              <div className="w-full md:w-7/12 p-6 sm:p-10 flex flex-col justify-between bg-white dark:bg-slate-900">
+              <div className="w-full md:w-7/12 p-5 sm:p-7 lg:p-8 flex flex-col justify-between bg-white dark:bg-slate-900">
                 {/* Brand Identity Header */}
-                <div className="flex items-center gap-3 pb-6 mb-6 border-b border-slate-100 dark:border-slate-800">
-                  <div className="w-10 h-10 rounded-xl bg-obsidian-900 dark:bg-brand-600 flex items-center justify-center shrink-0 shadow-sm">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="flex items-center gap-2.5 pb-3.5 mb-3.5 sm:pb-4 sm:mb-4 border-b border-slate-100 dark:border-slate-800">
+                  <div className="w-8 h-8 rounded-lg bg-obsidian-900 dark:bg-brand-600 flex items-center justify-center shrink-0 shadow-sm">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M12 4v16m8-8H4" />
                     </svg>
                   </div>
                   <div>
-                    <h2 className="font-bold text-sm tracking-tight text-slate-900 dark:text-white uppercase leading-none">
+                    <h2 className="font-bold text-xs tracking-tight text-slate-900 dark:text-white uppercase leading-none">
                       Nutheb Pharmacy
                     </h2>
-                    <p className="text-[11px] font-medium text-slate-400 dark:text-slate-500 mt-1">
+                    <p className="text-[10px] font-medium text-slate-400 dark:text-slate-500 mt-0.5">
                       Clinical Suite & Dispensary ERP
                     </p>
                   </div>
@@ -197,61 +197,61 @@ function App() {
                 </div>
 
                 {/* Form Bottom Footnote */}
-                <div className="pt-6 mt-6 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500">
+                <div className="pt-3.5 mt-3.5 sm:pt-4 sm:mt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] sm:text-[11px] text-slate-400 dark:text-slate-500">
                   <span>Terminal Workstation</span>
                   <span className="font-mono">v1.2.0 • ISO-27001</span>
                 </div>
               </div>
 
               {/* Right Pane: Clinical Intelligence Showcase */}
-              <div className="hidden md:flex md:w-5/12 bg-[#0b1329] border-l border-slate-800 p-8 flex-col justify-between relative overflow-hidden text-white">
+              <div className="hidden md:flex md:w-5/12 bg-[#0b1329] border-l border-slate-800 p-5 sm:p-6 lg:p-7 flex-col justify-between relative overflow-hidden text-white">
                 {/* Subtle Ambient Backlight Glow */}
-                <div className="absolute top-0 right-0 w-56 h-56 bg-brand-500/10 rounded-full blur-3xl pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-56 h-56 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute top-0 right-0 w-48 h-48 bg-brand-500/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
                 {/* Top Badge */}
                 <div className="relative z-10">
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/10 text-brand-300 text-[10px] font-mono uppercase tracking-wider border border-white/10">
-                    <svg className="w-3 h-3 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white/10 text-brand-300 text-[9px] font-mono uppercase tracking-wider border border-white/10">
+                    <svg className="w-2.5 h-2.5 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                     </svg>
                     <span>Pharmacological Intelligence</span>
                   </div>
-                  <h4 className="text-base font-bold text-white mt-3 tracking-tight">
+                  <h4 className="text-sm font-bold text-white mt-2 tracking-tight leading-snug">
                     Unified Dispensary & Cashier Platform
                   </h4>
-                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                  <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
                     High-speed checkout, barcode scanning, and multi-tier pharmacy stock management.
                   </p>
                 </div>
 
                 {/* Center Image / Visual */}
-                <div className="my-auto py-6 flex items-center justify-center relative z-10">
-                  <div className="relative p-2 rounded-2xl bg-white/5 border border-white/10 shadow-2xl backdrop-blur-sm">
+                <div className="my-auto py-2 sm:py-3 flex items-center justify-center relative z-10">
+                  <div className="relative p-1.5 rounded-xl bg-white/5 border border-white/10 shadow-xl backdrop-blur-sm">
                     <img
                       src={pharmacyIllustration}
                       alt="Pharmacy Operations"
-                      className="w-56 h-auto object-contain rounded-xl drop-shadow-md"
+                      className="w-36 sm:w-44 h-auto object-contain rounded-lg drop-shadow-md"
                     />
                   </div>
                 </div>
 
                 {/* Operational Highlights */}
-                <div className="space-y-2 pt-4 border-t border-white/10 relative z-10 text-xs">
+                <div className="space-y-1.5 pt-3 border-t border-white/10 relative z-10 text-[11px]">
                   <div className="flex items-center gap-2 text-slate-300">
-                    <svg className="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                     </svg>
                     <span>Instant POS Cashier & Receipt Generation</span>
                   </div>
                   <div className="flex items-center gap-2 text-slate-300">
-                    <svg className="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                     </svg>
                     <span>Real-time Multi-Warehouse Stock Sync</span>
                   </div>
                   <div className="flex items-center gap-2 text-slate-300">
-                    <svg className="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                     </svg>
                     <span>Cryptographic Audit Trail & RBAC Security</span>

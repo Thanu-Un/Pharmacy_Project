@@ -30,18 +30,18 @@ export default function ForgotPassword({ onSwitchTab }) {
 
   return (
     <div className="w-full">
-      <div className="mb-6">
-        <h3 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+      <div className="mb-3.5">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
           {t('auth.reset_password')}
         </h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
           {t('auth.reset_desc')}
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3">
         <div>
-          <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5" htmlFor="email">
+          <label className="block text-[10px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1" htmlFor="email">
             {t('auth.email_label')}
           </label>
           <div className="relative">
@@ -54,7 +54,7 @@ export default function ForgotPassword({ onSwitchTab }) {
               id="email"
               type="email"
               autoComplete="email"
-              className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all font-medium"
+              className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3.5 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all font-medium"
               placeholder="e.g. staff@pharmacy.local"
               value={email}
               onChange={(e) => setEmail(e.target.value)}

@@ -42,18 +42,18 @@ export default function Register({ onSwitchTab }) {
 
   return (
     <div className="w-full">
-      <div className="mb-6">
-        <h3 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+      <div className="mb-3.5">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
           {t('auth.create_account')}
         </h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
           {t('auth.register_desc')}
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3">
         <div>
-          <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5" htmlFor="reg-username">
+          <label className="block text-[10px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1" htmlFor="reg-username">
             {t('auth.username_label')}
           </label>
           <div className="relative">
@@ -66,7 +66,7 @@ export default function Register({ onSwitchTab }) {
               id="reg-username"
               type="text"
               autoComplete="username"
-              className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all font-medium"
+              className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3.5 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all font-medium"
               placeholder="e.g. jsmith"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -77,7 +77,7 @@ export default function Register({ onSwitchTab }) {
         </div>
 
         <div>
-          <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5" htmlFor="reg-email">
+          <label className="block text-[10px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1" htmlFor="reg-email">
             {t('auth.email_label')}
           </label>
           <div className="relative">
@@ -90,7 +90,7 @@ export default function Register({ onSwitchTab }) {
               id="reg-email"
               type="email"
               autoComplete="email"
-              className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all font-medium"
+              className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3.5 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all font-medium"
               placeholder="staff@pharmacy.local"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -100,7 +100,7 @@ export default function Register({ onSwitchTab }) {
         </div>
 
         <div>
-          <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5" htmlFor="reg-password">
+          <label className="block text-[10px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1" htmlFor="reg-password">
             {t('auth.password_label')}
           </label>
           <div className="relative">
@@ -113,7 +113,7 @@ export default function Register({ onSwitchTab }) {
               id="reg-password"
               type="password"
               autoComplete="new-password"
-              className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all font-medium font-mono"
+              className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3.5 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all font-medium font-mono"
               placeholder="••••••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

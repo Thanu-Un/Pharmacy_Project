@@ -62,23 +62,23 @@ export default function Login({ onLoginSuccess, onSwitchTab }) {
   return (
     <div className="w-full">
       {/* Form Header */}
-      <div className="mb-6">
-        <h3 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+      <div className="mb-3.5">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
           {t('auth.workstation_sign_in') || 'Workstation Sign In'}
         </h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
           {t('auth.sign_in_desc') || 'Enter your authorized credentials to access clinical operations and the dispensary ledger.'}
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3">
         {/* Username Field */}
         <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider" htmlFor="username">
+          <div className="flex items-center justify-between mb-1">
+            <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider" htmlFor="username">
               {t('auth.username_label') || 'Username or Staff ID'}
             </label>
-            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
+            <span className="text-[9px] text-slate-400 dark:text-slate-500 font-mono">
               {t('auth.required') || 'Required'}
             </span>
           </div>
@@ -92,7 +92,7 @@ export default function Login({ onLoginSuccess, onSwitchTab }) {
               id="username"
               type="text"
               autoComplete="username"
-              className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all font-medium"
+              className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3.5 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all font-medium"
               placeholder="e.g. admin or staff"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -104,12 +104,12 @@ export default function Login({ onLoginSuccess, onSwitchTab }) {
 
         {/* Password Field */}
         <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider" htmlFor="password">
+          <div className="flex items-center justify-between mb-1">
+            <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider" htmlFor="password">
               {t('auth.password_label') || 'Password'}
             </label>
             {capsLockActive && (
-              <span className="text-[10px] text-amber-500 dark:text-amber-400 font-medium flex items-center gap-1">
+              <span className="text-[9px] text-amber-500 dark:text-amber-400 font-medium flex items-center gap-1">
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
@@ -127,7 +127,7 @@ export default function Login({ onLoginSuccess, onSwitchTab }) {
               id="password"
               type={showPassword ? "text" : "password"}
               autoComplete="current-password"
-              className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-10 py-2.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all font-medium font-mono"
+              className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-10 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none transition-all font-medium font-mono"
               placeholder="••••••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -177,7 +177,7 @@ export default function Login({ onLoginSuccess, onSwitchTab }) {
 
         {/* Error Alert Box */}
         {error && (
-          <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200/80 dark:border-rose-800 text-rose-700 dark:text-rose-300 p-3 rounded-lg text-xs flex items-start gap-2.5">
+          <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200/80 dark:border-rose-800 text-rose-700 dark:text-rose-300 p-2.5 rounded-lg text-xs flex items-start gap-2">
             <svg className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
@@ -192,7 +192,7 @@ export default function Login({ onLoginSuccess, onSwitchTab }) {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-obsidian-900 hover:bg-obsidian-800 active:bg-obsidian-950 dark:bg-brand-600 dark:hover:bg-brand-500 text-white font-medium py-2.5 px-4 rounded-lg text-xs shadow-sm hover:shadow transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 cursor-pointer group mt-2"
+          className="w-full bg-obsidian-900 hover:bg-obsidian-800 active:bg-obsidian-950 dark:bg-brand-600 dark:hover:bg-brand-500 text-white font-medium py-2 px-4 rounded-lg text-xs shadow-sm hover:shadow transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 cursor-pointer group mt-1.5"
         >
           {isLoading ? (
             <>
@@ -213,7 +213,7 @@ export default function Login({ onLoginSuccess, onSwitchTab }) {
         </button>
 
         {/* Quick Fill Helper for Dev / Testing */}
-        <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
+        <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
           <div className="flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500">
             <span>{t('auth.quick_fill') || 'Quick Terminal Fill:'}</span>
             <div className="flex items-center gap-1.5">

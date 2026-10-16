@@ -118,7 +118,16 @@
     "create_account": "Staff Account Registration",
     "register_desc": "Create a new dispensary operator account for terminal access.",
     "register_button": "Register Account",
-    "already_have_account": "Already have an account? Sign In"
+    "already_have_account": "Already have an account? Sign In",
+    "clinical_suite": "Clinical Suite & Dispensary ERP",
+    "terminal_workstation": "Terminal Workstation",
+    "showcase_badge": "Pharmacological Intelligence",
+    "showcase_title": "Unified Dispensary & Cashier Platform",
+    "showcase_desc": "High-speed checkout, barcode scanning, and multi-tier pharmacy stock management.",
+    "feature_pos": "Instant POS Cashier & Receipt Generation",
+    "feature_stock": "Real-time Multi-Warehouse Stock Sync",
+    "feature_audit": "Cryptographic Audit Trail & RBAC Security",
+    "all_rights_reserved": "Nutheb Pharmacy Clinical Suite. All rights reserved."
   },
   "pos": {
     "title": "POS Cashier Terminal",

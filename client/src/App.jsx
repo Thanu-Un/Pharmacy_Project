@@ -7,7 +7,7 @@ import ForgotPassword from './components/auth/ForgotPassword';
 import pharmacyIllustration from './assets/pharmacy_illustration.png';
 
 function App() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [token, setToken] = useState(localStorage.getItem('token') || null);
   const [username, setUsername] = useState(localStorage.getItem('username') || '');
   const [permissions, setPermissions] = useState(() => {
@@ -178,7 +178,7 @@ function App() {
                       Nutheb Pharmacy
                     </h2>
                     <p className="text-[10px] font-medium text-slate-400 dark:text-slate-500 mt-0.5">
-                      Clinical Suite & Dispensary ERP
+                      {t('auth.clinical_suite') || 'Clinical Suite & Dispensary ERP'}
                     </p>
                   </div>
                 </div>
@@ -198,7 +198,7 @@ function App() {
 
                 {/* Form Bottom Footnote */}
                 <div className="pt-3.5 mt-3.5 sm:pt-4 sm:mt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] sm:text-[11px] text-slate-400 dark:text-slate-500">
-                  <span>Terminal Workstation</span>
+                  <span>{t('auth.terminal_workstation') || 'Terminal Workstation'}</span>
                   <span className="font-mono">v1.2.0 • ISO-27001</span>
                 </div>
               </div>
@@ -215,13 +215,13 @@ function App() {
                     <svg className="w-2.5 h-2.5 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                     </svg>
-                    <span>Pharmacological Intelligence</span>
+                    <span>{t('auth.showcase_badge') || 'Pharmacological Intelligence'}</span>
                   </div>
                   <h4 className="text-sm font-bold text-white mt-2 tracking-tight leading-snug">
-                    Unified Dispensary & Cashier Platform
+                    {t('auth.showcase_title') || 'Unified Dispensary & Cashier Platform'}
                   </h4>
                   <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
-                    High-speed checkout, barcode scanning, and multi-tier pharmacy stock management.
+                    {t('auth.showcase_desc') || 'High-speed checkout, barcode scanning, and multi-tier pharmacy stock management.'}
                   </p>
                 </div>
 
@@ -242,19 +242,19 @@ function App() {
                     <svg className="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                     </svg>
-                    <span>Instant POS Cashier & Receipt Generation</span>
+                    <span>{t('auth.feature_pos') || 'Instant POS Cashier & Receipt Generation'}</span>
                   </div>
                   <div className="flex items-center gap-2 text-slate-300">
                     <svg className="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                     </svg>
-                    <span>Real-time Multi-Warehouse Stock Sync</span>
+                    <span>{t('auth.feature_stock') || 'Real-time Multi-Warehouse Stock Sync'}</span>
                   </div>
                   <div className="flex items-center gap-2 text-slate-300">
                     <svg className="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                     </svg>
-                    <span>Cryptographic Audit Trail & RBAC Security</span>
+                    <span>{t('auth.feature_audit') || 'Cryptographic Audit Trail & RBAC Security'}</span>
                   </div>
                 </div>
 
@@ -265,7 +265,7 @@ function App() {
 
           {/* Bottom Footer */}
           <div className="w-full text-center py-2 text-[11px] text-slate-500 font-medium">
-            &copy; {new Date().getFullYear()} Nutheb Pharmacy Clinical Suite. All rights reserved.
+            &copy; {new Date().getFullYear()} {t('auth.all_rights_reserved') || 'Nutheb Pharmacy Clinical Suite. All rights reserved.'}
           </div>
         </div>
       )}

@@ -163,7 +163,21 @@
     "no_medications_found": "រកមិនឃើញឱសថដែលត្រូវគ្នានៅក្នុងបញ្ជីទេ។",
     "cart_instruction": "ចុចលើមុខថ្នាំនៅខាងឆ្វេង ឬស្កេនបាកូដ",
     "net_due": "ប្រាក់ត្រូវទូទាត់",
-    "charge_due": "គិតប្រាក់"
+    "charge_due": "គិតប្រាក់",
+    "dispensing_from": "សាខា/ឃ្លាំង",
+    "dispensing_warehouse": "ឃ្លាំងបញ្ចេញថ្នាំ"
+  },
+  "header": {
+    "workspace": "កន្លែងការងារ",
+    "pharmacy_system": "ប្រព័ន្ធឱសថស្ថាន",
+    "pos_cashier": "ផ្នែកគិតលុយ POS",
+    "light_mode": "ពន្លឺធម្មជាតិ",
+    "night_mode": "រាត្រីកាល",
+    "warehouse": "ឃ្លាំង",
+    "active_warehouse": "ឃ្លាំងសកម្ម",
+    "switch_warehouse": "ប្តូរឃ្លាំង",
+    "assigned_warehouse": "ឃ្លាំងប្រចាំការ",
+    "switch_in_header": "ប្តូរឃ្លាំងនៅលើ Header"
   },
   "sales": {
     "sales_list": "បញ្ជីលក់",

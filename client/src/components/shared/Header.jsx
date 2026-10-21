@@ -12,6 +12,25 @@ export default function Header({ username, onLogout, onPOSClick, showBrand, onBr
   const [isLangOpen, setIsLangOpen] = useState(false);
   const langDropdownRef = useRef(null);
 
+  const [warehouses, setWarehouses] = useState([]);
+  const [activeWarehouseId, setActiveWarehouseId] = useState(() => {
+    return localStorage.getItem('activeWarehouseId') ? Number(localStorage.getItem('activeWarehouseId')) : null;
+  });
+  const [isWarehouseOpen, setIsWarehouseOpen] = useState(false);
+  const warehouseDropdownRef = useRef(null);
+
+  const parseJwt = (token) => {
+    try { return JSON.parse(atob(token.split('.')[1])); } catch (e) { return null; }
+  };
+
+  const token = localStorage.getItem('token');
+  const userPayload = token ? parseJwt(token) : null;
+  const userRole = userPayload?.role?.toUpperCase();
+  const userName = userPayload?.sub?.toLowerCase();
+  const isOwner = userRole === 'OWNER' || userName === 'owner';
+  const isAdmin = userRole === 'ADMIN' || userName === 'admin' || isOwner;
+  const assignedWarehouseId = userPayload?.warehouseId ? Number(userPayload.warehouseId) : null;
+
   const [isDark, setIsDark] = useState(() => {
     try {
       return document.documentElement.classList.contains('dark') || localStorage.getItem('theme') === 'dark';
@@ -35,9 +54,54 @@ export default function Header({ username, onLogout, onPOSClick, showBrand, onBr
   };
 
   useEffect(() => {
+    const fetchWarehouses = async () => {
+      try {
+        const res = await fetch('/api/operation/warehouses', {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setWarehouses(data);
+          
+          if (!isAdmin && assignedWarehouseId) {
+            // Staff / Cashier is strictly locked to their assigned warehouse
+            setActiveWarehouseId(assignedWarehouseId);
+            localStorage.setItem('activeWarehouseId', String(assignedWarehouseId));
+            const found = data.find(w => w.id === assignedWarehouseId);
+            if (found) localStorage.setItem('activeWarehouseName', found.name);
+          } else if (data.length > 0) {
+            // Admin / Owner
+            const saved = localStorage.getItem('activeWarehouseId');
+            const valid = saved ? data.find(w => w.id === Number(saved)) : null;
+            const chosen = valid ? valid.id : data[0].id;
+            setActiveWarehouseId(chosen);
+            localStorage.setItem('activeWarehouseId', String(chosen));
+            const found = data.find(w => w.id === chosen);
+            if (found) localStorage.setItem('activeWarehouseName', found.name);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to fetch warehouses in header', e);
+      }
+    };
+    fetchWarehouses();
+  }, [isAdmin, assignedWarehouseId]);
+
+  const handleSelectWarehouse = (wh) => {
+    setActiveWarehouseId(wh.id);
+    localStorage.setItem('activeWarehouseId', String(wh.id));
+    localStorage.setItem('activeWarehouseName', wh.name);
+    setIsWarehouseOpen(false);
+    window.dispatchEvent(new CustomEvent('warehousechange', { detail: wh }));
+  };
+
+  useEffect(() => {
     const handleClickOutside = (event) => {
       if (langDropdownRef.current && !langDropdownRef.current.contains(event.target)) {
         setIsLangOpen(false);
+      }
+      if (warehouseDropdownRef.current && !warehouseDropdownRef.current.contains(event.target)) {
+        setIsWarehouseOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -88,7 +152,75 @@ export default function Header({ username, onLogout, onPOSClick, showBrand, onBr
 
       {/* Right Side Tools */}
       <div className="flex items-center gap-2 md:gap-3 ml-auto">
-        
+
+        {/* Warehouse Selector (Admin) or Assigned Warehouse Indicator (Staff) */}
+        {warehouses.length > 0 && (
+          isAdmin ? (
+            <div className="relative" ref={warehouseDropdownRef}>
+              <button
+                onClick={() => setIsWarehouseOpen(!isWarehouseOpen)}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium rounded-lg border border-slate-200/80 dark:border-slate-700 transition-all cursor-pointer shadow-sm"
+                title={t('header.active_warehouse') || 'Active Warehouse'}
+              >
+                <svg className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                <span className="font-semibold text-slate-800 dark:text-slate-100 max-w-[120px] truncate">
+                  {warehouses.find(w => w.id === activeWarehouseId)?.name || t('header.warehouse') || 'Warehouse'}
+                </span>
+                <svg className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isWarehouseOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {isWarehouseOpen && (
+                <div className="absolute right-0 mt-1.5 w-52 bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden py-1">
+                  <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 dark:border-slate-700/60">
+                    {t('header.switch_warehouse') || 'Switch Warehouse'}
+                  </div>
+                  <div className="max-h-60 overflow-y-auto">
+                    {warehouses.map(w => {
+                      const isSelected = w.id === activeWarehouseId;
+                      return (
+                        <button
+                          key={w.id}
+                          onClick={() => handleSelectWarehouse(w)}
+                          className={`w-full flex items-center justify-between px-3 py-2 text-xs transition-colors cursor-pointer ${
+                            isSelected 
+                              ? 'bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300 font-semibold' 
+                              : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 truncate">
+                            <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-brand-600' : 'bg-slate-300 dark:bg-slate-600'}`}></span>
+                            <span className="truncate">{w.name}</span>
+                          </div>
+                          {w.code && <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">[{w.code}]</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div 
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-brand-50/80 dark:bg-brand-950/40 text-brand-800 dark:text-brand-300 text-xs font-medium rounded-lg border border-brand-200/60 dark:border-brand-800/40 shadow-sm"
+              title={t('header.assigned_warehouse') || 'Assigned Warehouse'}
+            >
+              <svg className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+              <span className="font-semibold max-w-[120px] truncate">
+                {warehouses.find(w => w.id === activeWarehouseId)?.name || t('header.warehouse') || 'Warehouse'}
+              </span>
+              <span className="text-[10px] px-1 py-0.2 rounded bg-brand-200/50 dark:bg-brand-900/60 text-brand-700 dark:text-brand-300 font-mono">
+                🔒
+              </span>
+            </div>
+          )
+        )}
+
         {/* POS Cashier Button (Moved to Right Side) */}
         {onPOSClick && (
           <button

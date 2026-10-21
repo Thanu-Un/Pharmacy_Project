@@ -373,7 +373,7 @@ export default function Dispensing({ onSaleComplete }) {
         admin = true;
         setIsAdmin(true);
       } else if (decoded.warehouseId) {
-        setSelectedWarehouseId(decoded.warehouseId);
+        setSelectedWarehouseId(Number(decoded.warehouseId));
       }
     }
 
@@ -381,12 +381,9 @@ export default function Dispensing({ onSaleComplete }) {
       fetch('/api/operation/products', { headers: authHeaders }).then(res => res.ok ? res.json() : []),
       fetch('/api/operation/patients', { headers: authHeaders }).then(res => res.ok ? res.json() : []),
       fetch('/api/operation/units', { headers: authHeaders }).then(res => res.ok ? res.json() : []),
-      fetch('/api/operation/settings', { headers: authHeaders }).then(res => res.ok ? res.json() : [])
+      fetch('/api/operation/settings', { headers: authHeaders }).then(res => res.ok ? res.json() : []),
+      fetch('/api/operation/warehouses', { headers: authHeaders }).then(res => res.ok ? res.json() : [])
     ];
-
-    if (admin) {
-      fetches.push(fetch('/api/operation/warehouses', { headers: authHeaders }).then(res => res.ok ? res.json() : []));
-    }
 
     Promise.all(fetches).then((results) => {
       const [prods, custs, unts, stgs, whs] = results;
@@ -402,9 +399,18 @@ export default function Dispensing({ onSaleComplete }) {
         setSelectedCustomer(custs[0]);
       }
       
-      if (admin && whs) {
+      if (whs && whs.length > 0) {
         setWarehouses(whs);
-        if (whs.length > 0) {
+      }
+
+      // Priority: 1. Assigned warehouse for staff, 2. activeWarehouseId from localStorage, 3. first warehouse
+      if (!admin && decoded?.warehouseId) {
+        setSelectedWarehouseId(Number(decoded.warehouseId));
+      } else {
+        const savedWh = localStorage.getItem('activeWarehouseId');
+        if (savedWh && whs && whs.some(w => w.id === Number(savedWh))) {
+          setSelectedWarehouseId(Number(savedWh));
+        } else if (whs && whs.length > 0) {
           setSelectedWarehouseId(whs[0].id);
         }
       }
@@ -415,6 +421,26 @@ export default function Dispensing({ onSaleComplete }) {
       setIsLoading(false);
     });
   }, []);
+
+  useEffect(() => {
+    const handleWhChange = (e) => {
+      const newWhId = e.detail?.id ? Number(e.detail.id) : (localStorage.getItem('activeWarehouseId') ? Number(localStorage.getItem('activeWarehouseId')) : null);
+      if (newWhId) {
+        setSelectedWarehouseId(newWhId);
+      }
+    };
+    window.addEventListener('warehousechange', handleWhChange);
+    return () => window.removeEventListener('warehousechange', handleWhChange);
+  }, []);
+
+  const getProductStock = (product) => {
+    if (!product) return 0;
+    if (selectedWarehouseId && product.stocks && Array.isArray(product.stocks)) {
+      const found = product.stocks.find(s => s.warehouse?.id === selectedWarehouseId);
+      return found ? parseFloat(found.quantity) || 0 : 0;
+    }
+    return parseFloat(product.quantity) || 0;
+  };
 
   const filteredProducts = products.filter(p => {
     const matchesSearch = p.name?.toLowerCase().includes(searchTerm.toLowerCase()) || p.code?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -488,8 +514,9 @@ export default function Dispensing({ onSaleComplete }) {
   const addToCart = (product) => {
     setSuccess(false);
     setError(null);
-    if (!product.quantity || product.quantity <= 0) {
-      setError(`Cannot add ${product.name} - Out of stock!`);
+    const availableStock = getProductStock(product);
+    if (availableStock <= 0) {
+      setError(`Cannot add ${product.name} - Out of stock in this warehouse!`);
       setTimeout(() => setError(null), 3000);
       return;
     }
@@ -500,8 +527,9 @@ export default function Dispensing({ onSaleComplete }) {
 
     const existingItem = cart.find(item => item.product.id === product.id);
     if (existingItem) {
-      if (existingItem.quantity + 1 > product.quantity) {
-        setError(`Not enough stock for ${product.name}`);
+      const mult = existingItem.selectedUnit?.multiplier || 1;
+      if ((existingItem.quantity + 1) * mult > availableStock) {
+        setError(`Not enough stock for ${product.name} in this warehouse`);
         setTimeout(() => setError(null), 3000);
         return;
       }
@@ -545,8 +573,11 @@ export default function Dispensing({ onSaleComplete }) {
     }
 
     const product = products.find(p => p.id === productId);
-    if (product && newQuantity > product.quantity) {
-      setError(`Only ${product.quantity} units available for ${product.name}`);
+    const availableStock = getProductStock(product);
+    const cartItem = cart.find(i => i.product.id === productId);
+    const mult = cartItem?.selectedUnit?.multiplier || 1;
+    if (product && (newQuantity * mult) > availableStock) {
+      setError(`Only ${Math.floor(availableStock / mult)} available for ${product.name} in this warehouse`);
       setTimeout(() => setError(null), 3000);
       return;
     }
@@ -638,13 +669,20 @@ export default function Dispensing({ onSaleComplete }) {
 
       setSuccess(true);
 
-      // Update local product stock
+      // Update local product stock and warehouse stock
       const updatedProducts = [...products];
       cart.forEach(cartItem => {
         const prod = updatedProducts.find(p => p.id === cartItem.product.id);
         if (prod) {
           const mult = cartItem.selectedUnit?.multiplier || 1;
-          prod.quantity -= (cartItem.quantity * mult);
+          const deductUnits = cartItem.quantity * mult;
+          prod.quantity = Math.max(0, (parseFloat(prod.quantity) || 0) - deductUnits);
+          if (prod.stocks && Array.isArray(prod.stocks) && selectedWarehouseId) {
+            const whStock = prod.stocks.find(s => s.warehouse?.id === selectedWarehouseId);
+            if (whStock) {
+              whStock.quantity = Math.max(0, (parseFloat(whStock.quantity) || 0) - deductUnits);
+            }
+          }
         }
       });
       setProducts(updatedProducts);
@@ -669,11 +707,30 @@ export default function Dispensing({ onSaleComplete }) {
     return <div className="p-8 text-center text-slate-500">Loading POS...</div>;
   }
 
+  const currentWhObj = warehouses.find(w => w.id === selectedWarehouseId);
+
   return (
     <div className="flex flex-col lg:flex-row h-auto min-h-[calc(100vh-4.5rem)] lg:h-[calc(100vh-4.5rem)] w-full bg-slate-100/70 p-2.5 gap-2.5 overflow-y-auto lg:overflow-hidden max-w-7xl mx-auto">
 
       {/* LEFT PANEL: Products Catalog (65% width) */}
       <div className="w-full lg:w-[64%] bg-white rounded-xl shadow-card border border-slate-200/80 flex flex-col h-[55vh] lg:h-full overflow-hidden shrink-0 lg:shrink">
+        
+        {/* Active Warehouse Banner */}
+        <div className="px-3.5 py-1.5 bg-brand-50/80 border-b border-brand-100 flex items-center justify-between text-xs text-brand-900 shrink-0">
+          <div className="flex items-center gap-1.5">
+            <svg className="w-3.5 h-3.5 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            <span className="text-slate-500 font-medium">{t('pos.dispensing_from') || 'Branch'}:</span>
+            <span className="font-bold text-brand-700 bg-white px-2 py-0.5 rounded border border-brand-200 shadow-xs">
+              {currentWhObj?.name || localStorage.getItem('activeWarehouseName') || 'Main Warehouse'}
+            </span>
+          </div>
+          <span className="text-[10px] text-slate-400 font-medium hidden sm:inline">
+            {isAdmin ? `(${t('header.switch_in_header') || 'Switch branch from header'})` : '🔒 Strict Branch Mode'}
+          </span>
+        </div>
+
         {/* Category Filter Pills */}
         <div className="px-3.5 py-2.5 border-b border-slate-100 bg-white flex items-center gap-1.5 overflow-x-auto scrollbar-hide shrink-0">
           <button
@@ -705,7 +762,8 @@ export default function Dispensing({ onSaleComplete }) {
         <div className="flex-1 overflow-y-auto p-3 bg-slate-50/50">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
             {filteredProducts.map(product => {
-              const inStock = product.quantity > 0;
+              const whStock = getProductStock(product);
+              const inStock = whStock > 0;
               return (
                 <div
                   key={product.id}
@@ -722,11 +780,11 @@ export default function Dispensing({ onSaleComplete }) {
                         {product.code || 'SKU'}
                       </span>
                       <span className={`text-[10px] font-mono font-medium px-1.5 py-0.2 rounded ${
-                        product.quantity > 10 ? 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20' :
-                        product.quantity > 0 ? 'bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20' :
+                        whStock > 10 ? 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20' :
+                        whStock > 0 ? 'bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20' :
                         'bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-600/20'
                       }`}>
-                        {inStock ? `${Math.round(product.quantity)} ${t('pos.in_stock')}` : t('pos.out_of_stock')}
+                        {inStock ? `${Math.round(whStock)} ${t('pos.in_stock')}` : t('pos.out_of_stock')}
                       </span>
                     </div>
 

@@ -163,7 +163,21 @@
     "no_medications_found": "No matching medications found in catalog.",
     "cart_instruction": "Click medications on the left or scan a barcode",
     "net_due": "Net Due",
-    "charge_due": "Charge Due"
+    "charge_due": "Charge Due",
+    "dispensing_from": "Branch",
+    "dispensing_warehouse": "Dispensing Branch"
+  },
+  "header": {
+    "workspace": "Workspace",
+    "pharmacy_system": "Pharmacy System",
+    "pos_cashier": "POS Cashier",
+    "light_mode": "Light Mode",
+    "night_mode": "Night Mode",
+    "warehouse": "Warehouse",
+    "active_warehouse": "Active Warehouse",
+    "switch_warehouse": "Switch Warehouse",
+    "assigned_warehouse": "Assigned Branch",
+    "switch_in_header": "Switch branch from header"
   },
   "sales": {
     "sales_list": "Sales List",

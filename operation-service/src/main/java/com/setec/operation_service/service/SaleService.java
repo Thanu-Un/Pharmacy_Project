@@ -3,8 +3,10 @@ package com.setec.operation_service.service;
 import com.setec.operation_service.model.Product;
 import com.setec.operation_service.model.Sale;
 import com.setec.operation_service.model.SaleItem;
+import com.setec.operation_service.model.Stock;
 import com.setec.operation_service.repository.ProductRepository;
 import com.setec.operation_service.repository.SaleRepository;
+import com.setec.operation_service.repository.StockRepository;
 import com.setec.operation_service.repository.UnitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,9 @@ public class SaleService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private StockRepository stockRepository;
 
     @Autowired
     private UnitRepository unitRepository;
@@ -90,8 +95,18 @@ public class SaleService {
                         BigDecimal oldQty = product.getQuantity() != null ? product.getQuantity() : BigDecimal.ZERO;
                         BigDecimal baseUnits = item.getQuantity()
                                 .multiply(calculateBaseUnitsMultiplier(item.getUnit()));
-                        product.setQuantity(oldQty.add(baseUnits)); // add back to stock
+                        product.setQuantity(oldQty.add(baseUnits)); // add back to global stock
                         productRepository.save(product);
+
+                        // Revert Warehouse Stock if warehouse is specified
+                        if (existing.getWarehouse() != null && existing.getWarehouse().getId() != null) {
+                            Stock stock = stockRepository.findByProductIdAndWarehouseId(product.getId(), existing.getWarehouse().getId()).orElse(null);
+                            if (stock != null) {
+                                BigDecimal currentStock = stock.getQuantity() != null ? stock.getQuantity() : BigDecimal.ZERO;
+                                stock.setQuantity(currentStock.add(baseUnits));
+                                stockRepository.save(stock);
+                            }
+                        }
                     }
                 }
             }
@@ -120,6 +135,25 @@ public class SaleService {
 
                     product.setQuantity(newQty);
                     productRepository.save(product);
+
+                    // Deduct from specific Warehouse Stock if warehouse is specified
+                    if (sale.getWarehouse() != null && sale.getWarehouse().getId() != null) {
+                        Stock stock = stockRepository.findByProductIdAndWarehouseId(product.getId(), sale.getWarehouse().getId())
+                            .orElseGet(() -> {
+                                Stock s = new Stock();
+                                s.setProduct(product);
+                                s.setWarehouse(sale.getWarehouse());
+                                s.setQuantity(BigDecimal.ZERO);
+                                return s;
+                            });
+                        BigDecimal currentStock = stock.getQuantity() != null ? stock.getQuantity() : BigDecimal.ZERO;
+                        BigDecimal newStockQty = currentStock.subtract(baseUnits);
+                        if (newStockQty.compareTo(BigDecimal.ZERO) < 0) {
+                            newStockQty = BigDecimal.ZERO;
+                        }
+                        stock.setQuantity(newStockQty);
+                        stockRepository.save(stock);
+                    }
                 }
             }
         }

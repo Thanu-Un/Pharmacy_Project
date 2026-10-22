@@ -429,8 +429,8 @@ export default function AddTransfer({ onBack, onSave }) {
           </div>
 
           {/* Transfer Table */}
-          <div className="border border-slate-200/80 dark:border-slate-800 rounded-xl overflow-hidden">
-            <table className="w-full text-left text-xs">
+          <div className="border border-slate-200/80 dark:border-slate-800 rounded-xl overflow-x-auto">
+            <table className="w-full text-left text-xs min-w-[550px] sm:min-w-full">
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 text-[10px] uppercase font-semibold border-b border-slate-200 dark:border-slate-800">
                   <th className="py-2.5 px-3">{t('transfer.medicine') || 'Medicine'}</th>
@@ -531,18 +531,18 @@ export default function AddTransfer({ onBack, onSave }) {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-2">
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-2">
           <button
             type="button"
             onClick={onBack}
-            className="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer text-center"
           >
             {t('common.cancel') || 'Cancel'}
           </button>
           <button
             type="submit"
             disabled={isSubmitting || items.length === 0}
-            className="px-6 py-2.5 rounded-xl text-xs font-semibold text-white bg-obsidian-900 hover:bg-obsidian-800 active:bg-obsidian-950 shadow-md shadow-obsidian-900/10 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+            className="w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs font-semibold text-white bg-obsidian-900 hover:bg-obsidian-800 active:bg-obsidian-950 shadow-md shadow-obsidian-900/10 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
             {isSubmitting ? (
               <>

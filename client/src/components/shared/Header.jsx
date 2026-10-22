@@ -165,7 +165,7 @@ export default function Header({ username, onLogout, onPOSClick, showBrand, onBr
                 <svg className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
-                <span className="font-semibold text-slate-800 dark:text-slate-100 max-w-[120px] truncate">
+                <span className="font-semibold text-slate-800 dark:text-slate-100 max-w-[80px] sm:max-w-[120px] truncate">
                   {warehouses.find(w => w.id === activeWarehouseId)?.name || t('header.warehouse') || 'Warehouse'}
                 </span>
                 <svg className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isWarehouseOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -211,7 +211,7 @@ export default function Header({ username, onLogout, onPOSClick, showBrand, onBr
               <svg className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
-              <span className="font-semibold max-w-[120px] truncate">
+              <span className="font-semibold max-w-[80px] sm:max-w-[120px] truncate">
                 {warehouses.find(w => w.id === activeWarehouseId)?.name || t('header.warehouse') || 'Warehouse'}
               </span>
               <span className="text-[10px] px-1 py-0.2 rounded bg-brand-200/50 dark:bg-brand-900/60 text-brand-700 dark:text-brand-300 font-mono">
@@ -225,12 +225,12 @@ export default function Header({ username, onLogout, onPOSClick, showBrand, onBr
         {onPOSClick && (
           <button
             onClick={onPOSClick}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-obsidian-900 hover:bg-obsidian-800 active:bg-obsidian-950 text-white rounded-lg text-xs font-medium shadow-sm transition-all cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-obsidian-900 hover:bg-obsidian-800 active:bg-obsidian-950 text-white rounded-lg text-xs font-medium shadow-sm transition-all cursor-pointer"
           >
             <svg className="w-3.5 h-3.5 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
-            <span>{t('header.pos_cashier') || 'POS Cashier'}</span>
+            <span className="hidden sm:inline">{t('header.pos_cashier') || 'POS Cashier'}</span>
             <kbd className="hidden md:inline-block ml-1 px-1.5 py-0.2 bg-white/20 text-white text-[10px] font-mono rounded">
               POS
             </kbd>

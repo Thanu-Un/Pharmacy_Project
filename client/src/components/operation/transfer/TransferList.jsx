@@ -77,7 +77,7 @@ export default function TransferList({ onAddClick, permissions = [] }) {
         </div>
         <button 
           onClick={onAddClick}
-          className="bg-obsidian-900 hover:bg-obsidian-800 text-white text-xs px-3.5 py-2 rounded-lg font-medium flex items-center gap-2 shadow-sm transition-all whitespace-nowrap active:scale-[0.98] cursor-pointer"
+          className="w-full sm:w-auto bg-obsidian-900 hover:bg-obsidian-800 text-white text-xs px-3.5 py-2.5 sm:py-2 rounded-lg font-medium flex items-center justify-center gap-2 shadow-sm transition-all whitespace-nowrap active:scale-[0.98] cursor-pointer"
         >
           <svg className="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
@@ -95,7 +95,7 @@ export default function TransferList({ onAddClick, permissions = [] }) {
 
       {/* Filter / Search Bar */}
       <div className="bg-white dark:bg-slate-900 rounded-xl shadow-card border border-slate-200/80 dark:border-slate-800 overflow-hidden">
-        <div className="p-3.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between gap-4">
+        <div className="p-3.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
           <div className="relative max-w-sm w-full">
             <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
@@ -108,7 +108,7 @@ export default function TransferList({ onAddClick, permissions = [] }) {
               className="w-full bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-700 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-brand-500 transition-all"
             />
           </div>
-          <div className="text-xs text-slate-500 font-mono">
+          <div className="text-xs text-slate-500 font-mono text-right sm:text-left shrink-0">
             {filteredTransfers.length} {t('transfer.records') || 'Transfers'}
           </div>
         </div>
@@ -235,7 +235,7 @@ export default function TransferList({ onAddClick, permissions = [] }) {
             {/* Modal Body */}
             <div className="p-5 overflow-y-auto space-y-4">
               {/* Route Summary Card */}
-              <div className="grid grid-cols-2 gap-3 p-3.5 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200/70 dark:border-slate-700/60 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200/70 dark:border-slate-700/60 text-xs">
                 <div>
                   <div className="text-[10px] text-slate-400 uppercase font-semibold">{t('transfer.from_warehouse') || 'Source Warehouse'}</div>
                   <div className="font-bold text-slate-800 dark:text-slate-100 mt-0.5">{viewingTransfer.fromWarehouse?.name}</div>
@@ -253,7 +253,7 @@ export default function TransferList({ onAddClick, permissions = [] }) {
                 <h4 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                   {t('transfer.transferred_items') || 'Transferred Medicines'}
                 </h4>
-                <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
+                <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead>
                       <tr className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 text-[10px] uppercase font-semibold border-b border-slate-200 dark:border-slate-800">

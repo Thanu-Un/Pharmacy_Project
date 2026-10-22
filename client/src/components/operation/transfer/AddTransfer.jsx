@@ -45,7 +45,7 @@ export default function AddTransfer({ onBack, onSave }) {
         setFromWarehouseId(String(whs[0].id));
       }
     }).catch(err => {
-      setError('Failed to load initial master data.');
+      setError(t('transfer.failed_load') || 'Failed to load initial master data.');
     });
   }, []);
 
@@ -168,15 +168,15 @@ export default function AddTransfer({ onBack, onSave }) {
     setError(null);
 
     if (!fromWarehouseId || !toWarehouseId) {
-      setError('Please select both Source and Destination warehouses.');
+      setError(t('transfer.err_select_both_wh') || 'Please select both Source and Destination warehouses.');
       return;
     }
     if (fromWarehouseId === toWarehouseId) {
-      setError('Source and Destination warehouses cannot be the same!');
+      setError(t('transfer.err_same_wh') || 'Source and Destination warehouses cannot be the same!');
       return;
     }
     if (items.length === 0) {
-      setError('Please add at least one medicine item to transfer.');
+      setError(t('transfer.err_add_one_item') || 'Please add at least one medicine item to transfer.');
       return;
     }
 
@@ -187,11 +187,11 @@ export default function AddTransfer({ onBack, onSave }) {
       const baseQty = it.quantity * mult;
 
       if (it.quantity <= 0) {
-        setError(`Quantity for ${it.product.name} must be greater than 0.`);
+        setError(`${t('common.quantity') || 'Quantity'} (${it.product.name}) ${t('transfer.err_qty_positive') || 'must be greater than 0.'}`);
         return;
       }
       if (baseQty > available) {
-        setError(`Insufficient stock for ${it.product.name}. Available: ${available}, Transfer requested: ${baseQty}`);
+        setError(`${t('transfer.err_insufficient') || 'Insufficient stock for'} ${it.product.name}. ${t('transfer.available_in_source')}: ${available}`);
         return;
       }
     }
@@ -325,7 +325,7 @@ export default function AddTransfer({ onBack, onSave }) {
                 required
                 className="w-full bg-white dark:bg-slate-800 border border-amber-300 dark:border-amber-700/80 rounded-lg px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-brand-500"
               >
-                <option value="">-- Select Source --</option>
+                <option value="">{t('transfer.select_source') || '-- Select Source --'}</option>
                 {warehouses.map(w => (
                   <option key={w.id} value={w.id}>{w.name} {w.code ? `[${w.code}]` : ''}</option>
                 ))}
@@ -344,7 +344,7 @@ export default function AddTransfer({ onBack, onSave }) {
                 required
                 className="w-full bg-white dark:bg-slate-800 border border-emerald-300 dark:border-emerald-700/80 rounded-lg px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-brand-500"
               >
-                <option value="">-- Select Destination --</option>
+                <option value="">{t('transfer.select_destination') || '-- Select Destination --'}</option>
                 {warehouses.filter(w => String(w.id) !== String(fromWarehouseId)).map(w => (
                   <option key={w.id} value={w.id}>{w.name} {w.code ? `[${w.code}]` : ''}</option>
                 ))}
@@ -412,14 +412,16 @@ export default function AddTransfer({ onBack, onSave }) {
                                 ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/60' 
                                 : 'bg-rose-50 text-rose-600'
                             }`}>
-                              {availInSrc} in source
+                              {availInSrc} {t('transfer.in_source') || 'in source'}
                             </span>
                           </div>
                         </div>
                       );
                     })
                   ) : (
-                    <div className="p-3 text-center text-xs text-slate-400 italic">No medicines match search</div>
+                    <div className="p-3 text-center text-xs text-slate-400 italic">
+                      {t('transfer.no_match_search') || 'No medicines match search'}
+                    </div>
                   )}
                 </div>
               )}
@@ -431,11 +433,11 @@ export default function AddTransfer({ onBack, onSave }) {
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 text-[10px] uppercase font-semibold border-b border-slate-200 dark:border-slate-800">
-                  <th className="py-2.5 px-3">Medicine</th>
-                  <th className="py-2.5 px-3 text-center">Available in Source</th>
-                  <th className="py-2.5 px-3 text-center">Transfer Quantity</th>
-                  <th className="py-2.5 px-3">Unit</th>
-                  <th className="py-2.5 px-3 text-right">Action</th>
+                  <th className="py-2.5 px-3">{t('transfer.medicine') || 'Medicine'}</th>
+                  <th className="py-2.5 px-3 text-center">{t('transfer.available_in_source') || 'Available in Source'}</th>
+                  <th className="py-2.5 px-3 text-center">{t('transfer.transfer_quantity') || 'Transfer Quantity'}</th>
+                  <th className="py-2.5 px-3">{t('common.unit') || 'Unit'}</th>
+                  <th className="py-2.5 px-3 text-right">{t('common.action') || 'Action'}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -476,7 +478,9 @@ export default function AddTransfer({ onBack, onSave }) {
                             }`}
                           />
                           {isExceeding && (
-                            <div className="text-[10px] text-rose-500 font-semibold mt-0.5">Exceeds stock!</div>
+                            <div className="text-[10px] text-rose-500 font-semibold mt-0.5">
+                              {t('transfer.exceeds_stock') || 'Exceeds stock!'}
+                            </div>
                           )}
                         </td>
                         <td className="py-2.5 px-3">
@@ -487,11 +491,11 @@ export default function AddTransfer({ onBack, onSave }) {
                               className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-700 dark:text-slate-200 focus:outline-none"
                             >
                               {getAvailableUnits(it.product).map(u => (
-                                <option key={u.id} value={u.id}>{u.name}</option>
+                                 <option key={u.id} value={u.id}>{u.name}</option>
                               ))}
                             </select>
                           ) : (
-                            <span className="text-slate-500 text-xs font-mono">{it.unit?.name || 'Base'}</span>
+                            <span className="text-slate-500 text-xs font-mono">{it.unit?.name || t('transfer.base_unit') || 'Base'}</span>
                           )}
                         </td>
                         <td className="py-2.5 px-3 text-right">
@@ -515,7 +519,7 @@ export default function AddTransfer({ onBack, onSave }) {
         {/* Note Card */}
         <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-card border border-slate-200/80 dark:border-slate-800 p-5 space-y-2">
           <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-            {t('common.notes') || 'Transfer Note & Reason'}
+            {t('transfer.note_label') || t('common.notes') || 'Transfer Note & Reason'}
           </label>
           <textarea
             rows="2"

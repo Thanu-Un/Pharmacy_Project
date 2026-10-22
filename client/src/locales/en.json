@@ -227,7 +227,25 @@
     "no_items_added": "No medicines added yet. Use the search bar above to add items.",
     "no_transfers": "No stock transfer records found.",
     "note_placeholder": "e.g. Weekly stock replenishment for Branch 2, emergency rebalance...",
-    "confirm_and_shift": "Confirm & Shift Stock"
+    "confirm_and_shift": "Confirm & Shift Stock",
+    "select_source": "-- Select Source --",
+    "select_destination": "-- Select Destination --",
+    "medicine": "Medicine",
+    "available_in_source": "Available in Source",
+    "transfer_quantity": "Transfer Quantity",
+    "in_source": "in source",
+    "no_match_search": "No medicines match search",
+    "exceeds_stock": "Exceeds stock!",
+    "status_completed": "Completed",
+    "status_cancelled": "Cancelled",
+    "err_select_both_wh": "Please select both Source and Destination warehouses.",
+    "err_same_wh": "Source and Destination warehouses cannot be the same!",
+    "err_add_one_item": "Please add at least one medicine item to transfer.",
+    "err_qty_positive": "Transfer quantity must be greater than 0.",
+    "err_insufficient": "Insufficient stock in source warehouse.",
+    "failed_load": "Failed to load initial master data.",
+    "note_label": "Transfer Note & Reason",
+    "base_unit": "Base"
   },
   "common": {
     "all": "All",
@@ -268,6 +286,8 @@
     "price": "Price",
     "quantity": "Quantity",
     "supplier": "Supplier",
-    "warehouse": "Warehouse"
+    "warehouse": "Warehouse",
+    "code": "Code",
+    "total_items": "Total Items"
   }
 }

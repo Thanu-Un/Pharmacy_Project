@@ -8,8 +8,18 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', '"Noto Sans Khmer"', '"Khmer OS Battambang"', 'system-ui', 'sans-serif'],
+        sans: ['"Kantumruy Pro"', 'Inter', '"Noto Sans Khmer"', '"Khmer OS Battambang"', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+      },
+      fontSize: {
+        '2xs': ['0.78rem', { lineHeight: '1.15rem' }],
+        'xs': ['0.86rem', { lineHeight: '1.35rem' }],
+        'sm': ['0.96rem', { lineHeight: '1.45rem' }],
+        'base': ['1.05rem', { lineHeight: '1.6rem' }],
+        'lg': ['1.18rem', { lineHeight: '1.75rem' }],
+        'xl': ['1.32rem', { lineHeight: '1.85rem' }],
+        '2xl': ['1.6rem', { lineHeight: '2.1rem' }],
+        '3xl': ['1.95rem', { lineHeight: '2.4rem' }],
       },
       colors: {
         // Deep Obsidian & Brand Navy

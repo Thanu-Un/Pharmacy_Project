@@ -19,6 +19,8 @@ import EditPatient from '../operation/patient/EditPatient';
 import PurchaseList from '../operation/purchase/PurchaseList';
 import AddPurchase from '../operation/purchase/AddPurchase';
 import EditPurchase from '../operation/purchase/EditPurchase';
+import TransferList from '../operation/transfer/TransferList';
+import AddTransfer from '../operation/transfer/AddTransfer';
 import Dispensing from '../operation/dispensing/Dispensing';
 import SalesList from '../operation/dispensing/SalesList';
 import StaffList from '../operation/staff/StaffList';
@@ -133,6 +135,13 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
         return <AddPurchase onBack={() => setCurrentView('List Purchases')} onSave={() => setCurrentView('List Purchases')} />;
       case 'Edit Purchase':
         return <EditPurchase purchase={editingPurchase} onBack={() => setCurrentView('List Purchases')} onSave={() => setCurrentView('List Purchases')} />;
+
+      // Operation - Stock Transfers
+      case 'Stock Transfers':
+      case 'List Transfers':
+        return <TransferList onAddClick={() => setCurrentView('Add Transfer')} permissions={permissions} />;
+      case 'Add Transfer':
+        return <AddTransfer onBack={() => setCurrentView('List Transfers')} onSave={() => setCurrentView('List Transfers')} />;
 
       // Operation - Dispensing (Sales)
       case 'Dispensing':

@@ -75,6 +75,15 @@ const navSections = [
         ]
       },
       {
+        name: 'Stock Transfers',
+        icon: 'M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4',
+        permission: 'transfer_view',
+        subItems: [
+          { name: 'List Transfers', icon: 'M4 6h16M4 10h16M4 14h16M4 18h16', permission: 'transfer_view' },
+          { name: 'Add Transfer', icon: 'M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z', permission: 'transfer_add' }
+        ]
+      },
+      {
         name: 'Suppliers',
         icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z',
         permission: 'supplier_view',

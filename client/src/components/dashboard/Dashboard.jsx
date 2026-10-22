@@ -870,6 +870,16 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
               onBack={() => setCurrentView('List Purchases')}
               onSave={() => setCurrentView('List Purchases')}
             />
+          ) : (currentView === 'List Transfers' || currentView === 'Stock Transfers') ? (
+            <TransferList
+              onAddClick={() => setCurrentView('Add Transfer')}
+              permissions={permissions}
+            />
+          ) : currentView === 'Add Transfer' ? (
+            <AddTransfer
+              onBack={() => setCurrentView('List Transfers')}
+              onSave={() => setCurrentView('List Transfers')}
+            />
           ) : (currentView === 'List Staff' || currentView === 'Staff') ? (
             <StaffList
               onAddClick={() => setCurrentView('Add Staff')}

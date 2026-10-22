@@ -17,6 +17,7 @@ RUN echo 'server { \
     listen 80; \
     root /usr/share/nginx/html; \
     index index.html; \
+    error_page 405 =200 /index.html; \
     location / { \
         try_files $uri $uri/ /index.html; \
     } \

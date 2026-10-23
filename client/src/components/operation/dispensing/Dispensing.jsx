@@ -775,11 +775,11 @@ export default function Dispensing({ onSaleComplete }) {
                   }`}
                 >
                   <div>
-                    <div className="flex justify-between items-center mb-1.5">
-                      <span className="text-[10px] font-mono text-slate-400 uppercase truncate">
+                    <div className="flex items-center justify-between gap-1 mb-1.5 min-w-0">
+                      <span className="text-[10px] font-mono text-slate-400 uppercase truncate min-w-0 flex-1" title={product.code}>
                         {product.code || 'SKU'}
                       </span>
-                      <span className={`text-[10px] font-mono font-medium px-1.5 py-0.2 rounded ${
+                      <span className={`text-[10px] font-mono font-medium px-1.5 py-0.5 rounded whitespace-nowrap shrink-0 ${
                         whStock > 10 ? 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20' :
                         whStock > 0 ? 'bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20' :
                         'bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-600/20'
@@ -811,11 +811,11 @@ export default function Dispensing({ onSaleComplete }) {
                     </p>
                   </div>
 
-                  <div className="flex items-baseline justify-between pt-1 border-t border-slate-100">
-                    <span className="font-mono text-xs font-bold text-slate-900 tabular-nums">
+                  <div className="flex items-baseline justify-between pt-1 border-t border-slate-100 gap-1">
+                    <span className="font-mono text-xs font-bold text-slate-900 tabular-nums whitespace-nowrap">
                       ${Number(product.price).toFixed(2)}
                     </span>
-                    <span className="text-[10px] text-slate-400 font-mono">
+                    <span className="text-[10px] text-slate-400 font-mono whitespace-nowrap">
                       ៛{Math.round(Number(product.price) * exchangeRate).toLocaleString()}
                     </span>
                   </div>

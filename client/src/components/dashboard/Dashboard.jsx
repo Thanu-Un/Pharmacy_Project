@@ -388,9 +388,11 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
     }
   ];
 
+  const isPOSView = currentView === 'New Sale' || currentView === 'POS Cashier';
+
   return (
     <div className="flex h-screen bg-slate-50 font-sans selection:bg-emerald-100 selection:text-emerald-900 relative">
-      {currentView !== 'New Sale' && (
+      {!isPOSView && (
         <>
           {/* Mobile Overlay */}
           {isMobileMenuOpen && (
@@ -424,13 +426,13 @@ export default function Dashboard({ username, token, permissions = [], onLogout 
           username={username}
           onLogout={onLogout}
           onPOSClick={() => setCurrentView('New Sale')}
-          showBrand={currentView === 'New Sale'}
+          showBrand={isPOSView}
           onBrandClick={() => setCurrentView('Dashboard')}
           onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         />
 
         {/* Main Scrollable Area */}
-        <main key={refreshKey} className={`flex-1 overflow-y-auto ${currentView === 'New Sale' ? '' : 'p-4 md:p-6'} bg-slate-50`}>
+        <main key={refreshKey} className={`flex-1 ${isPOSView ? 'p-0 overflow-hidden h-[calc(100vh-3rem)]' : 'p-4 md:p-6 overflow-y-auto'} bg-slate-50`}>
 
           {currentView === 'Dashboard' ? (
             <div className="space-y-5 max-w-7xl mx-auto">

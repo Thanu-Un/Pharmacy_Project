@@ -710,10 +710,10 @@ export default function Dispensing({ onSaleComplete }) {
   const currentWhObj = warehouses.find(w => w.id === selectedWarehouseId);
 
   return (
-    <div className="flex flex-col lg:flex-row h-auto min-h-[calc(100vh-4.5rem)] lg:h-[calc(100vh-4.5rem)] w-full bg-slate-100/70 p-2.5 gap-2.5 overflow-y-auto lg:overflow-hidden max-w-7xl mx-auto">
+    <div className="flex flex-col lg:flex-row h-full w-full bg-slate-100/70 p-2 sm:p-2.5 gap-2 sm:gap-2.5 overflow-hidden max-w-none">
 
-      {/* LEFT PANEL: Products Catalog (65% width) */}
-      <div className="w-full lg:w-[64%] bg-white rounded-xl shadow-card border border-slate-200/80 flex flex-col h-[55vh] lg:h-full overflow-hidden shrink-0 lg:shrink">
+      {/* LEFT PANEL: Products Catalog (Flexible full width) */}
+      <div className="w-full lg:flex-1 bg-white rounded-xl shadow-card border border-slate-200/80 flex flex-col h-[55vh] lg:h-full overflow-hidden shrink-0">
         
         {/* Active Warehouse Banner */}
         <div className="px-3.5 py-1.5 bg-brand-50/80 border-b border-brand-100 flex items-center justify-between text-xs text-brand-900 shrink-0">
@@ -760,7 +760,7 @@ export default function Dispensing({ onSaleComplete }) {
 
         {/* Product Grid */}
         <div className="flex-1 overflow-y-auto p-3 bg-slate-50/50">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2.5">
             {filteredProducts.map(product => {
               const whStock = getProductStock(product);
               const inStock = whStock > 0;
@@ -831,8 +831,8 @@ export default function Dispensing({ onSaleComplete }) {
         </div>
       </div>
 
-      {/* RIGHT PANEL: Cart & Financial Terminal (36% width) */}
-      <div className="w-full lg:w-[36%] bg-white rounded-xl shadow-card border border-slate-200/80 flex flex-col h-[65vh] lg:h-full overflow-hidden shrink-0 lg:shrink">
+      {/* RIGHT PANEL: Cart & Financial Terminal */}
+      <div className="w-full lg:w-[380px] xl:w-[420px] 2xl:w-[450px] shrink-0 bg-white rounded-xl shadow-card border border-slate-200/80 flex flex-col h-[65vh] lg:h-full overflow-hidden">
 
         {/* Customer & Search Bar Header */}
         <div className="p-3 border-b border-slate-100 bg-slate-50/70 space-y-2 shrink-0">

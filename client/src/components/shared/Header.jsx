@@ -85,6 +85,11 @@ export default function Header({ username, onLogout, onPOSClick, showBrand, onBr
       }
     };
     fetchWarehouses();
+    const handleWarehousesUpdated = () => fetchWarehouses();
+    window.addEventListener('warehousesUpdated', handleWarehousesUpdated);
+    return () => {
+      window.removeEventListener('warehousesUpdated', handleWarehousesUpdated);
+    };
   }, [isAdmin, assignedWarehouseId]);
 
   const handleSelectWarehouse = (wh) => {

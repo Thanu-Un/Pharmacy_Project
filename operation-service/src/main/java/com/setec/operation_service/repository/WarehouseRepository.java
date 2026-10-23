@@ -9,4 +9,7 @@ import java.util.Optional;
 @Repository
 public interface WarehouseRepository extends JpaRepository<Warehouse, Long> {
     Optional<Warehouse> findByCode(String code);
+    Optional<Warehouse> findByCodeIgnoreCase(String code);
+    boolean existsByCodeIgnoreCase(String code);
+    boolean existsByCodeIgnoreCaseAndIdNot(String code, Long id);
 }

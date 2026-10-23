@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/operation/warehouses")
@@ -21,25 +22,43 @@ public class WarehouseController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Warehouse> getWarehouseById(@PathVariable Long id) {
+    public ResponseEntity<?> getWarehouseById(@PathVariable Long id) {
         return warehouseService.getWarehouseById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Warehouse> createWarehouse(@RequestBody Warehouse warehouse) {
-        return ResponseEntity.ok(warehouseService.createWarehouse(warehouse));
+    public ResponseEntity<?> createWarehouse(@RequestBody Warehouse warehouse) {
+        try {
+            return ResponseEntity.ok(warehouseService.createWarehouse(warehouse));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("message", "Failed to save warehouse: " + e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Warehouse> updateWarehouse(@PathVariable Long id, @RequestBody Warehouse warehouse) {
-        return ResponseEntity.ok(warehouseService.updateWarehouse(id, warehouse));
+    public ResponseEntity<?> updateWarehouse(@PathVariable Long id, @RequestBody Warehouse warehouse) {
+        try {
+            return ResponseEntity.ok(warehouseService.updateWarehouse(id, warehouse));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("message", "Failed to update warehouse: " + e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteWarehouse(@PathVariable Long id) {
-        warehouseService.deleteWarehouse(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteWarehouse(@PathVariable Long id) {
+        try {
+            warehouseService.deleteWarehouse(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("message", "Failed to delete warehouse: " + e.getMessage()));
+        }
     }
 }

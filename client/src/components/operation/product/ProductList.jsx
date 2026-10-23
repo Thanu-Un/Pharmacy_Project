@@ -1,37 +1,135 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Button from '../../ui/Button';
 import Badge from '../../ui/Badge';
 import Card from '../../ui/Card';
 
 export default function ProductList({ onAddClick, onEditClick }) {
+  const { t } = useTranslation();
   const [products, setProducts] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState(() => {
+    const saved = localStorage.getItem('activeWarehouseId');
+    return saved ? Number(saved) : 'all';
+  });
+  const [selectedWarehouseName, setSelectedWarehouseName] = useState(() => {
+    return localStorage.getItem('activeWarehouseName') || 'All Warehouses';
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [productToDelete, setProductToDelete] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch('/api/operation/products', {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-        });
+  const fetchWarehouses = async () => {
+    try {
+      const res = await fetch('/api/operation/warehouses', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setWarehouses(data);
         
-        if (!response.ok) {
-          throw new Error('Failed to fetch products');
+        // If saved ID matches a warehouse, ensure name is synchronized
+        const savedId = localStorage.getItem('activeWarehouseId');
+        if (savedId) {
+          const found = data.find(w => String(w.id) === String(savedId));
+          if (found) {
+            setSelectedWarehouseId(found.id);
+            setSelectedWarehouseName(found.name);
+          }
         }
-        
-        const data = await response.json();
-        setProducts(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
+      }
+    } catch (e) {
+      console.error('Failed to fetch warehouses in ProductList:', e);
+    }
+  };
+
+  const fetchProducts = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/operation/products', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+      
+      const data = await response.json();
+      setProducts(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+    fetchWarehouses();
+  }, []);
+
+  // Synchronize with Header's warehouse switcher or other components
+  useEffect(() => {
+    const handleWhChange = (e) => {
+      const newWh = e.detail;
+      if (newWh && newWh.id) {
+        setSelectedWarehouseId(Number(newWh.id));
+        setSelectedWarehouseName(newWh.name || '');
+      } else {
+        const savedId = localStorage.getItem('activeWarehouseId');
+        const savedName = localStorage.getItem('activeWarehouseName');
+        if (savedId) {
+          setSelectedWarehouseId(Number(savedId));
+          setSelectedWarehouseName(savedName || '');
+        } else {
+          setSelectedWarehouseId('all');
+          setSelectedWarehouseName('All Warehouses');
+        }
       }
     };
 
-    fetchProducts();
+    const handleWarehousesUpdated = () => {
+      fetchWarehouses();
+      fetchProducts();
+    };
+
+    window.addEventListener('warehousechange', handleWhChange);
+    window.addEventListener('warehousesUpdated', handleWarehousesUpdated);
+    return () => {
+      window.removeEventListener('warehousechange', handleWhChange);
+      window.removeEventListener('warehousesUpdated', handleWarehousesUpdated);
+    };
   }, []);
+
+  const handleSelectWarehouse = (val) => {
+    if (val === 'all') {
+      setSelectedWarehouseId('all');
+      setSelectedWarehouseName('All Warehouses');
+    } else {
+      const chosen = warehouses.find(w => String(w.id) === String(val));
+      if (chosen) {
+        setSelectedWarehouseId(chosen.id);
+        setSelectedWarehouseName(chosen.name);
+        localStorage.setItem('activeWarehouseId', String(chosen.id));
+        localStorage.setItem('activeWarehouseName', chosen.name);
+        // Dispatch to update Header and POS simultaneously
+        window.dispatchEvent(new CustomEvent('warehousechange', { detail: chosen }));
+      }
+    }
+  };
+
+  const getWarehouseStock = (product, whId) => {
+    if (!product) return 0;
+    if (whId === 'all' || !whId) {
+      return parseFloat(product.quantity || 0);
+    }
+    if (product.stocks && Array.isArray(product.stocks)) {
+      const found = product.stocks.find(s => s.warehouse?.id === Number(whId));
+      return found ? parseFloat(found.quantity || 0) : 0;
+    }
+    return 0;
+  };
 
   const handleDelete = async (id) => {
     try {
@@ -61,7 +159,7 @@ export default function ProductList({ onAddClick, onEditClick }) {
   );
 
   return (
-    <div className="space-y-4 max-w-7xl mx-auto">
+    <div className="space-y-4 w-full">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200/80">
         <div>
@@ -92,31 +190,62 @@ export default function ProductList({ onAddClick, onEditClick }) {
         </div>
       </div>
 
-      {/* Toolbar & Search */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="relative w-full max-w-sm">
-          <svg className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input 
-            type="text" 
-            placeholder="Search by name, SKU code, or category..." 
-            className="w-full bg-white border border-slate-200 rounded-lg pl-9 pr-8 py-1.5 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/15 transition-all shadow-subtle"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          {searchTerm && (
-            <button 
-              onClick={() => setSearchTerm('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
+      {/* Toolbar & Filters */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 flex-1">
+          {/* Search Input */}
+          <div className="relative w-full sm:max-w-xs">
+            <svg className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input 
+              type="text" 
+              placeholder="Search by name, SKU code, or category..." 
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-8 py-1.5 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {searchTerm && (
+              <button 
+                onClick={() => setSearchTerm('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          {/* Warehouse Stock Selector */}
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1.5 text-xs text-slate-600 font-medium">
+              <svg className="w-4 h-4 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+              <span className="hidden sm:inline">Stock Branch:</span>
+            </div>
+            <select
+              value={selectedWarehouseId}
+              onChange={(e) => handleSelectWarehouse(e.target.value)}
+              className="bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:bg-white focus:border-brand-500 cursor-pointer transition-all"
             >
-              ✕
-            </button>
-          )}
+              <option value="all">All Warehouses (Global Total)</option>
+              {warehouses.map(w => (
+                <option key={w.id} value={w.id}>
+                  {w.name} ({w.code})
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        <div className="text-xs text-slate-500 font-mono">
-          Showing {filteredProducts.length} of {products.length} medicines
+        {/* Showing Count & Active Warehouse Pill */}
+        <div className="flex items-center gap-2 text-xs text-slate-500 font-mono">
+          <span className="px-2 py-0.5 rounded bg-brand-50 text-brand-700 border border-brand-100 font-sans font-semibold text-[11px]">
+            {selectedWarehouseId === 'all' ? 'All Warehouses' : `Branch: ${selectedWarehouseName}`}
+          </span>
+          <span>
+            {filteredProducts.length} of {products.length} medicines
+          </span>
         </div>
       </div>
 
@@ -141,7 +270,14 @@ export default function ProductList({ onAddClick, onEditClick }) {
                 <th className="py-2.5 px-3.5">Category</th>
                 <th className="py-2.5 px-3.5 text-right">Cost</th>
                 <th className="py-2.5 px-3.5 text-right">Sale Price</th>
-                <th className="py-2.5 px-3.5 text-right">In Stock</th>
+                <th className="py-2.5 px-3.5 text-right">
+                  <span>In Stock</span>
+                  {selectedWarehouseId !== 'all' && (
+                    <span className="block text-[9px] font-sans font-normal text-brand-700 lowercase">
+                      ({selectedWarehouseName})
+                    </span>
+                  )}
+                </th>
                 <th className="py-2.5 px-3.5 text-center">Status</th>
                 <th className="py-2.5 px-3.5 text-right">Actions</th>
               </tr>
@@ -164,7 +300,8 @@ export default function ProductList({ onAddClick, onEditClick }) {
                 </tr>
               ) : (
                 filteredProducts.map((p) => {
-                  const qty = Number(p.quantity || 0);
+                  const qty = getWarehouseStock(p, selectedWarehouseId);
+                  const totalGlobal = parseFloat(p.quantity || 0);
                   const alertQty = Number(p.alertQuantity || 0);
                   const isOutOfStock = qty <= 0;
                   const isLowStock = qty > 0 && qty <= alertQty;
@@ -174,7 +311,12 @@ export default function ProductList({ onAddClick, onEditClick }) {
                       <td className="py-2 px-3 text-center">
                         {p.image ? (
                           <div className="w-8 h-8 rounded bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden mx-auto">
-                            <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                            <img 
+                              src={p.image.startsWith('http') || p.image.startsWith('data:') ? p.image : `/api/operation${p.image}`} 
+                              alt={p.name} 
+                              className="w-full h-full object-cover" 
+                              onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/32?text=Rx'; }}
+                            />
                           </div>
                         ) : (
                           <div className="w-8 h-8 rounded bg-slate-100 border border-slate-200/70 flex items-center justify-center text-slate-400 mx-auto">
@@ -209,10 +351,15 @@ export default function ProductList({ onAddClick, onEditClick }) {
                         {p.saleUnit && <span className="text-[10px] text-slate-400 block font-normal font-sans">per {p.saleUnit.name}</span>}
                       </td>
                       <td className="py-2.5 px-3.5 text-right font-mono tabular-nums">
-                        <span className={`font-semibold ${isOutOfStock ? 'text-rose-600' : isLowStock ? 'text-amber-600' : 'text-slate-800'}`}>
+                        <span className={`font-semibold text-xs ${isOutOfStock ? 'text-rose-600' : isLowStock ? 'text-amber-600' : 'text-slate-800'}`}>
                           {qty.toFixed(0)}
                         </span>
                         {p.unit && <span className="text-[10px] text-slate-400 ml-1 font-sans">{p.unit.name}</span>}
+                        {selectedWarehouseId !== 'all' && (
+                          <span className="block text-[10px] text-slate-400 font-sans font-normal" title="Total global stock across all warehouses">
+                            Total: {totalGlobal.toFixed(0)}
+                          </span>
+                        )}
                       </td>
                       <td className="py-2.5 px-3.5 text-center">
                         <Badge
@@ -220,7 +367,7 @@ export default function ProductList({ onAddClick, onEditClick }) {
                           dot
                           variant={isOutOfStock ? 'danger' : isLowStock ? 'warning' : 'success'}
                         >
-                          {isOutOfStock ? 'Out of Stock' : isLowStock ? 'Low Stock' : 'In Stock'}
+                          {isOutOfStock ? (t('pos.out_of_stock') || 'Out of Stock') : isLowStock ? 'Low Stock' : (t('pos.in_stock') || 'In Stock')}
                         </Badge>
                       </td>
                       <td className="py-2.5 px-3.5 text-right">
